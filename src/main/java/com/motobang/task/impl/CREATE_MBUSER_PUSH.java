@@ -86,6 +86,7 @@ public class CREATE_MBUSER_PUSH implements JobRunner {
 				GarageModel g=JSON.parseObject(JSON.toJSONString(garageMap), GarageModel.class);
 				mbuser.brandid=g.brandid;
 				mbuser.modelid=g.modelid;
+				mbuser.brandparentid=MotoDataManager.getInstance().getMotoBrand(g.brandid).bpid;
 			}
 			if(map.containsKey("addtime")) {
 				mbuser.addtime=Long.parseLong(map.get("addtime").toString());
