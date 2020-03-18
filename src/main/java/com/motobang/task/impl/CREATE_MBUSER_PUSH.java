@@ -22,6 +22,7 @@ import com.motoband.manager.MotoDataManager;
 import com.motoband.manager.search.ElasticSearchManager;
 import com.motoband.model.CityDataModel;
 import com.motoband.model.GarageModel;
+import com.motoband.model.MotoBrandModel;
 import com.motoband.model.task.MBUserPushModel;
 import com.motoband.utils.collection.CollectionUtil;
 
@@ -86,7 +87,10 @@ public class CREATE_MBUSER_PUSH implements JobRunner {
 				GarageModel g=JSON.parseObject(JSON.toJSONString(garageMap), GarageModel.class);
 				mbuser.brandid=g.brandid;
 				mbuser.modelid=g.modelid;
-				mbuser.brandparentid=MotoDataManager.getInstance().getMotoBrand(g.brandid).bpid;
+				MotoBrandModel res=MotoDataManager.getInstance().getMotoBrand(g.brandid);
+				if(res!=null){
+					mbuser.brandparentid=MotoDataManager.getInstance().getMotoBrand(g.brandid).bpid;
+				}
 			}
 			if(map.containsKey("addtime")) {
 				mbuser.addtime=Long.parseLong(map.get("addtime").toString());
