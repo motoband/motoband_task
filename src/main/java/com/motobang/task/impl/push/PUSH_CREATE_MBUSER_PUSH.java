@@ -1,4 +1,4 @@
-package com.motobang.task.impl;
+package com.motobang.task.impl.push;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,8 +32,8 @@ import com.motoband.utils.collection.CollectionUtil;
  * userid,province,city,gender, model,brand ,addtime,lastactivetime,ctype
  * Created by junfei.Yang on 2020年3月12日.
  */
-public class CREATE_MBUSER_PUSH implements JobRunner {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(CREATE_MBUSER_PUSH.class);
+public class PUSH_CREATE_MBUSER_PUSH implements JobRunner {
+    protected static final Logger LOGGER = LoggerFactory.getLogger(PUSH_CREATE_MBUSER_PUSH.class);
 
 	public static void main(String[] args) {
 		StringBuffer sb=new StringBuffer();

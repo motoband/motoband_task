@@ -1,4 +1,4 @@
-package com.motobang.task.impl;
+package com.motobang.task.impl.push;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +13,8 @@ import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import com.motoband.manager.UserManager;
 
-public class IM_PUSH_ERROR_USERIDS implements JobRunner {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(IM_PUSH_ERROR_USERIDS.class);
+public class PUSH_IM_PUSH_ERROR_USERIDS implements JobRunner {
+    protected static final Logger LOGGER = LoggerFactory.getLogger(PUSH_IM_PUSH_ERROR_USERIDS.class);
 
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
