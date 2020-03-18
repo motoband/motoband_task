@@ -101,7 +101,7 @@ public class CREATE_MBUSER_PUSH implements JobRunner {
 			for (int i = 0; i < year; i++) {
 				lastActiveTimeSQL.append("select * from userloginonlog");
 				lastActiveTimeSQL.append(LocalDate.now().plusMonths(-i).format(DateTimeFormatter.ofPattern("_yyyy_M")));
-				lastActiveTimeSQL.append(" where userid=\""+userid+"\" and ctype in (1,2) and channel is null ");
+				lastActiveTimeSQL.append(" where userid=\""+userid+"\" and ctype in (1,2) ");
 				if (i != year-1) {
 					lastActiveTimeSQL.append(" \r\n UNION ALL  \r\n");
 				}
