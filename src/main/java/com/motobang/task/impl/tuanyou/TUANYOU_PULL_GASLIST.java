@@ -10,7 +10,7 @@ import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import com.motoband.common.Consts;
-import com.motoband.manager.tuanyou.TuanYouManager;
+import com.motoband.manager.tuanyou.YouZhanManager;
 
 /**
  * 团油获取全量油站
@@ -23,12 +23,12 @@ public class TUANYOU_PULL_GASLIST implements JobRunner {
 	public Result run(JobContext jobContext) throws Throwable {
 		try {
 			if(StringUtils.isNotBlank(Consts.TUAN_YOU_ADMIN_TOKEN)) {
-				TuanYouManager.getInstance().refreshAdminToken();
+				YouZhanManager.getInstance().refreshAdminToken();
 			}
 			//刷新全量油站，
-			TuanYouManager.getInstance().getYouZhanManner(Consts.TUAN_YOU_ADMIN_MOBILENO,Consts.TUAN_YOU_ADMIN_TOKEN);
+			YouZhanManager.getInstance().getYouZhanManner(Consts.TUAN_YOU_ADMIN_MOBILENO,Consts.TUAN_YOU_ADMIN_TOKEN);
 			//刷新油站品牌
-			TuanYouManager.getInstance().getYouZhanPrice(Consts.TUAN_YOU_ADMIN_MOBILENO,Consts.TUAN_YOU_ADMIN_TOKEN);
+			YouZhanManager.getInstance().getYouZhanPrice(Consts.TUAN_YOU_ADMIN_MOBILENO,Consts.TUAN_YOU_ADMIN_TOKEN);
 //			刷新油站距离
 //			TuanYouManager.getInstance().getYouZhanJuli();
         } catch (Exception e) {
