@@ -29,8 +29,8 @@ public class TUANYOU_PULL_GASLIST implements JobRunner {
 			TuanYouManager.getInstance().getYouZhanManner(Consts.TUAN_YOU_ADMIN_MOBILENO,Consts.TUAN_YOU_ADMIN_TOKEN);
 			//刷新油站品牌
 			TuanYouManager.getInstance().getYouZhanPrice(Consts.TUAN_YOU_ADMIN_MOBILENO,Consts.TUAN_YOU_ADMIN_TOKEN);
-			//刷新油站距离
-			TuanYouManager.getInstance().getYouZhanJuli();
+//			刷新油站距离
+//			TuanYouManager.getInstance().getYouZhanJuli();
         } catch (Exception e) {
         	LOGGER.error("ERROR="+ExceptionUtils.getStackTrace(e));
             return new Result(Action.EXECUTE_FAILED, ExceptionUtils.getStackTrace(e));
