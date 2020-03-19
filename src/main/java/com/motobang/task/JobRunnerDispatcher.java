@@ -14,9 +14,10 @@ import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import com.motoband.common.MBResponse;
 import com.motoband.common.MBResponseCode;
 import com.motoband.model.task.MessageTaskModel;
-import com.motobang.task.impl.IM_PUSH;
-import com.motobang.task.impl.IM_PUSH_ERROR_USERIDS;
-import com.motobang.task.impl.CREATE_MBUSER_PUSH;
+import com.motobang.task.impl.push.PUSH_CREATE_MBUSER_PUSH;
+import com.motobang.task.impl.push.PUSH_IM_PUSH;
+import com.motobang.task.impl.push.PUSH_IM_PUSH_ERROR_USERIDS;
+import com.motobang.task.impl.tuanyou.TUANYOU_PULL_GASLIST;
 
 public class JobRunnerDispatcher implements JobRunner {
     protected static final Logger LOGGER = LoggerFactory.getLogger(JobRunnerDispatcher.class);
@@ -25,9 +26,15 @@ public class JobRunnerDispatcher implements JobRunner {
             JOB_RUNNER_MAP = new ConcurrentHashMap<String, JobRunner>();
 
     static {
-        JOB_RUNNER_MAP.put(MessageTaskModel.IM_PUSH, new IM_PUSH()); 
-        JOB_RUNNER_MAP.put(MessageTaskModel.CREATE_MBUSER_PUSH, new CREATE_MBUSER_PUSH());
-        JOB_RUNNER_MAP.put(MessageTaskModel.IM_PUSH_ERROR_USERIDS, new IM_PUSH_ERROR_USERIDS());
+        JOB_RUNNER_MAP.put(MessageTaskModel.PUSH_IM_PUSH, new PUSH_IM_PUSH()); 
+        JOB_RUNNER_MAP.put(MessageTaskModel.PUSH_CREATE_MBUSER_PUSH, new PUSH_CREATE_MBUSER_PUSH());
+        JOB_RUNNER_MAP.put(MessageTaskModel.PUSH_IM_PUSH_ERROR_USERIDS, new PUSH_IM_PUSH_ERROR_USERIDS());
+        JOB_RUNNER_MAP.put(MessageTaskModel.PUSH_IM_PUSH_ERROR_USERIDS, new PUSH_IM_PUSH_ERROR_USERIDS());
+        
+        
+        JOB_RUNNER_MAP.put(MessageTaskModel.TUANYOU_PULL_GASLIST, new TUANYOU_PULL_GASLIST());
+
+
 
     }
 

@@ -1,4 +1,4 @@
-package com.motobang.task.impl;
+package com.motobang.task.impl.push;
 
 import java.time.Clock;
 import java.util.HashMap;
@@ -34,8 +34,8 @@ import com.motobang.task.TaskTrackerStartup;
  * 推送任务
  * Created by junfei.Yang on 2020年3月12日.
  */
-public class IM_PUSH implements JobRunner {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(IM_PUSH.class);
+public class PUSH_IM_PUSH implements JobRunner {
+    protected static final Logger LOGGER = LoggerFactory.getLogger(PUSH_IM_PUSH.class);
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
 //		 BizLOGGER bizLOGGER = LtsLOGGERFactory.getBizLOGGER();
