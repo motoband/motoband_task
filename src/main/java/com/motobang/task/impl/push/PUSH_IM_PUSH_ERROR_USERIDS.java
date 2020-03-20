@@ -58,37 +58,11 @@ public static void main(String[] args) {
 					UserManager.getInstance().updateUsertaskmsg(dataMap);
 					LOGGER.error("taskid="+taskid+",线程id="+Thread.currentThread().getId()+",执行推送完毕,结束更改数据库用户状态");
 				}
-		TaskFinshe(taskid);
+//		TaskFinshe(taskid);
 		
 		return new Result(Action.EXECUTE_SUCCESS);
 	}
 	
-	private void TaskFinshe(String taskid) {
-		Map<String, Object> dataMap = new HashMap<String, Object>();
-		dataMap.put("updatetime", System.currentTimeMillis());
-		LOGGER.error("taskid="+taskid+",开始检查任务是否完成");
-		if (UserManager.getInstance().checkTask(taskid)) {
-			LOGGER.error("taskid="+taskid+",结束检查任务是否完成");
-			dataMap.put("state", 1);
-			if(LOGGER.isErrorEnabled()) {
-				LOGGER.trace("taskid is finshed -------"+taskid+"-----"+JSON.toJSONString(dataMap) );
-			}
-		} else {
-			LOGGER.error("taskid="+taskid+",结束检查任务是否完成");
-			dataMap.put("state", 0);
-		}
-		dataMap.put("taskid", taskid);
-		LOGGER.error("taskid="+taskid+"开始检查任务用户总数");
-		dataMap.put("sumcount", UserManager.getInstance().getUserTaskCount(taskid, -1));
-		LOGGER.error("taskid="+taskid+"结束检查任务用户总数");
-		LOGGER.error("taskid="+taskid+"开始检查任务用户执行成功总数");
-		dataMap.put("successcount", UserManager.getInstance().getUserTaskCount(taskid, 1));
-		LOGGER.error("taskid="+taskid+"开始检查任务用户执行失败总数");
-		dataMap.put("failcount", UserManager.getInstance().getUserTaskCount(taskid, 2));
-		LOGGER.error("taskid="+taskid+"开始更新任务执行情况");
-		UserManager.getInstance().updatetaskmsgliststate(dataMap);
-		LOGGER.error("taskid="+taskid+"结束更新任务执行情况");
 
-	}
 
 }

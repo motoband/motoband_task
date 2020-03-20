@@ -91,12 +91,41 @@ public class PUSH_IM_PUSH implements JobRunner {
 					String.format("taskid:%s 结束查询第 pici:%s 批次用户,用时:%s,userids:%s", taskid, pici,c.millis()-time, userids==null?0:userids.size()));
 		}
 		if(userids==null||userids.size()==0) {
+			TaskFinshe(taskid);
 			return ;
 		}
 		LOGGER.error("taskid="+taskid+",开始推送");
 		pici = batchSendCMSMessage(taskid, model, pushMsg, pici, userids);
 		LOGGER.error("taskid="+taskid+",结束推送");
 		FenPiSendtaskMsg_new(taskid, model, pushMsg, pici);		
+	}
+	
+	private void TaskFinshe(String taskid) {
+		Map<String, Object> dataMap = new HashMap<String, Object>();
+		dataMap.put("updatetime", System.currentTimeMillis());
+		LOGGER.error("taskid="+taskid+",开始检查任务是否完成");
+		if (UserManager.getInstance().checkTask(taskid)) {
+			LOGGER.error("taskid="+taskid+",结束检查任务是否完成");
+			dataMap.put("state", 1);
+			if(LOGGER.isErrorEnabled()) {
+				LOGGER.trace("taskid is finshed -------"+taskid+"-----"+JSON.toJSONString(dataMap) );
+			}
+		} else {
+			LOGGER.error("taskid="+taskid+",结束检查任务是否完成");
+			dataMap.put("state", 0);
+		}
+		dataMap.put("taskid", taskid);
+		LOGGER.error("taskid="+taskid+"开始检查任务用户总数");
+		dataMap.put("sumcount", UserManager.getInstance().getUserTaskCount(taskid, -1));
+		LOGGER.error("taskid="+taskid+"结束检查任务用户总数");
+		LOGGER.error("taskid="+taskid+"开始检查任务用户执行成功总数");
+		dataMap.put("successcount", UserManager.getInstance().getUserTaskCount(taskid, 1));
+		LOGGER.error("taskid="+taskid+"开始检查任务用户执行失败总数");
+		dataMap.put("failcount", UserManager.getInstance().getUserTaskCount(taskid, 2));
+		LOGGER.error("taskid="+taskid+"开始更新任务执行情况");
+		UserManager.getInstance().updatetaskmsgliststate(dataMap);
+		LOGGER.error("taskid="+taskid+"结束更新任务执行情况");
+
 	}
 
 	private int batchSendCMSMessage(String taskid, MBMessageModel model, String pushMsg, int pici, List<String> userids) {
