@@ -63,14 +63,14 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 				}
 				//标记需要处理的用户 条件是有效的用户  需要先筛选出有效的用户 条件是半年以内登录过的用户
 				FenPiSendtaskMsg_new(taskid, model, pushMsg, 0);
-
 			}
-			
-			
-
         } catch (Exception e) {
-        	LOGGER.error("ERROR="+ExceptionUtils.getStackTrace(e));
-            return new Result(Action.EXECUTE_FAILED, ExceptionUtils.getStackTrace(e));
+        	if(e instanceof InterruptedException) {
+        		
+        	}else {
+        		LOGGER.error("ERROR="+ExceptionUtils.getStackTrace(e));
+                return new Result(Action.EXECUTE_FAILED, ExceptionUtils.getStackTrace(e));
+        	}
         }
         return new Result(Action.EXECUTE_SUCCESS, "执行成功了，哈哈");
 	}
