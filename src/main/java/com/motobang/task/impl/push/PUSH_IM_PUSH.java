@@ -37,15 +37,15 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
     protected static final Logger LOGGER = LoggerFactory.getLogger(PUSH_IM_PUSH.class);
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
+		LOGGER.info("开始处理任务 jobContext="+JSON.toJSONString(jobContext));
+		String taskid=jobContext.getJob().getTaskId();
+		String data=jobContext.getJob().getParam("data");
 //		 BizLOGGER bizLOGGER = LtsLOGGERFactory.getBizLOGGER();
 		try {
             // TODO 业务逻辑
             // 会发送到 LTS (JobTracker上)
 //            bizLOGGER.info("测试，业务日志啊啊啊啊啊");
 //            bizLOGGER.info("jobContext="+JSON.toJSONString(jobContext));
-			LOGGER.info("开始处理任务 jobContext="+JSON.toJSONString(jobContext));
-			String taskid=jobContext.getJob().getTaskId();
-			String data=jobContext.getJob().getParam("data");
 			if(StringUtils.isNotBlank(data)) {
 				MessageTaskModel taskModel=JSON.parseObject(data, MessageTaskModel.class);
 				UserManager.getInstance().addMessageTaskUserAll(taskModel);
@@ -66,7 +66,12 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 			}
         } catch (Exception e) {
         	if(e instanceof InterruptedException) {
-        		
+        		Map<String, Object> dataMap = new HashMap<String, Object>();
+				dataMap.put("taskid", taskid);
+				dataMap.put("updatetime", System.currentTimeMillis());
+				dataMap.put("state", 3);
+				UserManager.getInstance().updatetaskmsgliststate(dataMap);
+        		return null;
         	}else {
         		LOGGER.error("ERROR="+ExceptionUtils.getStackTrace(e));
                 return new Result(Action.EXECUTE_FAILED, ExceptionUtils.getStackTrace(e));
