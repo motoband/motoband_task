@@ -52,7 +52,7 @@ public class PUSH_IM_PUSH implements JobRunner {
 				Map<String, Object> dataMap = new HashMap<String, Object>();
 				dataMap.put("taskid", taskModel.taskid);
 				dataMap.put("updatetime", System.currentTimeMillis());
-				dataMap.put("state", 0);
+				dataMap.put("state", 2);
 				UserManager.getInstance().updatetaskmsgliststate(dataMap);
 				UserManager.getInstance().addMessageTask(taskModel);
 				UserManager.getInstance().addMessageTaskUserAll(taskModel);
