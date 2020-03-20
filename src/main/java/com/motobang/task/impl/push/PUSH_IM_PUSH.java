@@ -48,7 +48,6 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 //            bizLOGGER.info("jobContext="+JSON.toJSONString(jobContext));
 			if(StringUtils.isNotBlank(data)) {
 				MessageTaskModel taskModel=JSON.parseObject(data, MessageTaskModel.class);
-				UserManager.getInstance().addMessageTaskUserAll(taskModel);
 				Map<String, Object> dataMap = new HashMap<String, Object>();
 				dataMap.put("taskid", taskModel.taskid);
 				dataMap.put("updatetime", System.currentTimeMillis());
@@ -65,7 +64,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 				FenPiSendtaskMsg_new(taskid, model, pushMsg, 0);
 			}
         } catch (Exception e) {
-        	if(e instanceof InterruptedException) {
+        	if(e.getMessage().contains("interrupt")) {
         		Map<String, Object> dataMap = new HashMap<String, Object>();
 				dataMap.put("taskid", taskid);
 				dataMap.put("updatetime", System.currentTimeMillis());
