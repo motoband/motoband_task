@@ -1,5 +1,6 @@
 package com.motobang.task.impl.push;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,11 +12,19 @@ import com.github.ltsopensource.core.logger.LoggerFactory;
 import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
+import com.google.common.collect.Lists;
 import com.motoband.manager.UserManager;
+import com.motoband.utils.collection.CollectionUtil;
 
 public class PUSH_IM_PUSH_ERROR_USERIDS implements JobRunner {
     protected static final Logger LOGGER = LoggerFactory.getLogger(PUSH_IM_PUSH_ERROR_USERIDS.class);
-
+public static void main(String[] args) {
+	String[] taskname="server_push_1584675965".split("_");
+	String time=taskname[taskname.length-1];
+	taskname=Arrays.copyOfRange(taskname, 0, taskname.length-1);
+	String newTaskId=CollectionUtil.join(Lists.newArrayList(taskname), "_")+"_callback_"+time;
+	System.out.println(newTaskId);
+}
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
 		String taskid=jobContext.getJob().getTaskId();
