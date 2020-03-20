@@ -13,6 +13,7 @@ import com.github.ltsopensource.core.domain.Action;
 import com.github.ltsopensource.core.logger.Logger;
 import com.github.ltsopensource.core.logger.LoggerFactory;
 import com.github.ltsopensource.tasktracker.Result;
+import com.github.ltsopensource.tasktracker.runner.InterruptibleJobRunner;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import com.google.common.collect.Lists;
@@ -33,7 +34,7 @@ import com.motoband.utils.collection.CollectionUtil;
  * userid,province,city,gender, model,brand ,addtime,lastactivetime,ctype
  * Created by junfei.Yang on 2020年3月12日.
  */
-public class PUSH_CREATE_MBUSER_PUSH implements JobRunner {
+public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
     protected static final Logger LOGGER = LoggerFactory.getLogger(PUSH_CREATE_MBUSER_PUSH.class);
 
 	public static void main(String[] args) {
@@ -130,7 +131,7 @@ public class PUSH_CREATE_MBUSER_PUSH implements JobRunner {
 			}
 			mbuser.updatetime=System.currentTimeMillis();
 			UserDAO.inserUserPush(mbuser);
-			LOGGER.info("mbuser="+JSON.toJSONString(mbuser));
+//			LOGGER.info("mbuser="+JSON.toJSONString(mbuser));
 //			mbusermodeljsonstr.add(JSON.toJSONString(mbuser));
 //			userids.add(userid);
 //			if(mbusermodeljsonstr.size()%1000==0) {
@@ -148,5 +149,10 @@ public class PUSH_CREATE_MBUSER_PUSH implements JobRunner {
 //		ElasticSearchManager.getInstance().syncAddEsList(MBUserPushModel.class, JSON.toJSONString(searchparams));	
 		LOGGER.debug("更新用戶有效性over");
 		return new Result(Action.EXECUTE_SUCCESS);
+	}
+
+	@Override
+	public void interrupt() {
+		LOGGER.info("结束处理...............");		
 	}
 }

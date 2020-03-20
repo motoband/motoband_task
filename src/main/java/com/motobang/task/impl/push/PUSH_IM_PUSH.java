@@ -16,8 +16,8 @@ import com.github.ltsopensource.core.domain.Action;
 import com.github.ltsopensource.core.logger.Logger;
 import com.github.ltsopensource.core.logger.LoggerFactory;
 import com.github.ltsopensource.tasktracker.Result;
+import com.github.ltsopensource.tasktracker.runner.InterruptibleJobRunner;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
-import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import com.motoband.common.Consts;
 import com.motoband.manager.MBMessageManager;
 import com.motoband.manager.RedisManager;
@@ -28,13 +28,12 @@ import com.motoband.model.SimpleUserModel;
 import com.motoband.model.task.MessageTaskModel;
 import com.motoband.utils.ExecutorsUtils;
 import com.motoband.utils.collection.CollectionUtil;
-import com.motobang.task.TaskTrackerStartup;
 
 /**
  * 推送任务
  * Created by junfei.Yang on 2020年3月12日.
  */
-public class PUSH_IM_PUSH implements JobRunner {
+public class PUSH_IM_PUSH implements InterruptibleJobRunner {
     protected static final Logger LOGGER = LoggerFactory.getLogger(PUSH_IM_PUSH.class);
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
@@ -252,5 +251,10 @@ public class PUSH_IM_PUSH implements JobRunner {
 		}
 		return model;
 
+	}
+
+	@Override
+	public void interrupt() {
+		LOGGER.info("结束处理...............");
 	}
 }

@@ -10,13 +10,13 @@ import com.github.ltsopensource.core.domain.Action;
 import com.github.ltsopensource.core.logger.Logger;
 import com.github.ltsopensource.core.logger.LoggerFactory;
 import com.github.ltsopensource.tasktracker.Result;
+import com.github.ltsopensource.tasktracker.runner.InterruptibleJobRunner;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
-import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import com.google.common.collect.Lists;
 import com.motoband.manager.UserManager;
 import com.motoband.utils.collection.CollectionUtil;
 
-public class PUSH_IM_PUSH_ERROR_USERIDS implements JobRunner {
+public class PUSH_IM_PUSH_ERROR_USERIDS implements InterruptibleJobRunner {
     protected static final Logger LOGGER = LoggerFactory.getLogger(PUSH_IM_PUSH_ERROR_USERIDS.class);
 public static void main(String[] args) {
 	String[] taskname="server_push_1584675965".split("_");
@@ -90,6 +90,10 @@ public static void main(String[] args) {
 		UserManager.getInstance().updatetaskmsgliststate(dataMap);
 		LOGGER.error("taskid="+taskid+"结束更新任务执行情况");
 
+	}
+	@Override
+	public void interrupt() {
+		LOGGER.info("结束处理...............");		
 	}
 
 }
