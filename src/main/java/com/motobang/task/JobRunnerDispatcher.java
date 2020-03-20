@@ -16,6 +16,7 @@ import com.motoband.common.MBResponseCode;
 import com.motoband.model.task.MessageTaskModel;
 import com.motobang.task.impl.push.PUSH_CREATE_MBUSER_PUSH;
 import com.motobang.task.impl.push.PUSH_IM_PUSH;
+import com.motobang.task.impl.push.PUSH_IM_PUSH_CHECKFINSHE;
 import com.motobang.task.impl.push.PUSH_IM_PUSH_ERROR_USERIDS;
 import com.motobang.task.impl.tuanyou.TUANYOU_PULL_GASLIST;
 
@@ -29,6 +30,8 @@ public class JobRunnerDispatcher implements JobRunner {
         JOB_RUNNER_MAP.put(MessageTaskModel.PUSH_IM_PUSH, new PUSH_IM_PUSH()); 
         JOB_RUNNER_MAP.put(MessageTaskModel.PUSH_CREATE_MBUSER_PUSH, new PUSH_CREATE_MBUSER_PUSH());
         JOB_RUNNER_MAP.put(MessageTaskModel.PUSH_IM_PUSH_ERROR_USERIDS, new PUSH_IM_PUSH_ERROR_USERIDS());
+        JOB_RUNNER_MAP.put(MessageTaskModel.PUSH_IM_PUSH_CHECKFINSHE, new PUSH_IM_PUSH_CHECKFINSHE());
+
         
         
         JOB_RUNNER_MAP.put(MessageTaskModel.TUANYOU_PULL_GASLIST, new TUANYOU_PULL_GASLIST());
