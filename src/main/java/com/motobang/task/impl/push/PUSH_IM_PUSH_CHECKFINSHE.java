@@ -10,7 +10,9 @@ import com.github.ltsopensource.core.logger.LoggerFactory;
 import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.runner.InterruptibleJobRunner;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
+import com.motoband.dao.UserDAO;
 import com.motoband.manager.UserManager;
+import com.motoband.model.task.MessageTaskModel;
 
 public class PUSH_IM_PUSH_CHECKFINSHE implements InterruptibleJobRunner {
     protected static final Logger LOGGER = LoggerFactory.getLogger(PUSH_IM_PUSH_CHECKFINSHE.class);
@@ -19,6 +21,10 @@ public class PUSH_IM_PUSH_CHECKFINSHE implements InterruptibleJobRunner {
 	public Result run(JobContext jobContext) throws Throwable {
 		String taskid =jobContext.getJob().getParam("taskid");
 		Map<String, Object> dataMap = new HashMap<String, Object>();
+		MessageTaskModel taskModel=UserDAO.getTaskMsgByTaskid(taskid);
+		if(taskModel.state==3) {
+			return null;
+		}
 		dataMap.put("updatetime", System.currentTimeMillis());
 		LOGGER.error("taskid="+taskid+",开始检查任务是否完成");
 		if (UserManager.getInstance().checkTask(taskid)) {
