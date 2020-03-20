@@ -27,7 +27,7 @@ public static void main(String[] args) {
 }
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
-		String taskid=jobContext.getJob().getTaskId();
+		String taskid=jobContext.getJob().getParam("taskid");
 		List<String> userids = JSON.parseArray(jobContext.getJob().getParam("userids"),String.class);
 		List<String> erroruserids = JSON.parseArray(jobContext.getJob().getParam("erroruserids"),String.class);
 
