@@ -18,6 +18,7 @@ import com.motobang.task.impl.push.PUSH_CREATE_MBUSER_PUSH;
 import com.motobang.task.impl.push.PUSH_IM_PUSH;
 import com.motobang.task.impl.push.PUSH_IM_PUSH_CHECKFINSHE;
 import com.motobang.task.impl.push.PUSH_IM_PUSH_ERROR_USERIDS;
+import com.motobang.task.impl.push.TestInterruptorJobRunner;
 import com.motobang.task.impl.tuanyou.TUANYOU_PULL_GASLIST;
 
 public class JobRunnerDispatcher implements JobRunner {
@@ -37,6 +38,7 @@ public class JobRunnerDispatcher implements JobRunner {
         JOB_RUNNER_MAP.put(MessageTaskModel.TUANYOU_PULL_GASLIST, new TUANYOU_PULL_GASLIST());
 
 
+        JOB_RUNNER_MAP.put("test", new TestInterruptorJobRunner());
 
     }
 
