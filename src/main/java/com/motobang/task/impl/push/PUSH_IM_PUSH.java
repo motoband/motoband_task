@@ -49,13 +49,13 @@ public class PUSH_IM_PUSH implements JobRunner {
 			String data=jobContext.getJob().getParam("data");
 			if(StringUtils.isNotBlank(data)) {
 				MessageTaskModel taskModel=JSON.parseObject(data, MessageTaskModel.class);
+				UserManager.getInstance().addMessageTask(taskModel);
+				UserManager.getInstance().addMessageTaskUserAll(taskModel);
 				Map<String, Object> dataMap = new HashMap<String, Object>();
 				dataMap.put("taskid", taskModel.taskid);
 				dataMap.put("updatetime", System.currentTimeMillis());
 				dataMap.put("state", 2);
 				UserManager.getInstance().updatetaskmsgliststate(dataMap);
-				UserManager.getInstance().addMessageTask(taskModel);
-				UserManager.getInstance().addMessageTaskUserAll(taskModel);
 				LOGGER.error("taskid="+taskid+",开始查询推送的MBMessageModel");
 				MBMessageModel model = gettaskMessageModel(taskModel);
 				LOGGER.error("taskid="+taskid+",结束查询推送的MBMessageModel");
