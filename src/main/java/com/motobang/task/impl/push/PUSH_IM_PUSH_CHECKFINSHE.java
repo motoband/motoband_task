@@ -38,21 +38,25 @@ public class PUSH_IM_PUSH_CHECKFINSHE implements InterruptibleJobRunner {
 			if(LOGGER.isErrorEnabled()) {
 				LOGGER.trace("taskid is finshed -------"+taskid+"-----"+JSON.toJSONString(dataMap) );
 			}
-			Map<String,Object> map=UserDAO.getLTSTask( taskid);
+			Map<String,Object> map=UserDAO.getLTSTask(taskid);
 			if(map!=null) {
 				String job_id=(String) map.get("job_id");
 				Map<String,String> params=Maps.newHashMap();
 				params.put("jobId", job_id);
+				okhttp3.Response response=null;
 				try {
 					Map<String,String> r=Maps.newHashMap();
 					r.put("Authorization", "Basic bW90b2JhbmQ6TW90b2JhbmQyMDE1IUAjJA==");
 					Headers.of(r);
-					okhttp3.Response response=OkHttpClientUtil.okHttpPost(Consts.LTS_ADMIN_API_IP+"/api/job-queue/repeat-job-delete",params,Headers.of(r));
+					response=OkHttpClientUtil.okHttpPost(Consts.LTS_ADMIN_API_IP+"/api/job-queue/repeat-job-delete",params,Headers.of(r));
 					if(response.isSuccessful()){
 					}
-					response.close();
 				} catch (Exception e) {
 					e.printStackTrace();
+				}finally {
+					if(response!=null) {
+						response.close();
+					}
 				}
 			}
 		} else {
