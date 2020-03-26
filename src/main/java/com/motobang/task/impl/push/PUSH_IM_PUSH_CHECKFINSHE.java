@@ -15,6 +15,7 @@ import com.motoband.common.Consts;
 import com.motoband.common.MBResponse;
 import com.motoband.common.MBResponseCode;
 import com.motoband.dao.UserDAO;
+import com.motoband.dao.lts.LTSDAO;
 import com.motoband.manager.UserManager;
 import com.motoband.model.task.MessageTaskModel;
 import com.motoband.utils.OkHttpClientUtil;
@@ -38,7 +39,7 @@ public class PUSH_IM_PUSH_CHECKFINSHE implements InterruptibleJobRunner {
 			if(LOGGER.isErrorEnabled()) {
 				LOGGER.trace("taskid is finshed -------"+taskid+"-----"+JSON.toJSONString(dataMap) );
 			}
-			Map<String,Object> map=UserDAO.getLTSTask(taskid);
+			Map<String,Object> map=LTSDAO.getLTSTaskRepeat(taskid);
 			if(map!=null) {
 				String job_id=(String) map.get("job_id");
 				Map<String,String> params=Maps.newHashMap();
