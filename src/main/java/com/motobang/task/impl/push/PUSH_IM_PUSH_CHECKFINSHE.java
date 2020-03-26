@@ -30,8 +30,9 @@ public class PUSH_IM_PUSH_CHECKFINSHE implements InterruptibleJobRunner {
 		String taskid =jobContext.getJob().getParam("taskid");
 		Map<String, Object> dataMap = new HashMap<String, Object>();
 		MessageTaskModel taskModel=UserDAO.getTaskMsgByTaskid(taskid);
+		boolean flag=false;
 		if(taskModel.state==3) {
-			return null;
+			flag=true;
 		}
 		dataMap.put("updatetime", System.currentTimeMillis());
 		if (UserManager.getInstance().checkTask(taskid)) {
@@ -39,6 +40,11 @@ public class PUSH_IM_PUSH_CHECKFINSHE implements InterruptibleJobRunner {
 			if(LOGGER.isErrorEnabled()) {
 				LOGGER.trace("taskid is finshed -------"+taskid+"-----"+JSON.toJSONString(dataMap) );
 			}
+			flag=true;
+		} else {
+			dataMap.put("state", 0);
+		}
+		if(flag) {
 			Map<String,Object> map=LTSDAO.getLTSTaskRepeat(jobContext.getJob().getTaskId());
 			if(map!=null) {
 				String job_id=(String) map.get("job_id");
@@ -50,18 +56,16 @@ public class PUSH_IM_PUSH_CHECKFINSHE implements InterruptibleJobRunner {
 					r.put("Authorization", "Basic bW90b2JhbmQ6TW90b2JhbmQyMDE1IUAjJA==");
 					Headers.of(r);
 					response=OkHttpClientUtil.okHttpPost(Consts.LTS_ADMIN_API_IP+"/api/job-queue/repeat-job-delete",params,Headers.of(r));
-					if(response.isSuccessful()){
-					}
+					return null;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}finally {
 					if(response!=null) {
 						response.close();
 					}
+					
 				}
 			}
-		} else {
-			dataMap.put("state", 0);
 		}
 		dataMap.put("taskid", taskid);
 		dataMap.put("sumcount", UserManager.getInstance().getUserTaskCount(taskid, -1));
