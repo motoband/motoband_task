@@ -39,7 +39,7 @@ public class PUSH_IM_PUSH_CHECKFINSHE implements InterruptibleJobRunner {
 			if(LOGGER.isErrorEnabled()) {
 				LOGGER.trace("taskid is finshed -------"+taskid+"-----"+JSON.toJSONString(dataMap) );
 			}
-			Map<String,Object> map=LTSDAO.getLTSTaskRepeat(taskid);
+			Map<String,Object> map=LTSDAO.getLTSTaskRepeat(jobContext.getJob().getTaskId());
 			if(map!=null) {
 				String job_id=(String) map.get("job_id");
 				Map<String,String> params=Maps.newHashMap();
