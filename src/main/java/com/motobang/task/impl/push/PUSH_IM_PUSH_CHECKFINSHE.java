@@ -16,6 +16,7 @@ import com.motoband.common.MBResponse;
 import com.motoband.common.MBResponseCode;
 import com.motoband.dao.UserDAO;
 import com.motoband.dao.lts.LTSDAO;
+import com.motoband.manager.RedisManager;
 import com.motoband.manager.UserManager;
 import com.motoband.model.task.MessageTaskModel;
 import com.motoband.utils.OkHttpClientUtil;
@@ -31,7 +32,10 @@ public class PUSH_IM_PUSH_CHECKFINSHE implements InterruptibleJobRunner {
 		Map<String, Object> dataMap = new HashMap<String, Object>();
 		MessageTaskModel taskModel=UserDAO.getTaskMsgByTaskid(taskid);
 		boolean flag=false;
-		if(taskModel.state==3) {
+		if(taskModel==null){
+			flag=true;
+		}
+		if(taskModel!=null&&taskModel.state==3) {
 			flag=true;
 		}
 		dataMap.put("updatetime", System.currentTimeMillis());
@@ -45,6 +49,11 @@ public class PUSH_IM_PUSH_CHECKFINSHE implements InterruptibleJobRunner {
 			dataMap.put("state", 0);
 		}
 		if(flag) {
+			dataMap.put("taskid", taskid);
+			dataMap.put("sumcount", UserManager.getInstance().getUserTaskCount(taskid, -1));
+			dataMap.put("successcount", UserManager.getInstance().getUserTaskCount(taskid, 1));
+			dataMap.put("failcount", UserManager.getInstance().getUserTaskCount(taskid, 2));
+			UserManager.getInstance().updatetaskmsgliststate(dataMap);
 			Map<String,Object> map=LTSDAO.getLTSTaskRepeat(jobContext.getJob().getTaskId());
 			if(map!=null) {
 				String job_id=(String) map.get("job_id");
@@ -56,6 +65,7 @@ public class PUSH_IM_PUSH_CHECKFINSHE implements InterruptibleJobRunner {
 					r.put("Authorization", "Basic bW90b2JhbmQ6TW90b2JhbmQyMDE1IUAjJA==");
 					Headers.of(r);
 					response=OkHttpClientUtil.okHttpPost(Consts.LTS_ADMIN_API_IP+"/api/job-queue/repeat-job-delete",params,Headers.of(r));
+					RedisManager.getInstance().delbykey(Consts.REDIS_SCHEME_RUN, jobContext.getJob().getTaskId());
 					return null;
 				} catch (Exception e) {
 					e.printStackTrace();

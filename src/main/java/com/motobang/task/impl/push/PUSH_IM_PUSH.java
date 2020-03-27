@@ -48,7 +48,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 //            bizLOGGER.info("jobContext="+JSON.toJSONString(jobContext));
 			if(StringUtils.isNotBlank(data)) {
 				MessageTaskModel taskModel=JSON.parseObject(data, MessageTaskModel.class);
-				UserManager.getInstance().addMessageTask(taskModel);
+//				UserManager.getInstance().addMessageTask(taskModel);
 				UserManager.getInstance().addMessageTaskUserAll(taskModel);
 				Map<String, Object> dataMap = new HashMap<String, Object>();
 				dataMap.put("taskid", taskModel.taskid);
@@ -134,8 +134,12 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 
 	private int batchSendCMSMessage(String taskid, MBMessageModel model, String pushMsg, int pici, List<String> userids) {
 		if (userids != null && userids.size() > 0) {
-			LOGGER.error("taskid="+taskid+",开始多线程执行推送任务,多线程数量"+Runtime.getRuntime().availableProcessors()*10);
-			List<List<String>> res = CollectionUtil.averageAssign(userids, Runtime.getRuntime().availableProcessors()*10);
+			int c=userids.size()/100000+1;
+			if(c>Runtime.getRuntime().availableProcessors()*10){
+				c=Runtime.getRuntime().availableProcessors()*10;
+			}
+			LOGGER.error("taskid="+taskid+",开始多线程执行推送任务,多线程数量"+c);
+			List<List<String>> res = CollectionUtil.averageAssign(userids, c);
 //			List<List<String>> res = CollectionUtil.averageAssign(userids, 50);
 			CyclicBarrier cb = new CyclicBarrier(res.size() + 1);
 			AtomicInteger groupcountAtomic = new AtomicInteger(0);

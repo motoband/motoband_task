@@ -31,7 +31,7 @@ public static void main(String[] args) {
 		List<String> userids = JSON.parseArray(jobContext.getJob().getParam("userids"),String.class);
 		List<String> erroruserids = JSON.parseArray(jobContext.getJob().getParam("erroruserids"),String.class);
 
-		LOGGER.error("taskid="+taskid+",线程id="+Thread.currentThread().getId()+",执行推送完毕,开始更改数据库用户状态");
+		LOGGER.error("taskid="+jobContext.getJob().getTaskId()+",线程id="+Thread.currentThread().getId()+",执行推送完毕,开始更改数据库用户状态");
 		if (erroruserids != null && erroruserids.size() > 0) {
 			Map<String, Object> dataMap = new HashMap<String, Object>();
 			userids.removeAll(erroruserids);
@@ -56,7 +56,7 @@ public static void main(String[] args) {
 					dataMap.put("state", 1);
 					dataMap.put("taskid", taskid);
 					UserManager.getInstance().updateUsertaskmsg(dataMap);
-					LOGGER.error("taskid="+taskid+",线程id="+Thread.currentThread().getId()+",执行推送完毕,结束更改数据库用户状态");
+					LOGGER.error("taskid="+taskid+",线程id="+Thread.currentThread().getId()+",执行推送完毕,人數:"+userids.size()+"结束更改数据库用户状态");
 				}
 		//要回调2600次,此处不处理任务是否完成
 //		TaskFinshe(taskid);
