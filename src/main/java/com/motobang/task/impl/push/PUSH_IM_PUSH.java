@@ -48,6 +48,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 //            bizLOGGER.info("jobContext="+JSON.toJSONString(jobContext));
 			if(StringUtils.isNotBlank(data)) {
 				MessageTaskModel taskModel=JSON.parseObject(data, MessageTaskModel.class);
+				UserManager.getInstance().addMessageTask(taskModel);
 				UserManager.getInstance().addMessageTaskUserAll(taskModel);
 				Map<String, Object> dataMap = new HashMap<String, Object>();
 				dataMap.put("taskid", taskModel.taskid);

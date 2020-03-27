@@ -19,6 +19,7 @@ import com.motobang.task.impl.push.PUSH_IM_PUSH;
 import com.motobang.task.impl.push.PUSH_IM_PUSH_CHECKFINSHE;
 import com.motobang.task.impl.push.PUSH_IM_PUSH_ERROR_USERIDS;
 import com.motobang.task.impl.tuanyou.TUANYOU_PULL_GASLIST;
+import com.motobang.task.impl.vote.VOTE_CLOSE;
 
 public class JobRunnerDispatcher implements JobRunner {
     protected static final Logger LOGGER = LoggerFactory.getLogger(JobRunnerDispatcher.class);
@@ -35,6 +36,8 @@ public class JobRunnerDispatcher implements JobRunner {
         
         
         JOB_RUNNER_MAP.put(MessageTaskModel.TUANYOU_PULL_GASLIST, new TUANYOU_PULL_GASLIST());
+        
+        JOB_RUNNER_MAP.put(MessageTaskModel.VOTE_CLOSE, new VOTE_CLOSE());
 
 
     }
