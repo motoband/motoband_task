@@ -4,6 +4,8 @@ import com.github.ltsopensource.core.commons.file.FileUtils;
 import com.github.ltsopensource.core.commons.utils.Assert;
 import com.github.ltsopensource.core.commons.utils.StringUtils;
 import com.github.ltsopensource.core.constant.Level;
+import com.github.ltsopensource.core.logger.Logger;
+import com.github.ltsopensource.core.logger.LoggerFactory;
 import com.motoband.common.Consts;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -18,11 +20,13 @@ import java.util.Properties;
  * Created by junfei.Yang on 2020年3月11日.
  */
 public class TaskTrackerCfgLoader {
+    protected static final Logger LOGGER = LoggerFactory.getLogger(TaskTrackerStartup.class);
 
     public static TaskTrackerCfg load(String confPath) throws CfgException {
 //
 //        String cfgPath = confPath + "/tasktracker.cfg";
         String log4jPath = confPath + "/log4j.properties";
+        System.out.println("log4jPath="+log4jPath);
 //
 //        Properties conf = new Properties();
 //        File file = new File(cfgPath);
@@ -107,6 +111,8 @@ public class TaskTrackerCfgLoader {
         if (FileUtils.exist(log4jPath)) {
             //  log4j 配置文件路径
             PropertyConfigurator.configure(log4jPath);
+        }else{
+            System.out.println("log4jPath="+log4jPath+",找不到");
         }
 
         return cfg;
