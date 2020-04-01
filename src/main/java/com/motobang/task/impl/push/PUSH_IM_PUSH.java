@@ -134,7 +134,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 
 	private int batchSendCMSMessage(String taskid, MBMessageModel model, String pushMsg, int pici, List<String> userids) {
 		if (userids != null && userids.size() > 0) {
-			int c=userids.size()/100000+1;
+			int c=userids.size()/10000+1;
 			if(c>Runtime.getRuntime().availableProcessors()*10){
 				c=Runtime.getRuntime().availableProcessors()*10;
 			}
