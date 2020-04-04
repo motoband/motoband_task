@@ -134,9 +134,9 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 
 	private int batchSendCMSMessage(String taskid, MBMessageModel model, String pushMsg, int pici, List<String> userids) {
 		if (userids != null && userids.size() > 0) {
-			int c=userids.size()/10000+1;
-			if(c>Runtime.getRuntime().availableProcessors()*10){
-				c=Runtime.getRuntime().availableProcessors()*10;
+			int c=Runtime.getRuntime().availableProcessors()*5;
+			if(c>=10){
+				c=10;
 			}
 			LOGGER.error("taskid="+taskid+",开始多线程执行推送任务,多线程数量"+c);
 			List<List<String>> res = CollectionUtil.averageAssign(userids, c);

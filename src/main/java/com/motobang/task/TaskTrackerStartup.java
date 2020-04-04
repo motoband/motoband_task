@@ -5,6 +5,8 @@ import java.io.IOException;
 import com.github.ltsopensource.core.logger.Logger;
 import com.github.ltsopensource.core.logger.LoggerFactory;
 import com.github.ltsopensource.tasktracker.TaskTracker;
+import com.motoband.common.trace.TraceLevel;
+import com.motoband.common.trace.Tracer;
 import com.motoband.manager.ConfigManager;
 import com.motoband.manager.DBConnectionManager;
 import com.motoband.manager.DataVersionManager;
@@ -27,6 +29,11 @@ public class TaskTrackerStartup {
 		OkHttpClientUtil.init();
         String cfgPath = args[0];
         start(cfgPath);
+        TraceLevel tiTraceLevel = TraceLevel.get(Integer.valueOf(ConfigManager.getInstance().getConfig(ConfigManager.Trace_Level)));
+		boolean writeToFile = Boolean.valueOf(ConfigManager.getInstance().getConfig(ConfigManager.Trace_WriteTraceToFile));
+		boolean printToControl = Boolean.valueOf(ConfigManager.getInstance().getConfig(ConfigManager.Trace_PrintTraceToControl));
+		String logFileURL = ConfigManager.getInstance().getConfig(ConfigManager.Trace_LogFileURL);
+		Tracer.initialize( tiTraceLevel, writeToFile, printToControl, ConfigManager.ServiceName, "/data/logs/motobandtask/task.log");
     }
 
     public static void start(String cfgPath) {
