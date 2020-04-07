@@ -1,19 +1,17 @@
 package com.motobang.task;
 
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.log4j.PropertyConfigurator;
+
 import com.github.ltsopensource.core.commons.file.FileUtils;
-import com.github.ltsopensource.core.commons.utils.Assert;
 import com.github.ltsopensource.core.commons.utils.StringUtils;
 import com.github.ltsopensource.core.constant.Level;
 import com.github.ltsopensource.core.logger.Logger;
 import com.github.ltsopensource.core.logger.LoggerFactory;
 import com.motoband.common.Consts;
-
-import org.apache.log4j.PropertyConfigurator;
-
-import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * 
@@ -23,9 +21,28 @@ public class TaskTrackerCfgLoader {
     protected static final Logger LOGGER = LoggerFactory.getLogger(TaskTrackerStartup.class);
 
     public static TaskTrackerCfg load(String confPath) throws CfgException {
+    	  String log4jPath="src/main/resource/conf";
+    	if(StringUtils.isNotEmpty(confPath)) {
+    		log4jPath=confPath;
+        	String env = System.getProperty("env","windowstest");
+        	if(env.equals("windowstest")) {
+        		log4jPath = confPath + "/log4j.properties";
+        	}else {
+        		log4jPath = confPath + "/log4j.properties";
+        	}
+    	}else {
+    		URL url=TaskTrackerCfgLoader.class.getClassLoader().getResource("conf/log4j.properties");
+    		if(url==null) {
+    			log4jPath += "/log4j.properties";
+    		}else {
+    			log4jPath =url.toString();
+    		}
+    		System.out.println("log4jPath url="+url);
+    		
+    	}
 //
 //        String cfgPath = confPath + "/tasktracker.cfg";
-        String log4jPath = confPath + "/log4j.properties";
+
         System.out.println("log4jPath="+log4jPath);
 //
 //        Properties conf = new Properties();

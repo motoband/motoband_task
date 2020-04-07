@@ -26,7 +26,10 @@ public class TaskTrackerStartup {
 		DataVersionManager.getInstance().init();
 		DataVersionManager.getInstance().startCheck();	
 		OkHttpClientUtil.init();
-        String cfgPath = args[0];
+		String cfgPath=null;
+		if(args.length!=0) {
+			cfgPath = args[0];
+		}
         start(cfgPath);
         TraceLevel tiTraceLevel = TraceLevel.get(Integer.valueOf(ConfigManager.getInstance().getConfig(ConfigManager.Trace_Level)));
 		boolean writeToFile = Boolean.valueOf(ConfigManager.getInstance().getConfig(ConfigManager.Trace_WriteTraceToFile));
