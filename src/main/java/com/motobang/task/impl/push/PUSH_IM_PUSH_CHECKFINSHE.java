@@ -68,7 +68,7 @@ public class PUSH_IM_PUSH_CHECKFINSHE implements InterruptibleJobRunner {
 					RedisManager.getInstance().delbykey(Consts.REDIS_SCHEME_RUN, jobContext.getJob().getTaskId());
 					return null;
 				} catch (Exception e) {
-					e.printStackTrace();
+					throw e;
 				}finally {
 					if(response!=null) {
 						response.close();

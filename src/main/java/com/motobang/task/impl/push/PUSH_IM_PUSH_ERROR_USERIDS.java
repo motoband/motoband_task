@@ -13,8 +13,15 @@ import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.runner.InterruptibleJobRunner;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.motoband.common.Consts;
+import com.motoband.dao.lts.LTSDAO;
+import com.motoband.manager.RedisManager;
 import com.motoband.manager.UserManager;
+import com.motoband.utils.OkHttpClientUtil;
 import com.motoband.utils.collection.CollectionUtil;
+
+import okhttp3.Headers;
 
 public class PUSH_IM_PUSH_ERROR_USERIDS implements InterruptibleJobRunner {
     protected static final Logger LOGGER = LoggerFactory.getLogger(PUSH_IM_PUSH_ERROR_USERIDS.class);
@@ -58,6 +65,28 @@ public static void main(String[] args) {
 					UserManager.getInstance().updateUsertaskmsg(dataMap);
 					LOGGER.error("taskid="+taskid+",线程id="+Thread.currentThread().getId()+",执行推送完毕,人數:"+userids.size()+"结束更改数据库用户状态");
 				}
+//		Map<String,Object> map=LTSDAO.getLTSTaskRepeat(jobContext.getJob().getTaskId());
+//		if(map!=null) {
+//			String job_id=(String) map.get("job_id");
+//			Map<String,String> params=Maps.newHashMap();
+//			params.put("jobId", job_id);
+//			okhttp3.Response response=null;
+//			try {
+//				Map<String,String> r=Maps.newHashMap();
+//				r.put("Authorization", "Basic bW90b2JhbmQ6TW90b2JhbmQyMDE1IUAjJA==");
+//				Headers.of(r);
+//				response=OkHttpClientUtil.okHttpPost(Consts.LTS_ADMIN_API_IP+"/api/job-queue/repeat-job-delete",params,Headers.of(r));
+//				RedisManager.getInstance().delbykey(Consts.REDIS_SCHEME_RUN, jobContext.getJob().getTaskId());
+//				return null;
+//			} catch (Exception e) {
+//				throw e;
+//			}finally {
+//				if(response!=null) {
+//					response.close();
+//				}
+//				
+//			}
+//		}
 		//要回调2600次,此处不处理任务是否完成
 //		TaskFinshe(taskid);
 		

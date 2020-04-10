@@ -26,7 +26,8 @@ public class TestJobRunnerTester extends JobRunnerTester {
 
     public static void main(String[] args) throws Throwable {
 //        //  Mock Job 数据
-    	String json=""
+    	String json="{\"createtime\":1586499906391,\"des\":\"不知这次有没有你，如没有，那是幸福\",\"failcount\":0,\"gpid\":0,\"handlecount\":0,\"id\":0,\"imgurl\":\"http://news2-10013836.cos.ap-shanghai.myqcloud.com/78217F5AC176441A95C30C86C6189E33\",\"linktype\":1,\"name\":\"2020-04-10 14:25:06_阿沟的推送\",\"nid\":\"FB7E8D79694A4038A46BC3FC90C4DC7A\",\"starttime\":0,\"state\":0,\"successcount\":0,\"sumcount\":0,\"taskid\":\"ios_push_20200410142506\",\"test\":1,\"title\":\"机车吐槽大会第二弹\",\"updatetime\":0,\"userpushmodel\":{\"addtime\":0,\"brandid\":0,\"brandparentid\":0,\"ctype\":1,\"cversion\":0,\"lastactivetime\":0,\"mbid\":0,\"modelid\":0,\"state\":0,\"updatetime\":0}}";
+    	MessageTaskModel taskModel=JSON.parseObject(json, MessageTaskModel.class);
     	Job job=new Job();
 		job.setTaskId(taskModel.taskid);
 		job.setParam("type", MessageTaskModel.PUSH_IM_PUSH);
@@ -62,7 +63,8 @@ public class TestJobRunnerTester extends JobRunnerTester {
         jobExtInfo.setRetry(false);
 //
         jobContext.setJobExtInfo(jobExtInfo);
-    	DBConnectionManager.init();
+        System.setProperty("push_flag","1");
+    	DBConnectionManager.init("production");
 		ConfigManager.getInstance().init("MotoBandTask");
 		MotoDataManager.getInstance().init();
 		DataVersionManager.getInstance().init();
