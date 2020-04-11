@@ -160,7 +160,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 				ExecutorsUtils.getInstance().submit(new Runnable() {
 					@Override
 					public void run() {
-						LOGGER.error("taskid="+taskid+Thread.currentThread().getId()+"开始推送");
+						LOGGER.error("taskid="+taskid+Thread.currentThread().getId()+"开始推送"+"innerlist="+JSON.toJSONString(innerlist));
 						if(CollectionUtil.isEmpty(innerlist)) {
 							try {
 								cb.await();
@@ -168,6 +168,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 								e.printStackTrace();
 							}
 						}
+//						LOGGER.error("taskid="+taskid+Thread.currentThread().getId()+"开始推送"+"innerlist="+JSON.toJSONString(innerlist));
 						int groupcount = groupcountAtomic.incrementAndGet();
 						double forcountdouble = Math.ceil(innerlist.size() / 400.0);
 						int forcount = (int) forcountdouble;
