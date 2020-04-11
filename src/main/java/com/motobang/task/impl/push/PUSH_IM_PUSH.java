@@ -165,7 +165,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 							}
 						}
 						int groupcount = groupcountAtomic.incrementAndGet();
-						double forcountdouble = Math.ceil(innerlist.size() / 500.0);
+						double forcountdouble = Math.ceil(innerlist.size() / 400.0);
 						int forcount = (int) forcountdouble;
 						List<List<String>> msglist = CollectionUtil.averageAssign(innerlist, forcount);
 						int classcount = 1;
