@@ -192,6 +192,12 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 						} catch (InterruptedException | BrokenBarrierException e) {
 							if (LOGGER.isErrorEnabled()) {
 								LOGGER.error(ExceptionUtils.getStackTrace(e));
+								
+							}
+							try {
+								throw e;
+							} catch (Exception e1) {
+								e1.printStackTrace();
 							}
 						}
 
