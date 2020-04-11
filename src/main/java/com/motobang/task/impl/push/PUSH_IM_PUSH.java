@@ -92,7 +92,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
         return new Result(Action.EXECUTE_SUCCESS, JSON.toJSONString(m));
 	}
 	
-	private void FenPiSendtaskMsg_new(String taskid, MBMessageModel model, String pushMsg, int pici) {
+	private void FenPiSendtaskMsg_new(String taskid, MBMessageModel model, String pushMsg, int pici) throws Exception {
 		Map<String, Object> dataMap = new HashMap<String, Object>();
 		dataMap.put("taskid", taskid);
 		dataMap.put("pici", pici * 80000);
@@ -143,13 +143,13 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 
 	}
 
-	private int batchSendCMSMessage(String taskid, MBMessageModel model, String pushMsg, int pici, List<String> userids) {
+	private int batchSendCMSMessage(String taskid, MBMessageModel model, String pushMsg, int pici, List<String> userids)throws Exception {
 		if (userids != null && userids.size() > 0) {
 			int c=Runtime.getRuntime().availableProcessors()*5;
 			if(c>=10){
 				c=10;
 			}
-			c=2;
+			c=1;
 			LOGGER.error("taskid="+taskid+",开始多线程执行推送任务,多线程数量"+c);
 			List<List<String>> res = CollectionUtil.averageAssign(userids, c);
 //			List<List<String>> res = CollectionUtil.averageAssign(userids, 50);
