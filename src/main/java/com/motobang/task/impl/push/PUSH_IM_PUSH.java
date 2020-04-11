@@ -151,6 +151,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 			}
 			c=1;
 			LOGGER.error("taskid="+taskid+",开始多线程执行推送任务,多线程数量"+c);
+			RedisManager.getInstance().delbykey(Consts.REDIS_SCHEME_RUN, model.taskid);
 			List<List<String>> res = CollectionUtil.averageAssign(userids, c);
 //			List<List<String>> res = CollectionUtil.averageAssign(userids, 50);
 			CyclicBarrier cb = new CyclicBarrier(res.size() + 1);
