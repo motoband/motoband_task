@@ -53,6 +53,14 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 				MessageTaskModel taskModel=JSON.parseObject(data, MessageTaskModel.class);
 //				UserManager.getInstance().addMessageTask(taskModel);
 				LOGGER.error("taskid="+taskid+",开始插入需要推送的用户");
+//				if(taskModel.test==1) {
+//					StringBuffer sql=new StringBuffer("select * from mbuser_push where 1=1");
+//					if(taskModel!=null) {
+//						if(taskModel.userpushmodel.addtime>0) {
+//							sql.append("addtime>="+taskModel.userpushmodel.addtime);
+//						}
+//					}
+//				}
 				UserManager.getInstance().addMessageTaskUserAll(taskModel);
 				Map<String, Object> dataMap = new HashMap<String, Object>();
 				dataMap.put("taskid", taskModel.taskid);
@@ -95,7 +103,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 	private void FenPiSendtaskMsg_new(String taskid, MBMessageModel model, String pushMsg, int pici) throws Exception {
 		Map<String, Object> dataMap = new HashMap<String, Object>();
 		dataMap.put("taskid", taskid);
-		dataMap.put("pici", pici * 80000);
+		dataMap.put("pici", 0);
 		Clock c=Clock.systemUTC();
 		long time=c.millis();
 		LOGGER.error(

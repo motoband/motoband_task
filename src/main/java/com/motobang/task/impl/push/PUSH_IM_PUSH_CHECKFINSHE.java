@@ -28,7 +28,17 @@ public class PUSH_IM_PUSH_CHECKFINSHE implements InterruptibleJobRunner {
 
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
+		//任务是否被中断
+		//检测回调任务是否完成
+		//检测任务数是否一致
 		String taskid =jobContext.getJob().getParam("taskid");
+		if(checkTaskInterupte(taskid)) {
+			cancleTask(jobContext, taskid);
+			return null;
+		}
+		if(!checkCallbackStatus(taskid)) {
+			return null;
+		}
 		Map<String, Object> dataMap = new HashMap<String, Object>();
 		MessageTaskModel taskModel=UserDAO.getTaskMsgByTaskid(taskid);
 		boolean flag=false;
@@ -49,33 +59,12 @@ public class PUSH_IM_PUSH_CHECKFINSHE implements InterruptibleJobRunner {
 			dataMap.put("state", 0);
 		}
 		if(flag) {
-			dataMap.put("taskid", taskid);
-			dataMap.put("sumcount", UserManager.getInstance().getUserTaskCount(taskid, -1));
-			dataMap.put("successcount", UserManager.getInstance().getUserTaskCount(taskid, 1));
-			dataMap.put("failcount", UserManager.getInstance().getUserTaskCount(taskid, 2));
-			UserManager.getInstance().updatetaskmsgliststate(dataMap);
-			Map<String,Object> map=LTSDAO.getLTSTaskRepeat(jobContext.getJob().getTaskId());
-			if(map!=null) {
-				String job_id=(String) map.get("job_id");
-				Map<String,String> params=Maps.newHashMap();
-				params.put("jobId", job_id);
-				okhttp3.Response response=null;
-				try {
-					Map<String,String> r=Maps.newHashMap();
-					r.put("Authorization", "Basic bW90b2JhbmQ6TW90b2JhbmQyMDE1IUAjJA==");
-					Headers.of(r);
-					response=OkHttpClientUtil.okHttpPost(Consts.LTS_ADMIN_API_IP+"/api/job-queue/repeat-job-delete",params,Headers.of(r));
-					RedisManager.getInstance().delbykey(Consts.REDIS_SCHEME_RUN, taskid);
-					return null;
-				} catch (Exception e) {
-					throw e;
-				}finally {
-					if(response!=null) {
-						response.close();
-					}
-					
-				}
-			}
+//			dataMap.put("taskid", taskid);
+//			dataMap.put("sumcount", UserManager.getInstance().getUserTaskCount(taskid, -1));
+//			dataMap.put("successcount", UserManager.getInstance().getUserTaskCount(taskid, 1));
+//			dataMap.put("failcount", UserManager.getInstance().getUserTaskCount(taskid, 2));
+//			UserManager.getInstance().updatetaskmsgliststate(dataMap);
+			cancleTask(jobContext, taskid);
 		}
 		dataMap.put("taskid", taskid);
 		dataMap.put("sumcount", UserManager.getInstance().getUserTaskCount(taskid, -1));
@@ -84,7 +73,53 @@ public class PUSH_IM_PUSH_CHECKFINSHE implements InterruptibleJobRunner {
 		UserManager.getInstance().updatetaskmsgliststate(dataMap);
 		return null;
 	}
+	/**
+	 * 检测任务回调是否已完成
+	 * @param taskids
+	 * @return
+	 */
+	private boolean checkCallbackStatus(String taskids) {
+		return LTSDAO.getLTSCallBack(taskids);
+	}
+
+	private void cancleTask(JobContext jobContext, String taskid) throws Exception {
+		Map<String, Object> map = LTSDAO.getLTSTaskRepeat(jobContext.getJob().getTaskId());
+		if (map != null) {
+			String job_id = (String) map.get("job_id");
+			Map<String, String> params = Maps.newHashMap();
+			params.put("jobId", job_id);
+			okhttp3.Response response = null;
+			try {
+				Map<String, String> r = Maps.newHashMap();
+				r.put("Authorization", "Basic bW90b2JhbmQ6TW90b2JhbmQyMDE1IUAjJA==");
+				Headers.of(r);
+				response = OkHttpClientUtil.okHttpPost(Consts.LTS_ADMIN_API_IP + "/api/job-queue/repeat-job-delete",
+						params, Headers.of(r));
+				RedisManager.getInstance().delbykey(Consts.REDIS_SCHEME_RUN, taskid);
+			} catch (Exception e) {
+				throw e;
+			} finally {
+				if (response != null) {
+					response.close();
+				}
+
+			}
+		}
+	}
 	
+	/**
+	 * 检测任务是否被中断
+	 * @param taskid
+	 * @return
+	 */
+	private boolean checkTaskInterupte(String taskid) {
+		Map<String,Object> map=LTSDAO.getLTSTaskExecuting(taskid);
+		if(map!=null) {
+			return false;
+		}
+		return true;
+	}
+
 	private void TaskFinshe(String taskid) {
 		Map<String, Object> dataMap = new HashMap<String, Object>();
 		dataMap.put("updatetime", System.currentTimeMillis());
