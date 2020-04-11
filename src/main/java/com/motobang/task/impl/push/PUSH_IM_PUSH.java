@@ -160,7 +160,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 				ExecutorsUtils.getInstance().submit(new Runnable() {
 					@Override
 					public void run() {
-						LOGGER.error("taskid="+taskid+Thread.currentThread().getId()+"开始推送"+"innerlist="+JSON.toJSONString(innerlist));
+						LOGGER.error("taskid="+taskid+Thread.currentThread().getId()+"开始推送"+"innerlist="+innerlist.size());
 						if(CollectionUtil.isEmpty(innerlist)) {
 							try {
 								cb.await();
