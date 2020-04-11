@@ -160,7 +160,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 				ExecutorsUtils.getInstance().submit(new Runnable() {
 					@Override
 					public void run() {
-						LOGGER.error("taskid="+taskid+Thread.currentThread().getId()+"开始推送"+"innerlist="+innerlist.size());
+						LOGGER.error("taskid="+taskid+Thread.currentThread().getId()+"innerlist="+innerlist.size());
 						if(CollectionUtil.isEmpty(innerlist)) {
 							try {
 								cb.await();
@@ -175,6 +175,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 						List<List<String>> msglist = CollectionUtil.averageAssign(innerlist, forcount);
 						int classcount = 1;
 						for (List<String> sendlist : msglist) {
+							LOGGER.error("taskid="+taskid+Thread.currentThread().getId()+"开始推送"+"sendlist="+sendlist.size());
 							if (LOGGER.isErrorEnabled()) {
 //								LOGGER.error(String.format("taskid:%s,pici:%s,groupcount:%s,classcount:%s", taskid,
 //										thread_pici, groupcount, classcount));
