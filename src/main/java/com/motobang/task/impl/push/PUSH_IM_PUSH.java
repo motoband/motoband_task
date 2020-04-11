@@ -52,6 +52,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 			if(StringUtils.isNotBlank(data)) {
 				MessageTaskModel taskModel=JSON.parseObject(data, MessageTaskModel.class);
 //				UserManager.getInstance().addMessageTask(taskModel);
+				LOGGER.error("taskid="+taskid+",开始插入需要推送的用户");
 				UserManager.getInstance().addMessageTaskUserAll(taskModel);
 				Map<String, Object> dataMap = new HashMap<String, Object>();
 				dataMap.put("taskid", taskModel.taskid);
@@ -105,7 +106,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 					String.format("taskid:%s 结束查询第 pici:%s 批次用户,用时:%s,userids:%s", taskid, pici,c.millis()-time, userids==null?0:userids.size()));
 		}
 		if(userids==null||userids.size()==0) {
-//			TaskFinshe(taskid);
+			TaskFinshe(taskid);
 			return ;
 		}
 		LOGGER.error("taskid="+taskid+",开始推送");
@@ -178,18 +179,20 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 //										+",开始执行第"+classcount+"分组");
 
 							}
+							model.taskreq=model.taskid+"_callback_"+RedisManager.getInstance().string_incr(Consts.REDIS_SCHEME_RUN, model.taskid);
 							Integer size=0;
 							classcount++;
+							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+"开始插入缓存MAP");
 							if(MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.containsKey(taskid)) {
 								 size=sendlist.size()+MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.get(taskid);
 							}else {
 								 size=sendlist.size();
 							}
 							MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.put(taskid, size);
-							model.taskreq=model.taskid+"_callback_"+RedisManager.getInstance().string_incr(Consts.REDIS_SCHEME_RUN, model.taskid);
+							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+"结束插入缓存MAP="+size);
 							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+",开始执行执行用户数量="+sendlist.size()+",分组数量="+forcount);
 							singleSendtaskMsg(taskid, model, pushMsg, sendlist);
-							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+",开始执行执行用户数量="+sendlist.size()+",分组数量="+forcount);
+							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+",结束执行执行用户数量="+sendlist.size()+",分组数量="+forcount);
 
 							if (LOGGER.isErrorEnabled()) {
 //								LOGGER.error(String.format("taskid:%s,pici:%s,groupcount:%s,classcount:%s", taskid,
