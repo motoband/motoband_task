@@ -18,6 +18,7 @@ import com.github.ltsopensource.core.logger.LoggerFactory;
 import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.runner.InterruptibleJobRunner;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
+import com.google.common.collect.Maps;
 import com.motoband.common.Consts;
 import com.motoband.manager.MBMessageManager;
 import com.motoband.manager.RedisManager;
@@ -35,6 +36,7 @@ import com.motoband.utils.collection.CollectionUtil;
  */
 public class PUSH_IM_PUSH implements InterruptibleJobRunner {
     protected static final Logger LOGGER = LoggerFactory.getLogger(PUSH_IM_PUSH.class);
+    private static final Map<String,Integer> map=Maps.newConcurrentMap();
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
 		LOGGER.info("开始处理任务 jobContext="+JSON.toJSONString(jobContext));
@@ -78,7 +80,14 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
                 return new Result(Action.EXECUTE_FAILED, ExceptionUtils.getStackTrace(e));
         	}
         }
-        return new Result(Action.EXECUTE_SUCCESS, "执行成功了，哈哈");
+		Map<String,Integer> m=Maps.newHashMap();
+		if(map.containsKey(taskid)) {
+			m.put(taskid, map.get(taskid));
+			LOGGER.error(
+					String.format("taskid:%s,共发出:%s 个用户消息", taskid, map.get(taskid)));
+			map.remove(taskid);
+		}
+        return new Result(Action.EXECUTE_SUCCESS, JSON.toJSONString(m));
 	}
 	
 	private void FenPiSendtaskMsg_new(String taskid, MBMessageModel model, String pushMsg, int pici) {
@@ -95,7 +104,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 					String.format("taskid:%s 结束查询第 pici:%s 批次用户,用时:%s,userids:%s", taskid, pici,c.millis()-time, userids==null?0:userids.size()));
 		}
 		if(userids==null||userids.size()==0) {
-			TaskFinshe(taskid);
+//			TaskFinshe(taskid);
 			return ;
 		}
 		LOGGER.error("taskid="+taskid+",开始推送");
@@ -158,24 +167,34 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 						int groupcount = groupcountAtomic.incrementAndGet();
 						double forcountdouble = Math.ceil(innerlist.size() / 500.0);
 						int forcount = (int) forcountdouble;
-						LOGGER.error("taskid="+taskid+",线程id="+Thread.currentThread().getId()+",执行用户数量="+innerlist.size()+",分组数量="+forcount);
 						List<List<String>> msglist = CollectionUtil.averageAssign(innerlist, forcount);
 						int classcount = 1;
 						for (List<String> sendlist : msglist) {
 							if (LOGGER.isErrorEnabled()) {
 //								LOGGER.error(String.format("taskid:%s,pici:%s,groupcount:%s,classcount:%s", taskid,
 //										thread_pici, groupcount, classcount));
-								LOGGER.error("taskid="+taskid+",线程id="+Thread.currentThread().getId()+",执行用户数量="+innerlist.size()+",分组数量="+forcount
-										+",开始执行第"+classcount+"分组");
+//								LOGGER.error("taskid="+taskid+",线程id="+Thread.currentThread().getId()+",执行用户数量="+innerlist.size()+",分组数量="+forcount
+//										+",开始执行第"+classcount+"分组");
 
 							}
+							Integer size=0;
 							classcount++;
+							if(map.containsKey(taskid)) {
+								 size=sendlist.size()+map.get(taskid);
+							}else {
+								 size=sendlist.size();
+							}
+							map.put(taskid, size);
+							model.taskreq=model.taskid+"_callback_"+RedisManager.getInstance().string_incr(Consts.REDIS_SCHEME_RUN, model.taskid);
+							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+",开始执行执行用户数量="+sendlist.size()+",分组数量="+forcount);
 							singleSendtaskMsg(taskid, model, pushMsg, sendlist);
+							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+",开始执行执行用户数量="+sendlist.size()+",分组数量="+forcount);
+
 							if (LOGGER.isErrorEnabled()) {
 //								LOGGER.error(String.format("taskid:%s,pici:%s,groupcount:%s,classcount:%s", taskid,
 //										thread_pici, groupcount, classcount));
-								LOGGER.error("taskid="+taskid+",线程id="+Thread.currentThread().getId()+",执行用户数量="+innerlist.size()+",分组数量="+forcount
-										+",结束执行第"+classcount+"分组");
+//								LOGGER.error("taskid="+taskid+",线程id="+Thread.currentThread().getId()+",执行用户数量="+innerlist.size()+",分组数量="+forcount
+//										+",结束执行第"+classcount+"分组");
 							}
 							// System.out.print("====400===");
 							// System.out.println("====400===");

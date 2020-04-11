@@ -65,7 +65,7 @@ public class PUSH_IM_PUSH_CHECKFINSHE implements InterruptibleJobRunner {
 					r.put("Authorization", "Basic bW90b2JhbmQ6TW90b2JhbmQyMDE1IUAjJA==");
 					Headers.of(r);
 					response=OkHttpClientUtil.okHttpPost(Consts.LTS_ADMIN_API_IP+"/api/job-queue/repeat-job-delete",params,Headers.of(r));
-					RedisManager.getInstance().delbykey(Consts.REDIS_SCHEME_RUN, jobContext.getJob().getTaskId());
+					RedisManager.getInstance().delbykey(Consts.REDIS_SCHEME_RUN, taskid);
 					return null;
 				} catch (Exception e) {
 					throw e;
