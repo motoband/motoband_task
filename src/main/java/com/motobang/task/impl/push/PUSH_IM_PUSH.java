@@ -20,7 +20,9 @@ import com.github.ltsopensource.tasktracker.runner.InterruptibleJobRunner;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.google.common.collect.Maps;
 import com.motoband.common.Consts;
+import com.motoband.dao.MotobandGPDAO;
 import com.motoband.manager.MBMessageManager;
+import com.motoband.manager.MotoDataManager;
 import com.motoband.manager.RedisManager;
 import com.motoband.manager.UserManager;
 import com.motoband.model.BannerModel;
@@ -36,7 +38,6 @@ import com.motoband.utils.collection.CollectionUtil;
  */
 public class PUSH_IM_PUSH implements InterruptibleJobRunner {
     protected static final Logger LOGGER = LoggerFactory.getLogger(PUSH_IM_PUSH.class);
-    private static final Map<String,Integer> map=Maps.newConcurrentMap();
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
 		LOGGER.info("开始处理任务 jobContext="+JSON.toJSONString(jobContext));
@@ -81,11 +82,11 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
         	}
         }
 		Map<String,Integer> m=Maps.newHashMap();
-		if(map.containsKey(taskid)) {
-			m.put(taskid, map.get(taskid));
+		if(MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.containsKey(taskid)) {
+			m.put(taskid, MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.get(taskid));
 			LOGGER.error(
-					String.format("taskid:%s,共发出:%s 个用户消息", taskid, map.get(taskid)));
-			map.remove(taskid);
+					String.format("taskid:%s,共发出:%s 个用户消息", taskid, MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.get(taskid)));
+			MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.remove(taskid);
 		}
         return new Result(Action.EXECUTE_SUCCESS, JSON.toJSONString(m));
 	}
@@ -179,12 +180,12 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 							}
 							Integer size=0;
 							classcount++;
-							if(map.containsKey(taskid)) {
-								 size=sendlist.size()+map.get(taskid);
+							if(MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.containsKey(taskid)) {
+								 size=sendlist.size()+MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.get(taskid);
 							}else {
 								 size=sendlist.size();
 							}
-							map.put(taskid, size);
+							MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.put(taskid, size);
 							model.taskreq=model.taskid+"_callback_"+RedisManager.getInstance().string_incr(Consts.REDIS_SCHEME_RUN, model.taskid);
 							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+",开始执行执行用户数量="+sendlist.size()+",分组数量="+forcount);
 							singleSendtaskMsg(taskid, model, pushMsg, sendlist);

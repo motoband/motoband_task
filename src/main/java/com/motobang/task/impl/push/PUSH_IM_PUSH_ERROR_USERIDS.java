@@ -16,6 +16,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.motoband.common.Consts;
 import com.motoband.dao.lts.LTSDAO;
+import com.motoband.manager.MotoDataManager;
 import com.motoband.manager.RedisManager;
 import com.motoband.manager.UserManager;
 import com.motoband.utils.OkHttpClientUtil;
@@ -25,7 +26,7 @@ import okhttp3.Headers;
 
 public class PUSH_IM_PUSH_ERROR_USERIDS implements InterruptibleJobRunner {
     protected static final Logger LOGGER = LoggerFactory.getLogger(PUSH_IM_PUSH_ERROR_USERIDS.class);
-    private static final Map<String,Integer> map=Maps.newConcurrentMap();
+  
 
 public static void main(String[] args) {
 	String[] taskname="server_push_1584675965".split("_");
@@ -40,12 +41,12 @@ public static void main(String[] args) {
 		List<String> userids = JSON.parseArray(jobContext.getJob().getParam("userids"),String.class);
 		List<String> erroruserids = JSON.parseArray(jobContext.getJob().getParam("erroruserids"),String.class);
 		Integer size=0;
-		if(map.containsKey(taskid)) {
-			 size=userids.size()+map.get(taskid);
+		if(MotoDataManager.getInstance().PUSH_IM_PUSH_ERROR_USERIDS_MAP.containsKey(taskid)) {
+			 size=userids.size()+MotoDataManager.getInstance().PUSH_IM_PUSH_ERROR_USERIDS_MAP.get(taskid);
 		}else {
 			 size=userids.size();
 		}
-		map.put(taskid, size);
+		MotoDataManager.getInstance().PUSH_IM_PUSH_ERROR_USERIDS_MAP.put(taskid, size);
 		LOGGER.error("taskid="+taskid+",taskreq="+jobContext.getJob().getTaskId()+",收到回调用户数量="+userids.size());
 
 //		LOGGER.error("taskid="+jobContext.getJob().getTaskId()+",线程id="+Thread.currentThread().getId()+",执行推送完毕,开始更改数据库用户状态");
@@ -99,8 +100,8 @@ public static void main(String[] args) {
 //		}
 		//要回调2600次,此处不处理任务是否完成
 //		TaskFinshe(taskid);
-		LOGGER.error("taskid="+taskid+",总收到回调用户="+map.get(taskid));
-		return new Result(Action.EXECUTE_SUCCESS,JSON.toJSONString(map));
+		LOGGER.error("taskid="+taskid+",总收到回调用户="+MotoDataManager.getInstance().PUSH_IM_PUSH_ERROR_USERIDS_MAP.get(taskid));
+		return new Result(Action.EXECUTE_SUCCESS,JSON.toJSONString(MotoDataManager.getInstance().PUSH_IM_PUSH_ERROR_USERIDS_MAP));
 	}
 	
 	private void TaskFinshe(String taskid) {
