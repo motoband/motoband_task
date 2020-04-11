@@ -20,7 +20,7 @@ import com.github.ltsopensource.tasktracker.runner.InterruptibleJobRunner;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.google.common.collect.Maps;
 import com.motoband.common.Consts;
-import com.motoband.dao.MotobandGPDAO;
+import com.motoband.dao.UserDAO;
 import com.motoband.manager.MBMessageManager;
 import com.motoband.manager.MotoDataManager;
 import com.motoband.manager.RedisManager;
@@ -261,6 +261,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 	public MBMessageModel gettaskMessageModel(MessageTaskModel messageTaskModel) {
 
 		MBMessageModel model = new MBMessageModel();
+		model.taskid=messageTaskModel.taskid;
 		BannerModel bannermodel = new BannerModel();
 		if (messageTaskModel != null) {
 			bannermodel.title=messageTaskModel.title;
