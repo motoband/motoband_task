@@ -149,6 +149,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 			if(c>=10){
 				c=10;
 			}
+			c=2;
 			LOGGER.error("taskid="+taskid+",开始多线程执行推送任务,多线程数量"+c);
 			List<List<String>> res = CollectionUtil.averageAssign(userids, c);
 //			List<List<String>> res = CollectionUtil.averageAssign(userids, 50);
@@ -159,6 +160,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 				ExecutorsUtils.getInstance().submit(new Runnable() {
 					@Override
 					public void run() {
+						LOGGER.error("taskid="+taskid+Thread.currentThread().getId()+"开始推送");
 						if(CollectionUtil.isEmpty(innerlist)) {
 							try {
 								cb.await();
