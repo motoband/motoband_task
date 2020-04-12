@@ -193,7 +193,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 
 							}
 							model.taskreq=model.taskid+"_callback_"+RedisManager.getInstance().string_incr(Consts.REDIS_SCHEME_RUN, model.taskid);
-							Integer size=0;
+							Integer size=sendlist.size();
 							classcount++;
 							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+"开始插入缓存MAP");
 							if(MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.containsKey(model.taskid)) {
