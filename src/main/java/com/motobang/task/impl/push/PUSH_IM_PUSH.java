@@ -157,7 +157,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 			if(c>=10){
 				c=10;
 			}
-			c=1;
+//			c=1;
 			LOGGER.error("taskid="+taskid+",开始多线程执行推送任务,多线程数量"+c);
 			RedisManager.getInstance().delbykey(Consts.REDIS_SCHEME_RUN, model.taskid);
 			List<List<String>> res = CollectionUtil.averageAssign(userids, c);
@@ -269,7 +269,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 
 	protected void singleSendtaskMsg(String taskid, MBMessageModel model, String pushMsg, List<String> sendlist) {
 		model.taskid=taskid;
-		MBMessageManager.getInstance().sendMessage(model, sendlist, pushMsg);
+		MBMessageManager.getInstance().sendMessage(model, sendlist, pushMsg,false);
 	}
 
 	public MBMessageModel gettaskMessageModel(MessageTaskModel messageTaskModel) {
