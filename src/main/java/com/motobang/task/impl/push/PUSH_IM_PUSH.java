@@ -203,9 +203,9 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 							}
 							MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.put(taskid, size);
 							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+"结束插入缓存MAP="+size);
-							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+",开始执行执行用户数量="+sendlist.size()+",分组数量="+forcount);
+							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+",开始执行执行用户数量="+sendlist.size()+",分组数量="+forcount+",开始执行第"+classcount+"分组");
 							singleSendtaskMsg(taskid, model, pushMsg, sendlist);
-							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+",结束执行执行用户数量="+sendlist.size()+",分组数量="+forcount);
+							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+",结束执行执行用户数量="+sendlist.size()+",分组数量="+forcount+",结束执行第"+classcount+"分组");
 
 							if (LOGGER.isErrorEnabled()) {
 //								LOGGER.error(String.format("taskid:%s,pici:%s,groupcount:%s,classcount:%s", taskid,
