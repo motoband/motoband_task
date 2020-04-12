@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.alibaba.fastjson.JSON;
 import com.github.ltsopensource.core.domain.Action;
@@ -42,11 +43,17 @@ public static void main(String[] args) {
 		List<String> erroruserids = JSON.parseArray(jobContext.getJob().getParam("erroruserids"),String.class);
 		Integer size=0;
 		if(MotoDataManager.getInstance().PUSH_IM_PUSH_ERROR_USERIDS_MAP.containsKey(taskid)) {
-			 size=userids.size()+MotoDataManager.getInstance().PUSH_IM_PUSH_ERROR_USERIDS_MAP.get(taskid);
+//			size.set(timMessage.To_Account.size());
+			MotoDataManager.getInstance().PUSH_IM_PUSH_ERROR_USERIDS_MAP.get(taskid).addAndGet(userids.size());
 		}else {
-			 size=userids.size();
+			MotoDataManager.getInstance().PUSH_IM_PUSH_ERROR_USERIDS_MAP.put(taskid, new AtomicInteger(userids.size()));
 		}
-		MotoDataManager.getInstance().PUSH_IM_PUSH_ERROR_USERIDS_MAP.put(taskid, size);
+//		if(MotoDataManager.getInstance().PUSH_IM_PUSH_ERROR_USERIDS_MAP.containsKey(taskid)) {
+//			 size=userids.size()+MotoDataManager.getInstance().PUSH_IM_PUSH_ERROR_USERIDS_MAP.get(taskid);
+//		}else {
+//			 size=userids.size();
+//		}
+//		MotoDataManager.getInstance().PUSH_IM_PUSH_ERROR_USERIDS_MAP.put(taskid, size);
 		LOGGER.error("taskid="+taskid+",taskreq="+jobContext.getJob().getTaskId()+",收到回调用户数量="+userids.size());
 
 //		LOGGER.error("taskid="+jobContext.getJob().getTaskId()+",线程id="+Thread.currentThread().getId()+",执行推送完毕,开始更改数据库用户状态");

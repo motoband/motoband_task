@@ -92,7 +92,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
         }
 		Map<String,Integer> m=Maps.newHashMap();
 		if(MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.containsKey(taskid)) {
-			m.put(taskid, MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.get(taskid));
+			m.put(taskid, MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.get(taskid).intValue());
 			LOGGER.error(
 					String.format("taskid:%s,共发出:%s 个用户消息", taskid, MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.get(taskid)));
 			MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.remove(taskid);
@@ -196,12 +196,18 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 							Integer size=0;
 							classcount++;
 							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+"开始插入缓存MAP");
-							if(MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.containsKey(taskid)) {
-								 size=sendlist.size()+MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.get(taskid);
+							if(MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.containsKey(model.taskid)) {
+//								size.set(timMessage.To_Account.size());
+								MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.get(model.taskid).addAndGet(sendlist.size());
 							}else {
-								 size=sendlist.size();
+								MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.put(model.taskid, new AtomicInteger(sendlist.size()));
 							}
-							MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.put(taskid, size);
+//							if(MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.containsKey(taskid)) {
+//								 size=sendlist.size()+MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.get(taskid);
+//							}else {
+//								 size=sendlist.size();
+//							}
+//							MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.put(taskid, size);
 							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+"结束插入缓存MAP="+size);
 							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+",开始执行执行用户数量="+sendlist.size()+",分组数量="+forcount+",开始执行第"+classcount+"分组");
 							singleSendtaskMsg(taskid, model, pushMsg, sendlist);
