@@ -103,7 +103,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 	private void FenPiSendtaskMsg_new(String taskid, MBMessageModel model, String pushMsg, int pici) throws Exception {
 		Map<String, Object> dataMap = new HashMap<String, Object>();
 		dataMap.put("taskid", taskid);
-		dataMap.put("pici", 0);
+		dataMap.put("pici", pici*80000);
 		Clock c=Clock.systemUTC();
 		long time=c.millis();
 		LOGGER.error(
