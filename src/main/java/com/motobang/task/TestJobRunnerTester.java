@@ -37,6 +37,7 @@ public class TestJobRunnerTester extends JobRunnerTester {
     		List<String> userids=Lists.newArrayList("1C90B36CAA8D4B4EAF59A866CA7170E9");
     		//正威
     		userids.add("8CA00FA094C14FBC88FC8ECFF92152A0");
+    		userids.add("E2CD901A398C4B66A4BB16CE1603B3B1");
     		
     		taskModel.userpushmodel.userids=userids;
     	}else {
