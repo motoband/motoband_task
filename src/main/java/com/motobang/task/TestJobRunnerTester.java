@@ -21,6 +21,7 @@ import com.motoband.manager.ConfigManager;
 import com.motoband.manager.DBConnectionManager;
 import com.motoband.manager.DataVersionManager;
 import com.motoband.manager.MotoDataManager;
+import com.motoband.manager.UserManager;
 import com.motoband.model.task.MBUserPushModel;
 import com.motoband.model.task.MessageTaskModel;
 import com.motoband.utils.OkHttpClientUtil;
@@ -76,6 +77,7 @@ public class TestJobRunnerTester extends JobRunnerTester {
 			taskModel.starttime=LocalDateTime.ofEpochSecond(time/1000, 0, ZoneOffset.of("+8")).plusMinutes(5).toInstant(ZoneOffset.of("+8")).toEpochMilli();
 
 		}
+		UserManager.getInstance().addMessageTask(taskModel);
 		job.setTriggerTime(taskModel.starttime);
 //
         JobContext jobContext = new JobContext();
