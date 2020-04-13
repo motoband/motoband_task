@@ -293,7 +293,10 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 				}else {
 					bannermodel.ntype=0;
 				}
+				model.nid=messageTaskModel.nid;
+				model.ntype=bannermodel.ntype;
 			}
+			
 			bannermodel.keyword=messageTaskModel.keyword;
 			bannermodel.secondcarid=messageTaskModel.secondcarid;
 			bannermodel.miniprogramid=messageTaskModel.miniprogramid;
@@ -304,6 +307,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 		model.msgtype=MBMessageModel.MBMsgType_Banner;
 		model.msgtime=System.currentTimeMillis();
 		model.content=messageTaskModel.title;
+		
 		SimpleUserModel simpleUserInfo = UserManager.getInstance().getSimpleUserInfo(Consts.TIM_ACTIVITYCENTERID);
 		if (simpleUserInfo != null) {
 			model.simpleusermodel=simpleUserInfo;
