@@ -20,7 +20,9 @@ import com.github.ltsopensource.tasktracker.runner.InterruptibleJobRunner;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.google.common.collect.Maps;
 import com.motoband.common.Consts;
+import com.motoband.dao.UserDAO;
 import com.motoband.manager.MBMessageManager;
+import com.motoband.manager.MotoDataManager;
 import com.motoband.manager.RedisManager;
 import com.motoband.manager.UserManager;
 import com.motoband.model.BannerModel;
@@ -36,7 +38,6 @@ import com.motoband.utils.collection.CollectionUtil;
  */
 public class PUSH_IM_PUSH implements InterruptibleJobRunner {
     protected static final Logger LOGGER = LoggerFactory.getLogger(PUSH_IM_PUSH.class);
-    private static final Map<String,Integer> map=Maps.newConcurrentMap();
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
 		LOGGER.info("开始处理任务 jobContext="+JSON.toJSONString(jobContext));
@@ -51,6 +52,15 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 			if(StringUtils.isNotBlank(data)) {
 				MessageTaskModel taskModel=JSON.parseObject(data, MessageTaskModel.class);
 //				UserManager.getInstance().addMessageTask(taskModel);
+				LOGGER.error("taskid="+taskid+",开始插入需要推送的用户");
+//				if(taskModel.test==1) {
+//					StringBuffer sql=new StringBuffer("select * from mbuser_push where 1=1");
+//					if(taskModel!=null) {
+//						if(taskModel.userpushmodel.addtime>0) {
+//							sql.append("addtime>="+taskModel.userpushmodel.addtime);
+//						}
+//					}
+//				}
 				UserManager.getInstance().addMessageTaskUserAll(taskModel);
 				Map<String, Object> dataMap = new HashMap<String, Object>();
 				dataMap.put("taskid", taskModel.taskid);
@@ -81,19 +91,19 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
         	}
         }
 		Map<String,Integer> m=Maps.newHashMap();
-		if(map.containsKey(taskid)) {
-			m.put(taskid, map.get(taskid));
+		if(MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.containsKey(taskid)) {
+			m.put(taskid, MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.get(taskid).intValue());
 			LOGGER.error(
-					String.format("taskid:%s,共发出:%s 个用户消息", taskid, map.get(taskid)));
-			map.remove(taskid);
+					String.format("taskid:%s,共发出:%s 个用户消息", taskid, MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.get(taskid)));
+			MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.remove(taskid);
 		}
         return new Result(Action.EXECUTE_SUCCESS, JSON.toJSONString(m));
 	}
 	
-	private void FenPiSendtaskMsg_new(String taskid, MBMessageModel model, String pushMsg, int pici) {
+	private void FenPiSendtaskMsg_new(String taskid, MBMessageModel model, String pushMsg, int pici) throws Exception {
 		Map<String, Object> dataMap = new HashMap<String, Object>();
 		dataMap.put("taskid", taskid);
-		dataMap.put("pici", pici * 80000);
+		dataMap.put("pici", pici*80000);
 		Clock c=Clock.systemUTC();
 		long time=c.millis();
 		LOGGER.error(
@@ -104,7 +114,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 					String.format("taskid:%s 结束查询第 pici:%s 批次用户,用时:%s,userids:%s", taskid, pici,c.millis()-time, userids==null?0:userids.size()));
 		}
 		if(userids==null||userids.size()==0) {
-//			TaskFinshe(taskid);
+			TaskFinshe(taskid);
 			return ;
 		}
 		LOGGER.error("taskid="+taskid+",开始推送");
@@ -141,13 +151,15 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 
 	}
 
-	private int batchSendCMSMessage(String taskid, MBMessageModel model, String pushMsg, int pici, List<String> userids) {
+	private int batchSendCMSMessage(String taskid, MBMessageModel model, String pushMsg, int pici, List<String> userids)throws Exception {
 		if (userids != null && userids.size() > 0) {
 			int c=Runtime.getRuntime().availableProcessors()*5;
 			if(c>=10){
 				c=10;
 			}
+//			c=1;
 			LOGGER.error("taskid="+taskid+",开始多线程执行推送任务,多线程数量"+c);
+			RedisManager.getInstance().delbykey(Consts.REDIS_SCHEME_RUN, model.taskid);
 			List<List<String>> res = CollectionUtil.averageAssign(userids, c);
 //			List<List<String>> res = CollectionUtil.averageAssign(userids, 50);
 			CyclicBarrier cb = new CyclicBarrier(res.size() + 1);
@@ -157,6 +169,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 				ExecutorsUtils.getInstance().submit(new Runnable() {
 					@Override
 					public void run() {
+						LOGGER.error("taskid="+taskid+Thread.currentThread().getId()+"innerlist="+innerlist.size());
 						if(CollectionUtil.isEmpty(innerlist)) {
 							try {
 								cb.await();
@@ -164,12 +177,14 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 								e.printStackTrace();
 							}
 						}
+//						LOGGER.error("taskid="+taskid+Thread.currentThread().getId()+"开始推送"+"innerlist="+JSON.toJSONString(innerlist));
 						int groupcount = groupcountAtomic.incrementAndGet();
 						double forcountdouble = Math.ceil(innerlist.size() / 400.0);
 						int forcount = (int) forcountdouble;
 						List<List<String>> msglist = CollectionUtil.averageAssign(innerlist, forcount);
 						int classcount = 1;
 						for (List<String> sendlist : msglist) {
+							LOGGER.error("taskid="+taskid+Thread.currentThread().getId()+"开始推送"+"sendlist="+sendlist.size());
 							if (LOGGER.isErrorEnabled()) {
 //								LOGGER.error(String.format("taskid:%s,pici:%s,groupcount:%s,classcount:%s", taskid,
 //										thread_pici, groupcount, classcount));
@@ -177,18 +192,26 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 //										+",开始执行第"+classcount+"分组");
 
 							}
-							Integer size=0;
-							classcount++;
-							if(map.containsKey(taskid)) {
-								 size=sendlist.size()+map.get(taskid);
-							}else {
-								 size=sendlist.size();
-							}
-							map.put(taskid, size);
 							model.taskreq=model.taskid+"_callback_"+RedisManager.getInstance().string_incr(Consts.REDIS_SCHEME_RUN, model.taskid);
-							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+",开始执行执行用户数量="+sendlist.size()+",分组数量="+forcount);
+							Integer size=sendlist.size();
+							classcount++;
+							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+"开始插入缓存MAP");
+							if(MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.containsKey(model.taskid)) {
+//								size.set(timMessage.To_Account.size());
+								MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.get(model.taskid).addAndGet(sendlist.size());
+							}else {
+								MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.put(model.taskid, new AtomicInteger(sendlist.size()));
+							}
+//							if(MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.containsKey(taskid)) {
+//								 size=sendlist.size()+MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.get(taskid);
+//							}else {
+//								 size=sendlist.size();
+//							}
+//							MotoDataManager.getInstance().PUSH_IM_PUSH_MAP.put(taskid, size);
+							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+"结束插入缓存MAP="+size);
+							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+",开始执行执行用户数量="+sendlist.size()+",分组数量="+forcount+",开始执行第"+classcount+"分组");
 							singleSendtaskMsg(taskid, model, pushMsg, sendlist);
-							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+",开始执行执行用户数量="+sendlist.size()+",分组数量="+forcount);
+							LOGGER.error("taskid="+taskid+",taskreq="+model.taskreq+",结束执行执行用户数量="+sendlist.size()+",分组数量="+forcount+",结束执行第"+classcount+"分组");
 
 							if (LOGGER.isErrorEnabled()) {
 //								LOGGER.error(String.format("taskid:%s,pici:%s,groupcount:%s,classcount:%s", taskid,
@@ -246,12 +269,13 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 
 	protected void singleSendtaskMsg(String taskid, MBMessageModel model, String pushMsg, List<String> sendlist) {
 		model.taskid=taskid;
-		MBMessageManager.getInstance().sendMessage(model, sendlist, pushMsg);
+		MBMessageManager.getInstance().sendMessage(model, sendlist, pushMsg,false);
 	}
 
 	public MBMessageModel gettaskMessageModel(MessageTaskModel messageTaskModel) {
 
 		MBMessageModel model = new MBMessageModel();
+		model.taskid=messageTaskModel.taskid;
 		BannerModel bannermodel = new BannerModel();
 		if (messageTaskModel != null) {
 			bannermodel.title=messageTaskModel.title;
