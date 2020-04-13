@@ -86,7 +86,7 @@ public class TestJobRunnerTester extends JobRunnerTester {
 //
         jobContext.setJobExtInfo(jobExtInfo);
         System.setProperty("push_flag","0");
-    	DBConnectionManager.init("windowstest");
+    	DBConnectionManager.init("production");
 		ConfigManager.getInstance().init("MotoBandTask");
 		MotoDataManager.getInstance().init();
 		DataVersionManager.getInstance().init();
