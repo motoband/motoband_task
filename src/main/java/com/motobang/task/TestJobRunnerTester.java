@@ -45,11 +45,17 @@ public class TestJobRunnerTester extends JobRunnerTester {
     		List<String> userids=Lists.newArrayList("1C90B36CAA8D4B4EAF59A866CA7170E9");
     		//正威
     		userids.add("8CA00FA094C14FBC88FC8ECFF92152A0");
+    		userids.add("E2CD901A398C4B66A4BB16CE1603B3B1");
+
     		
     		taskModel.userpushmodel.userids=userids;
     	}
+    	taskModel.title="安卓測試推送";
+    	taskModel.subtitle="安卓測試推送";
+    	taskModel.des="其他人收到請聯係服務器";
+    	taskModel.nid="1204E87D9F404AFF849EB6364A21E006";
     	//1586750375000
-    	taskModel.taskid+=System.currentTimeMillis()/1000000000;
+//    	taskModel.taskid+=System.currentTimeMillis()/1000;
     	taskModel.test=1;
     	Job job=new Job();
 		job.setTaskId(taskModel.taskid);
@@ -77,7 +83,6 @@ public class TestJobRunnerTester extends JobRunnerTester {
 			taskModel.starttime=LocalDateTime.ofEpochSecond(time/1000, 0, ZoneOffset.of("+8")).plusMinutes(5).toInstant(ZoneOffset.of("+8")).toEpochMilli();
 
 		}
-		UserManager.getInstance().addMessageTask(taskModel);
 		job.setTriggerTime(taskModel.starttime);
 //
         JobContext jobContext = new JobContext();
@@ -88,7 +93,7 @@ public class TestJobRunnerTester extends JobRunnerTester {
 //
         jobContext.setJobExtInfo(jobExtInfo);
         System.setProperty("push_flag","0");
-    	DBConnectionManager.init("windowstest");
+    	DBConnectionManager.init("production");
 		ConfigManager.getInstance().init("MotoBandTask");
 		MotoDataManager.getInstance().init();
 		DataVersionManager.getInstance().init();
@@ -104,6 +109,7 @@ public class TestJobRunnerTester extends JobRunnerTester {
 		boolean printToControl = Boolean.valueOf(ConfigManager.getInstance().getConfig(ConfigManager.Trace_PrintTraceToControl));
 		String logFileURL = ConfigManager.getInstance().getConfig(ConfigManager.Trace_LogFileURL);
 		Tracer.initialize( tiTraceLevel, writeToFile, printToControl, ConfigManager.ServiceName, "/data/logs/");
+		UserManager.getInstance().addMessageTask(taskModel);
 //		if (_tracer.CriticalAvailable())
 //			_tracer.Critical(TaskTrackerStartup.class.getSimpleName()+" MotoBandTask init  SUCCESSFUL");
 //		LOGGER.info(TaskTrackerStartup.class.getSimpleName()+" MotoBandTask init  SUCCESSFUL");
