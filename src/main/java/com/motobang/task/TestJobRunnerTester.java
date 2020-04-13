@@ -2,6 +2,7 @@ package com.motobang.task;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,6 +13,7 @@ import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobExtInfo;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import com.github.ltsopensource.tasktracker.runner.JobRunnerTester;
+import com.google.common.collect.Lists;
 import com.motoband.common.Consts;
 import com.motoband.common.trace.TraceLevel;
 import com.motoband.common.trace.Tracer;
@@ -19,6 +21,7 @@ import com.motoband.manager.ConfigManager;
 import com.motoband.manager.DBConnectionManager;
 import com.motoband.manager.DataVersionManager;
 import com.motoband.manager.MotoDataManager;
+import com.motoband.model.task.MBUserPushModel;
 import com.motoband.model.task.MessageTaskModel;
 import com.motoband.utils.OkHttpClientUtil;
 
@@ -28,6 +31,18 @@ public class TestJobRunnerTester extends JobRunnerTester {
 //        //  Mock Job 数据
     	String json="{\"createtime\":1586499906391,\"des\":\"不知这次有没有你，如没有，那是幸福\",\"failcount\":0,\"gpid\":0,\"handlecount\":0,\"id\":0,\"imgurl\":\"http://news2-10013836.cos.ap-shanghai.myqcloud.com/78217F5AC176441A95C30C86C6189E33\",\"linktype\":1,\"name\":\"2020-04-10 14:25:06_阿沟的推送\",\"nid\":\"FB7E8D79694A4038A46BC3FC90C4DC7A\",\"starttime\":0,\"state\":0,\"successcount\":0,\"sumcount\":0,\"taskid\":\"ios_push_20200410142506\",\"test\":1,\"title\":\"机车吐槽大会第二弹\",\"updatetime\":0,\"userpushmodel\":{\"addtime\":0,\"brandid\":0,\"brandparentid\":0,\"ctype\":1,\"cversion\":0,\"lastactivetime\":0,\"mbid\":0,\"modelid\":0,\"state\":0,\"updatetime\":0}}";
     	MessageTaskModel taskModel=JSON.parseObject(json, MessageTaskModel.class);
+    	if(taskModel.userpushmodel==null) {
+    		taskModel.userpushmodel=new MBUserPushModel();
+    		//川
+    		List<String> userids=Lists.newArrayList("1C90B36CAA8D4B4EAF59A866CA7170E9");
+    		//正威
+    		userids.add("8CA00FA094C14FBC88FC8ECFF92152A0");
+    		
+    		taskModel.userpushmodel.userids=userids;
+    	}
+    	//1586750375000
+    	taskModel.taskid+=System.currentTimeMillis()/1000000000;
+    	taskModel.test=1;
     	Job job=new Job();
 		job.setTaskId(taskModel.taskid);
 		job.setParam("type", MessageTaskModel.PUSH_IM_PUSH);
@@ -63,7 +78,7 @@ public class TestJobRunnerTester extends JobRunnerTester {
         jobExtInfo.setRetry(false);
 //
         jobContext.setJobExtInfo(jobExtInfo);
-        System.setProperty("push_flag","1");
+        System.setProperty("push_flag","0");
     	DBConnectionManager.init("production");
 		ConfigManager.getInstance().init("MotoBandTask");
 		MotoDataManager.getInstance().init();
