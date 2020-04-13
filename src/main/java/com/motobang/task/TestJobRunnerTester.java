@@ -39,6 +39,12 @@ public class TestJobRunnerTester extends JobRunnerTester {
     		userids.add("8CA00FA094C14FBC88FC8ECFF92152A0");
     		
     		taskModel.userpushmodel.userids=userids;
+    	}else {
+    		List<String> userids=Lists.newArrayList("1C90B36CAA8D4B4EAF59A866CA7170E9");
+    		//正威
+    		userids.add("8CA00FA094C14FBC88FC8ECFF92152A0");
+    		
+    		taskModel.userpushmodel.userids=userids;
     	}
     	//1586750375000
     	taskModel.taskid+=System.currentTimeMillis()/1000000000;
@@ -79,7 +85,7 @@ public class TestJobRunnerTester extends JobRunnerTester {
 //
         jobContext.setJobExtInfo(jobExtInfo);
         System.setProperty("push_flag","0");
-    	DBConnectionManager.init("production");
+    	DBConnectionManager.init("windowstest");
 		ConfigManager.getInstance().init("MotoBandTask");
 		MotoDataManager.getInstance().init();
 		DataVersionManager.getInstance().init();
