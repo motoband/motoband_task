@@ -21,6 +21,7 @@ public class TaskTrackerStartup {
 
     public static void main(String[] args) throws Exception {
     	DBConnectionManager.init();
+    	DBConnectionManager.init("production_task");
 		ConfigManager.getInstance().init("MotoBandTask");
 		MotoDataManager.getInstance().init();
 		DataVersionManager.getInstance().init();
