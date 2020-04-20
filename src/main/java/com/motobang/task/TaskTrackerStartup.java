@@ -20,6 +20,7 @@ public class TaskTrackerStartup {
 	private static final Tracer _tracer = Tracer.create(TaskTrackerStartup.class);
 
     public static void main(String[] args) throws Exception {
+//    	System.setProperty("env_task","production_task");
     	DBConnectionManager.init();
     	DBConnectionManager.init("production_task");
 		ConfigManager.getInstance().init("MotoBandTask");
