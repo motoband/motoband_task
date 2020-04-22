@@ -69,7 +69,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 				UserManager.getInstance().updatetaskmsgliststate(dataMap);
 				LOGGER.error("taskid="+taskid+",开始查询推送的MBMessageModel");
 				MBMessageModel model = gettaskMessageModel(taskModel);
-				LOGGER.error("taskid="+taskid+",结束查询推送的MBMessageModel");
+				LOGGER.error("taskid="+taskid+",结束查询推送的MBMessageModel="+JSON.toJSONString(model));
 				String pushMsg = "您有一条新的消息，点击查看";
 				if(model.bannermodel!=null){
 					pushMsg =model.bannermodel.title;
