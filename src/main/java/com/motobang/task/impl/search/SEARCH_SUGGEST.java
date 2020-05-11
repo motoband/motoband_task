@@ -28,25 +28,29 @@ public class SEARCH_SUGGEST implements JobRunner  {
 
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
+		LOGGER.info("SEARCH_SUGGEST is start");
+		Consts.MOTOBAND_SEARCHSERVICE="http://10.0.0.11:8091/motoband-search/";
 		String urlString =  "http://10.0.0.11:8091/motoband-search/search/suggest/removeall";
+//		String urlString =  "http://127.0.0.1:8091/motoband-search/search/suggest/removeall";
 		Map<String,Object> map=Maps.newHashMap();
 //		Map<String, String> requestData = new HashMap<String, String>();
 //		requestData.put("searchcontent", searchcontent);
 		List<String> list = Lists.newArrayList();
 		List<Map<String, Object>> resultList = Lists.newArrayList();
-		list = OkHttpClientUtil.okHttpPost(urlString, JSON.toJSONString(map), new TypeToken<List<String>>() {
-		}.getType());		
-		handleLabels();
-		LOGGER.debug("handleLabels is  sync over");
-		handleMoto();
-		LOGGER.debug("handleMoto is  sync over");
+//		list = OkHttpClientUtil.okHttpPost(urlString, JSON.toJSONString(map), new TypeToken<List<String>>() {
+//		}.getType());		
+//		handleLabels();
+		LOGGER.info("handleLabels is  sync over");
+//		handleMoto();
+		LOGGER.info("handleMoto is  sync over");
 		handleMall();
-		LOGGER.debug("handleMall is  sync over");
+		LOGGER.info("handleMall is  sync over");
 		return null;
 	}
 	
 	private void handleLabels() throws Exception {
 		String urlString = "http://10.0.0.11:8091/motoband-search/"+ "search/searchlabel";
+//		String urlString = "http://127.0.0.1:8091/motoband-search/"+ "search/searchlabel";
 		Map<String,Object> map=Maps.newHashMap();
 		map.put("pagesize", 100000);
 //		Map<String, String> requestData = new HashMap<String, String>();
@@ -74,6 +78,8 @@ public class SEARCH_SUGGEST implements JobRunner  {
 				params.put("searchcontent",searchcontent);
 				params.put("sids",sids);
 				ElasticSearchManager.getInstance().syncAddEsList(SuggestModel.class, JSON.toJSONString(params));
+				LOGGER.info("handleLabels is  sync ");
+
 			}
 //			for (int i = 0; i < 10; i++) {
 //				_tracer.Critical(JSON.toJSONString(list.get(i)));
@@ -107,6 +113,8 @@ public class SEARCH_SUGGEST implements JobRunner  {
 			params.put("searchcontent",searchcontent);
 			params.put("sids",sids);
 			ElasticSearchManager.getInstance().syncAddEsList(SuggestModel.class, JSON.toJSONString(params));
+			LOGGER.info("handleMoto is  sync ");
+
 		}
 	}
 	
@@ -142,6 +150,7 @@ public class SEARCH_SUGGEST implements JobRunner  {
 			params.put("searchcontent",searchcontent);
 			params.put("sids",sids);
 			ElasticSearchManager.getInstance().syncAddEsList(SuggestModel.class, JSON.toJSONString(params));
+			LOGGER.info("handleMall is  sync ");
 
 		}
 		
