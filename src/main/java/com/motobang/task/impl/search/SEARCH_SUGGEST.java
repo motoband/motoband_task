@@ -38,7 +38,7 @@ public class SEARCH_SUGGEST implements JobRunner  {
 	}
 	
 	private void handleLabels() throws Exception {
-		String urlString = Consts.MOTOBAND_SEARCHSERVICE + "search/searchlabel";
+		String urlString = "http://10.0.0.11:8091/motoband-search/"+ "search/searchlabel";
 		Map<String,Object> map=Maps.newHashMap();
 		map.put("pagesize", 100000);
 //		Map<String, String> requestData = new HashMap<String, String>();
