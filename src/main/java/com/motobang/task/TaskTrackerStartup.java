@@ -9,6 +9,7 @@ import com.motoband.manager.ConfigManager;
 import com.motoband.manager.DBConnectionManager;
 import com.motoband.manager.DataVersionManager;
 import com.motoband.manager.MotoDataManager;
+import com.motoband.manager.YZManager;
 import com.motoband.utils.OkHttpClientUtil;
 
 /**
@@ -28,6 +29,7 @@ public class TaskTrackerStartup {
 		DataVersionManager.getInstance().init();
 		DataVersionManager.getInstance().startCheck();	
 		OkHttpClientUtil.init();
+		YZManager.getInstance().refreshYZAccessToken();
 		String cfgPath=null;
 		if(args.length!=0) {
 			cfgPath = args[0];
