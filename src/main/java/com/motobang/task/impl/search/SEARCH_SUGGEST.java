@@ -28,6 +28,14 @@ public class SEARCH_SUGGEST implements JobRunner  {
 
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
+		String urlString =  "http://10.0.0.11:8091/motoband-search/search/suggest/removeall";
+		Map<String,Object> map=Maps.newHashMap();
+//		Map<String, String> requestData = new HashMap<String, String>();
+//		requestData.put("searchcontent", searchcontent);
+		List<String> list = Lists.newArrayList();
+		List<Map<String, Object>> resultList = Lists.newArrayList();
+		list = OkHttpClientUtil.okHttpPost(urlString, JSON.toJSONString(map), new TypeToken<List<String>>() {
+		}.getType());		
 		handleLabels();
 		LOGGER.debug("handleLabels is  sync over");
 		handleMoto();
