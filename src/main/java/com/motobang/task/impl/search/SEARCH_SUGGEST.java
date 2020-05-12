@@ -37,11 +37,11 @@ public class SEARCH_SUGGEST implements JobRunner  {
 //		requestData.put("searchcontent", searchcontent);
 		List<String> list = Lists.newArrayList();
 		List<Map<String, Object>> resultList = Lists.newArrayList();
-//		list = OkHttpClientUtil.okHttpPost(urlString, JSON.toJSONString(map), new TypeToken<List<String>>() {
-//		}.getType());		
-//		handleLabels();
+		list = OkHttpClientUtil.okHttpPost(urlString, JSON.toJSONString(map), new TypeToken<List<String>>() {
+		}.getType());		
+		handleLabels();
 		LOGGER.info("handleLabels is  sync over");
-//		handleMoto();
+		handleMoto();
 		LOGGER.info("handleMoto is  sync over");
 		handleMall();
 		LOGGER.info("handleMall is  sync over");
