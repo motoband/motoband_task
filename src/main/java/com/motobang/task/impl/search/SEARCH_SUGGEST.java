@@ -78,6 +78,9 @@ public class SEARCH_SUGGEST implements JobRunner  {
 				if(StringUtils.isNotBlank(key)){
 					SuggestModel sm=new SuggestModel();
 					sm.malldesc=key;
+					sm.modeldesc=null;
+					sm.topicdesc=null;
+					sm.userdesc=null;
 					String sid=MD5.stringToMD5(key);
 					sm.sid=sid;
 					sm.type=3;
