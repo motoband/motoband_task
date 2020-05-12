@@ -1,9 +1,13 @@
 package com.motobang.task.impl.search;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.ltsopensource.core.logger.Logger;
 import com.github.ltsopensource.core.logger.LoggerFactory;
 import com.github.ltsopensource.tasktracker.Result;
@@ -11,6 +15,7 @@ import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 import com.motoband.common.Consts;
 import com.motoband.manager.MotoDataManager;
@@ -48,9 +53,86 @@ public class SEARCH_SUGGEST implements JobRunner  {
 		return null;
 	}
 	
+	private void handleMall() {
+		List<MallProductModel> r=Lists.newArrayList();
+		List<String> list=Lists.newArrayList();
+		int pageno=1;
+		do {
+			r=YZManager.getInstance().searchYzProduct(pageno, 300, null);
+			for (MallProductModel model : r) {
+				list.add(model.title);
+			}
+			pageno++;
+			LOGGER.info("handleMall pageno="+pageno);
+			if(r.size()==0){
+				break;
+			}
+		} while (r.size()<=300);
+		List<List<String>> averageList=CollectionUtil.averageAssign(list, list.size()/500+1);
+		for (List<String> list2 : averageList) {
+			Map<String,Object> params=Maps.newHashMap();
+			List<String> sids=Lists.newArrayList();
+			List<String> searchcontent=Lists.newArrayList();
+
+			for (String key : list2) {
+				if(StringUtils.isNotBlank(key)){
+					SuggestModel sm=new SuggestModel();
+					sm.malldesc=key;
+					String sid=MD5.stringToMD5(key);
+					sm.sid=sid;
+					sm.type=3;
+					sids.add(sid);
+					searchcontent.add(JSON.toJSONString(sm));
+				}
+			}
+			params.put("searchcontent",searchcontent);
+			params.put("sids",sids);
+			ElasticSearchManager.getInstance().syncAddEsList(SuggestModel.class, JSON.toJSONString(params));
+			LOGGER.info("handleMall handle.....");
+
+		}
+		
+	}
+
+	private void handleMoto() {
+		LinkedHashSet<String> list=Sets.newLinkedHashSet();
+		List<NewMotoModel> newmotomodel=MotoDataManager.getInstance().getNewMotoModels();
+		for (NewMotoModel newMotoModel2 : newmotomodel) {
+			list.add(newMotoModel2.name);
+			list.add(newMotoModel2.brandname);
+			list.add(newMotoModel2.brandparentname);
+		}
+//		List<List<String>> averageList=CollectionUtil.averageAssign(list, list.size()/500+1);
+//		for (String list2 : list) {
+			Map<String,Object> params=Maps.newHashMap();
+			List<String> sids=Lists.newArrayList();
+			List<String> searchcontent=Lists.newArrayList();
+
+			for (String key : list) {
+				 searchcontent=Lists.newArrayList();
+				 sids=Lists.newArrayList();
+				SuggestModel sm=new SuggestModel();
+				sm.modeldesc=key;
+				sm.topicdesc=null;
+				sm.malldesc=null;
+				sm.userdesc=null;
+				String sid=MD5.stringToMD5(key);
+				sm.sid=sid;
+				sm.type=2;
+				sids.add(sid);
+				searchcontent.add(JSON.toJSONString(sm,SerializerFeature.WriteNullStringAsEmpty));
+				params.put("searchcontent",searchcontent);
+				params.put("sids",sids);
+				ElasticSearchManager.getInstance().syncAddEsList(SuggestModel.class, JSON.toJSONString(params));
+				LOGGER.info("handleMoto handle.....  key="+key);
+			}
+
+
+//		}
+	}
+
 	private void handleLabels() throws Exception {
-		String urlString = "http://10.0.0.11:8091/motoband-search/"+ "search/searchlabel";
-//		String urlString = "http://127.0.0.1:8091/motoband-search/"+ "search/searchlabel";
+		String urlString = Consts.MOTOBAND_SEARCHSERVICE + "search/searchlabel";
 		Map<String,Object> map=Maps.newHashMap();
 		map.put("pagesize", 100000);
 //		Map<String, String> requestData = new HashMap<String, String>();
@@ -69,91 +151,26 @@ public class SEARCH_SUGGEST implements JobRunner  {
 				for (String key : list2) {
 					SuggestModel sm=new SuggestModel();
 					sm.topicdesc=key;
+					sm.modeldesc=null;
+					sm.malldesc=null;
+					sm.userdesc=null;
 					String sid=MD5.stringToMD5(key);
 					sm.sid=sid;
 					sm.type=1;
 					sids.add(sid);
-					searchcontent.add(JSON.toJSONString(sm));
+					searchcontent.add(JSON.toJSONString(sm,SerializerFeature.WriteNullStringAsEmpty));
 				}
 				params.put("searchcontent",searchcontent);
 				params.put("sids",sids);
 				ElasticSearchManager.getInstance().syncAddEsList(SuggestModel.class, JSON.toJSONString(params));
-				LOGGER.info("handleLabels is  sync ");
+				LOGGER.info("handleLabels handle.....");
 
 			}
 //			for (int i = 0; i < 10; i++) {
-//				_tracer.Critical(JSON.toJSONString(list.get(i)));
+//				LOGGER.info(JSON.toJSONString(list.get(i)));
 //			}
 		}
 	}
-	
-	private void handleMoto() {
-		List<String> list=Lists.newArrayList();
-		List<NewMotoModel> newmotomodel=MotoDataManager.getInstance().getNewMotoModels();
-		for (NewMotoModel newMotoModel2 : newmotomodel) {
-			list.add(newMotoModel2.name);
-			list.add(newMotoModel2.brandname);
-			list.add(newMotoModel2.brandparentname);
-		}
-		List<List<String>> averageList=CollectionUtil.averageAssign(list, list.size()/500+1);
-		for (List<String> list2 : averageList) {
-			Map<String,Object> params=Maps.newHashMap();
-			List<String> sids=Lists.newArrayList();
-			List<String> searchcontent=Lists.newArrayList();
 
-			for (String key : list2) {
-				SuggestModel sm=new SuggestModel();
-				sm.modeldesc=key;
-				String sid=MD5.stringToMD5(key);
-				sm.sid=sid;
-				sm.type=2;
-				sids.add(sid);
-				searchcontent.add(JSON.toJSONString(sm));
-			}
-			params.put("searchcontent",searchcontent);
-			params.put("sids",sids);
-			ElasticSearchManager.getInstance().syncAddEsList(SuggestModel.class, JSON.toJSONString(params));
-			LOGGER.info("handleMoto is  sync ");
-
-		}
-	}
-	
-	private void handleMall() {
-		List<MallProductModel> r=Lists.newArrayList();
-		List<String> list=Lists.newArrayList();
-		int pageno=1;
-		do {
-			r=YZManager.getInstance().searchYzProduct(pageno, 300, null);
-			for (MallProductModel model : r) {
-				list.add(model.title);
-			}
-			pageno++;
-			if(r.size()==0){
-				break;
-			}
-		} while (r.size()<=300);
-		List<List<String>> averageList=CollectionUtil.averageAssign(list, list.size()/500+1);
-		for (List<String> list2 : averageList) {
-			Map<String,Object> params=Maps.newHashMap();
-			List<String> sids=Lists.newArrayList();
-			List<String> searchcontent=Lists.newArrayList();
-
-			for (String key : list2) {
-				SuggestModel sm=new SuggestModel();
-				sm.malldesc=key;
-				String sid=MD5.stringToMD5(key);
-				sm.sid=sid;
-				sm.type=3;
-				sids.add(sid);
-				searchcontent.add(JSON.toJSONString(sm));
-			}
-			params.put("searchcontent",searchcontent);
-			params.put("sids",sids);
-			ElasticSearchManager.getInstance().syncAddEsList(SuggestModel.class, JSON.toJSONString(params));
-			LOGGER.info("handleMall is  sync ");
-
-		}
-		
-	}
 
 }
