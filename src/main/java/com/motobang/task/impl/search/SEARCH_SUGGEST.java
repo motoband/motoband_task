@@ -28,7 +28,7 @@ public class SEARCH_SUGGEST implements JobRunner  {
 
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
-		LOGGER.info("SEARCH_SUGGEST is start");
+		LOGGER.error("SEARCH_SUGGEST is start");
 		Consts.MOTOBAND_SEARCHSERVICE="http://10.0.0.11:8091/motoband-search/";
 		String urlString =  "http://10.0.0.11:8091/motoband-search/search/suggest/removeall";
 //		String urlString =  "http://127.0.0.1:8091/motoband-search/search/suggest/removeall";
@@ -37,11 +37,11 @@ public class SEARCH_SUGGEST implements JobRunner  {
 //		requestData.put("searchcontent", searchcontent);
 		List<String> list = Lists.newArrayList();
 		List<Map<String, Object>> resultList = Lists.newArrayList();
-//		list = OkHttpClientUtil.okHttpPost(urlString, JSON.toJSONString(map), new TypeToken<List<String>>() {
-//		}.getType());		
-//		handleLabels();
+		list = OkHttpClientUtil.okHttpPost(urlString, JSON.toJSONString(map), new TypeToken<List<String>>() {
+		}.getType());		
+		handleLabels();
 		LOGGER.info("handleLabels is  sync over");
-//		handleMoto();
+		handleMoto();
 		LOGGER.info("handleMoto is  sync over");
 		handleMall();
 		LOGGER.info("handleMall is  sync over");
