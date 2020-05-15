@@ -38,7 +38,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		styleMap.put("巡航", 7);
 		styleMap.put("旅行", 10);
 		styleMap.put("拉力探险", 11);
-		styleMap.put("经典／复古", 13);
+		styleMap.put("经典/复古", 13);
 		styleMap.put("新能源", 14);
 		styleMap.put("其它", 20);
 		LOGGER.error("NEWMOTOMODEL_RANK is start");	
@@ -46,7 +46,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		long starttime=now.plusMonths(-1).toInstant(ZoneOffset.of("+8")).toEpochMilli();
 		long endtime=now.toInstant(ZoneOffset.of("+8")).toEpochMilli();
 		//查询时间段内的线路
-		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed,count(id) usercount from rideline \r\n" + 
+		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed,count(id) hotcount from rideline \r\n" + 
 				"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY modelid";
 //		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed,count(id) usercount from rideline \r\n" + 
 //"where reporttime>=1585670400000 and reporttime<1585699200000 GROUP BY modelid";
