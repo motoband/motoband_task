@@ -97,7 +97,10 @@ public class TestJobRunnerTester extends JobRunnerTester {
 //
         jobContext.setJobExtInfo(jobExtInfo);
         System.setProperty("push_flag","0");
+        System.setProperty("env","production");
+        System.setProperty("env_task","production_task");
     	DBConnectionManager.init("production");
+    	DBConnectionManager.init("production_task");
 		ConfigManager.getInstance().init("MotoBandTask");
 		MotoDataManager.getInstance().init();
 		DataVersionManager.getInstance().init();
