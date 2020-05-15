@@ -15,6 +15,7 @@ import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import com.motoband.common.MBResponse;
 import com.motoband.common.MBResponseCode;
 import com.motoband.model.task.MessageTaskModel;
+import com.motobang.task.impl.newmotomodel.NEWMOTOMODEL_RANK;
 import com.motobang.task.impl.push.PUSH_CREATE_MBUSER_PUSH;
 import com.motobang.task.impl.push.PUSH_IM_PUSH;
 import com.motobang.task.impl.push.PUSH_IM_PUSH_CHECKFINSHE;
@@ -42,6 +43,9 @@ public class JobRunnerDispatcher implements JobRunner {
 //        JOB_RUNNER_MAP.put(MessageTaskModel.VOTE_CLOSE, new VOTE_CLOSE());
         
         JOB_RUNNER_MAP.put(MessageTaskModel.SEARCH_SUGGEST, new SEARCH_SUGGEST());
+        
+        //newmotomodel
+        JOB_RUNNER_MAP.put(MessageTaskModel.NEWMOTOMODEL_RANK, new NEWMOTOMODEL_RANK());
 
 
     }
