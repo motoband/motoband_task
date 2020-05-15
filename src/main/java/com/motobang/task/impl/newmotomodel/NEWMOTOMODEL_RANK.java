@@ -27,6 +27,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed,count(id) usercount from rideline \r\n" + 
 				"where reporttime>=1585670400000 and reporttime<1585699200000 GROUP BY modelid";
 		List<NewMotoRankModel> res=NewMotoModelDAO.selectList(sql);
+		NewMotoModelDAO.insert(res);
 		return null;
 	}
 }
