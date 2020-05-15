@@ -24,6 +24,13 @@
 			<scope>system</scope>
 			<systemPath>${basedir}/lib/lts-tasktracker-1.7.0.jar</systemPath>
 		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.youzan</groupId> -->
+<!-- 			<artifactId>youzan</artifactId> -->
+<!-- 			<version>2.0.2</version> -->
+<!-- 			<scope>system</scope> -->
+<!-- 			<systemPath>${basedir}/lib/open-sdk-java-2.0.2.jar</systemPath> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>com.motoband.motoband</groupId>
 			<artifactId>motoband-core</artifactId>
