@@ -67,6 +67,10 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 				 style=styleMap.get(newmotomodel.style);
 			}  
 			newMotoRankModel.put("style",style);
+			sql="select count(1) as count from usergarage where modelid="+modelid+" and addtime>="+starttime+" and addtime<="+endtime+"\r\n" + 
+					"";
+			int count=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("usercount", count);
 		}
 		result=JSON.parseArray(JSON.toJSONString(res), NewMotoRankModel.class);
 		NewMotoModelDAO.insert(result);
