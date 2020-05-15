@@ -28,18 +28,19 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
-//		Map<String, Integer> styleMap=Maps.newHashMap();
-//		styleMap.put("踏板", 1);
-//		styleMap.put("弯梁", 2);
-//		styleMap.put("越野滑胎", 3);
-//		styleMap.put("跑车", 4);
-//		styleMap.put("街车", 5);
-//		styleMap.put("三轮", 6);
-//		styleMap.put("巡航", 7);
-//		styleMap.put("旅行", 8);
-//		styleMap.put("拉力探险", 9);
-//		styleMap.put("经典／复古", 10);
-//		styleMap.put("其它", 20);
+		Map<String, Integer> styleMap=Maps.newHashMap();
+		styleMap.put("踏板", 1);
+		styleMap.put("弯梁", 2);
+		styleMap.put("越野滑胎", 3);
+		styleMap.put("跑车", 4);
+		styleMap.put("街车", 5);
+		styleMap.put("三轮", 6);
+		styleMap.put("巡航", 7);
+		styleMap.put("旅行", 10);
+		styleMap.put("拉力探险", 11);
+		styleMap.put("经典／复古", 13);
+		styleMap.put("新能源", 14);
+		styleMap.put("其它", 20);
 		LOGGER.error("NEWMOTOMODEL_RANK is start");	
 		LocalDateTime now=LocalDateTime.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), 1,0,0,0);
 		long starttime=now.plusMonths(-1).toInstant(ZoneOffset.of("+8")).toEpochMilli();
@@ -56,14 +57,14 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			newMotoRankModel.put("rankid", MD5.stringToMD5(newMotoRankModel.get("modelid")+"-"+endtime));;
 			int modelid=Integer.parseInt(newMotoRankModel.get("modelid")+"");
 			NewMotoModel newmotomodel=MotoDataManager.getInstance().getNewMotoModel(modelid);
-			String style="";
+			Integer style=0;
 			if(newmotomodel==null){
 				MotoModelModel motomodel=MotoDataManager.getInstance().getMotoModel(modelid);
 				if(motomodel!=null){
-					 style=motomodel.style;
+					 style=styleMap.get(motomodel.style);
 				}
 			}else{
-				 style=newmotomodel.style;
+				 style=styleMap.get(newmotomodel.style);
 			}  
 			newMotoRankModel.put("style",style);
 		}
