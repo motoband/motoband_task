@@ -23,6 +23,7 @@ import com.motoband.manager.YZManager;
 import com.motoband.manager.search.ElasticSearchManager;
 import com.motoband.model.MallProductModel;
 import com.motoband.model.NewMotoModel;
+import com.motoband.model.NewMotoModelV2;
 import com.motoband.model.SuggestModel;
 import com.motoband.utils.MD5;
 import com.motoband.utils.OkHttpClientUtil;
@@ -99,11 +100,11 @@ public class SEARCH_SUGGEST implements JobRunner  {
 
 	private void handleMoto() {
 		LinkedHashSet<String> list=Sets.newLinkedHashSet();
-		List<NewMotoModel> newmotomodel=MotoDataManager.getInstance().getNewMotoModels();
-		for (NewMotoModel newMotoModel2 : newmotomodel) {
+		List<NewMotoModelV2> newmotomodel=MotoDataManager.getInstance().getNewMotoModels();
+		for (NewMotoModelV2 newMotoModel2 : newmotomodel) {
 			list.add(newMotoModel2.name);
 			list.add(newMotoModel2.brandname);
-			list.add(newMotoModel2.brandparentname);
+//			list.add(newMotoModel2.brandparentname);
 		}
 //		List<List<String>> averageList=CollectionUtil.averageAssign(list, list.size()/500+1);
 //		for (String list2 : list) {

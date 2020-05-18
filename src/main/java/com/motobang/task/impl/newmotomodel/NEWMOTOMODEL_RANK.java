@@ -6,6 +6,8 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.alibaba.fastjson.JSON;
 import com.github.ltsopensource.core.logger.Logger;
 import com.github.ltsopensource.core.logger.LoggerFactory;
@@ -19,6 +21,7 @@ import com.motoband.dao.newmotomodel.NewMotoModelDAO;
 import com.motoband.manager.MotoDataManager;
 import com.motoband.model.MotoModelModel;
 import com.motoband.model.NewMotoModel;
+import com.motoband.model.NewMotoModelV2;
 import com.motoband.model.NewMotoRankModel;
 import com.motoband.utils.MBUtil;
 import com.motoband.utils.MD5;
@@ -56,7 +59,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			newMotoRankModel.put("ranktime", starttime);
 			newMotoRankModel.put("rankid", MD5.stringToMD5(newMotoRankModel.get("modelid")+"-"+endtime));;
 			int modelid=Integer.parseInt(newMotoRankModel.get("modelid")+"");
-			NewMotoModel newmotomodel=MotoDataManager.getInstance().getNewMotoModel(modelid);
+			NewMotoModelV2 newmotomodel=MotoDataManager.getInstance().getNewMotoModel(modelid);
 			Integer style=0;
 			if(newmotomodel==null){
 				MotoModelModel motomodel=MotoDataManager.getInstance().getMotoModel(modelid);
@@ -71,6 +74,21 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 					"";
 			int count=NewMotoModelDAO.getCountByModelId(sql);
 			newMotoRankModel.put("usercount", count);
+			sql="select DISTINCT(makertype) as makertype from motomodel_new_v2 where modelid="+modelid;
+			List<Map> makertypeList=NewMotoModelDAO.selectList(sql);
+			String makertypeStr="";
+			for (Map makertypeMap : makertypeList) {
+				if(makertypeMap!=null&&makertypeMap.containsKey("makertype")) {
+					makertypeStr+=makertypeMap.get("makertype")+",";
+				}
+			}
+			if(StringUtils.isNotBlank(makertypeStr)) {
+				if(makertypeStr.charAt(makertypeStr.length()-1)==',') {
+					makertypeStr.substring(0,makertypeStr.length()-1);
+				}
+				newMotoRankModel.put("makertype", makertypeStr);
+			}
+
 		}
 		result=JSON.parseArray(JSON.toJSONString(res), NewMotoRankModel.class);
 		NewMotoModelDAO.insert(result);
