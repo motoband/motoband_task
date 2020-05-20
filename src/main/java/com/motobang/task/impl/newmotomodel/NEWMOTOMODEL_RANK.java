@@ -45,11 +45,57 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		styleMap.put("新能源", 14);
 		styleMap.put("其它", 20);
 		LOGGER.error("NEWMOTOMODEL_RANK is start");	
+		handleModelid(styleMap);
+		handleBrandid(styleMap);
+		return null;
+	}
+
+	private void handleBrandid(Map<String, Integer> styleMap) {
 		LocalDateTime now=LocalDateTime.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), 1,0,0,0);
 		long starttime=now.plusMonths(-1).toInstant(ZoneOffset.of("+8")).toEpochMilli();
 		long endtime=now.toInstant(ZoneOffset.of("+8")).toEpochMilli();
 		//查询时间段内的线路
-		String sql="select modelid,brandid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed,count(id) hotcount from rideline \r\n" + 
+		String sql="select brandid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed,count(id) hotcount from rideline \r\n" + 
+				"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY brandid";
+//		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed,count(id) usercount from rideline \r\n" + 
+//"where reporttime>=1585670400000 and reporttime<1585699200000 GROUP BY modelid";
+		List<Map> res=NewMotoModelDAO.selectList(sql);
+		List<NewMotoRankModel> result=Lists.newArrayList();
+		for (Map newMotoRankModel : res) {
+			newMotoRankModel.put("ranktype", 1);
+			newMotoRankModel.put("ranktime", starttime);
+			newMotoRankModel.put("rankid", MD5.stringToMD5(newMotoRankModel.get("brandid")+"-"+endtime));;
+			int brandid=Integer.parseInt(newMotoRankModel.get("brandid")+"");
+			sql="select count(1) as count from usergarage where brandid="+brandid+" and addtime>="+starttime+" and addtime<="+endtime+"\r\n" + 
+					"";
+			int count=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("usercount", count);
+			sql="select DISTINCT(makertype) as makertype from motomodel_new_v2 where brandid="+brandid;
+			List<Map> makertypeList=NewMotoModelDAO.selectList(sql);
+			String makertypeStr="";
+			for (Map makertypeMap : makertypeList) {
+				if(makertypeMap!=null&&makertypeMap.containsKey("makertype")) {
+					makertypeStr+=makertypeMap.get("makertype")+",";
+				}
+			}
+			if(StringUtils.isNotBlank(makertypeStr)) {
+				if(makertypeStr.charAt(makertypeStr.length()-1)==',') {
+					makertypeStr.substring(0,makertypeStr.length()-1);
+				}
+				newMotoRankModel.put("makertype", makertypeStr);
+			}
+
+		}
+		result=JSON.parseArray(JSON.toJSONString(res), NewMotoRankModel.class);
+		NewMotoModelDAO.insertRankModel(result);		
+	}
+
+	private void handleModelid(Map<String, Integer> styleMap) {
+		LocalDateTime now=LocalDateTime.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), 1,0,0,0);
+		long starttime=now.plusMonths(-1).toInstant(ZoneOffset.of("+8")).toEpochMilli();
+		long endtime=now.toInstant(ZoneOffset.of("+8")).toEpochMilli();
+		//查询时间段内的线路
+		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed,count(id) hotcount from rideline \r\n" + 
 				"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY modelid";
 //		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed,count(id) usercount from rideline \r\n" + 
 //"where reporttime>=1585670400000 and reporttime<1585699200000 GROUP BY modelid";
@@ -91,7 +137,6 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 
 		}
 		result=JSON.parseArray(JSON.toJSONString(res), NewMotoRankModel.class);
-		NewMotoModelDAO.insert(result);
-		return null;
+		NewMotoModelDAO.insertRankModel(result);
 	}
 }
