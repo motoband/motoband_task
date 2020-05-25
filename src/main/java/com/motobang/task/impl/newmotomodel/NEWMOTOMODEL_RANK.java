@@ -105,15 +105,21 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			newMotoRankModel.put("ranktime", starttime);
 			newMotoRankModel.put("rankid", MD5.stringToMD5(newMotoRankModel.get("modelid")+"-"+endtime));;
 			int modelid=Integer.parseInt(newMotoRankModel.get("modelid")+"");
-			NewMotoModelV2 newmotomodel=MotoDataManager.getInstance().getNewMotoModel(modelid);
-			Integer style=0;
+			List<NewMotoModelV2> newmotomodel=MotoDataManager.getInstance().getNewMotoModel(modelid);
+			String style="";
 			if(newmotomodel==null){
 				MotoModelModel motomodel=MotoDataManager.getInstance().getMotoModel(modelid);
 				if(motomodel!=null){
-					 style=styleMap.get(motomodel.style);
+					 style+=styleMap.get(motomodel.style);
 				}
 			}else{
-				 style=styleMap.get(newmotomodel.style);
+				for (NewMotoRankModel newMotoRankModel2 : result) {
+					 int tempstyle=styleMap.get(newMotoRankModel2.style);
+					 style+=tempstyle+",";
+				}
+				if(style.charAt(style.length()-1)==',') {
+					style=style.substring(0,style.length()-1);
+				}
 			}  
 			newMotoRankModel.put("style",style);
 			sql="select count(1) as count from usergarage where modelid="+modelid+" and addtime>="+starttime+" and addtime<="+endtime+"\r\n" + 
@@ -130,7 +136,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			}
 			if(StringUtils.isNotBlank(makertypeStr)) {
 				if(makertypeStr.charAt(makertypeStr.length()-1)==',') {
-					makertypeStr.substring(0,makertypeStr.length()-1);
+					makertypeStr=makertypeStr.substring(0,makertypeStr.length()-1);
 				}
 				newMotoRankModel.put("makertype", makertypeStr);
 			}
