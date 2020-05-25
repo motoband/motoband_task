@@ -64,7 +64,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		for (Map newMotoRankModel : res) {
 			newMotoRankModel.put("ranktype", 1);
 			newMotoRankModel.put("ranktime", starttime);
-			newMotoRankModel.put("rankid", MD5.stringToMD5(newMotoRankModel.get("brandid")+"-"+endtime));;
+//			newMotoRankModel.put("rankid", MD5.stringToMD5(newMotoRankModel.get("brandid")+"-"+endtime));;
 			int brandid=Integer.parseInt(newMotoRankModel.get("brandid")+"");
 			sql="select count(1) as count from usergarage where brandid="+brandid+" and addtime>="+starttime+" and addtime<="+endtime+"\r\n" + 
 					"";
@@ -84,6 +84,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 				}
 				newMotoRankModel.put("makertype", makertypeStr);
 			}
+			newMotoRankModel.put("modelid", null);
 
 		}
 		result=JSON.parseArray(JSON.toJSONString(res), NewMotoRankModel.class);
@@ -103,7 +104,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		List<NewMotoRankModel> result=Lists.newArrayList();
 		for (Map newMotoRankModel : res) {
 			newMotoRankModel.put("ranktime", starttime);
-			newMotoRankModel.put("rankid", MD5.stringToMD5(newMotoRankModel.get("modelid")+"-"+endtime));;
+//			newMotoRankModel.put("rankid", MD5.stringToMD5(newMotoRankModel.get("modelid")+"-"+endtime));;
 			int modelid=Integer.parseInt(newMotoRankModel.get("modelid")+"");
 			List<NewMotoModelV2> newmotomodel=MotoDataManager.getInstance().getNewMotoModel(modelid);
 			String style="";
@@ -140,6 +141,9 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 				}
 				newMotoRankModel.put("makertype", makertypeStr);
 			}
+			newMotoRankModel.put("ranktype", 0);
+			newMotoRankModel.put("brandid",null);
+
 
 		}
 		result=JSON.parseArray(JSON.toJSONString(res), NewMotoRankModel.class);
