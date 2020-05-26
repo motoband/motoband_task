@@ -4,6 +4,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.alibaba.druid.sql.dialect.oracle.ast.clause.SearchClause;
 import com.github.ltsopensource.core.domain.Action;
 import com.github.ltsopensource.core.json.JSON;
 import com.github.ltsopensource.core.logger.Logger;
@@ -14,10 +15,12 @@ import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import com.motoband.common.MBResponse;
 import com.motoband.common.MBResponseCode;
 import com.motoband.model.task.MessageTaskModel;
+import com.motobang.task.impl.newmotomodel.NEWMOTOMODEL_RANK;
 import com.motobang.task.impl.push.PUSH_CREATE_MBUSER_PUSH;
 import com.motobang.task.impl.push.PUSH_IM_PUSH;
 import com.motobang.task.impl.push.PUSH_IM_PUSH_CHECKFINSHE;
 import com.motobang.task.impl.push.PUSH_IM_PUSH_ERROR_USERIDS;
+import com.motobang.task.impl.search.SEARCH_SUGGEST;
 import com.motobang.task.impl.tuanyou.TUANYOU_PULL_GASLIST;
 import com.motobang.task.impl.vote.VOTE_CLOSE;
 
@@ -37,7 +40,12 @@ public class JobRunnerDispatcher implements JobRunner {
         
         JOB_RUNNER_MAP.put(MessageTaskModel.TUANYOU_PULL_GASLIST, new TUANYOU_PULL_GASLIST());
         
-        JOB_RUNNER_MAP.put(MessageTaskModel.VOTE_CLOSE, new VOTE_CLOSE());
+//        JOB_RUNNER_MAP.put(MessageTaskModel.VOTE_CLOSE, new VOTE_CLOSE());
+        
+        JOB_RUNNER_MAP.put(MessageTaskModel.SEARCH_SUGGEST, new SEARCH_SUGGEST());
+        
+        //newmotomodel
+        JOB_RUNNER_MAP.put(MessageTaskModel.NEWMOTOMODEL_RANK, new NEWMOTOMODEL_RANK());
 
 
     }

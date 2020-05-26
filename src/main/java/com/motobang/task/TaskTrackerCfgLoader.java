@@ -21,7 +21,7 @@ public class TaskTrackerCfgLoader {
     protected static final Logger LOGGER = LoggerFactory.getLogger(TaskTrackerStartup.class);
 
     public static TaskTrackerCfg load(String confPath) throws CfgException {
-    	  String log4jPath="src/main/resource/conf";
+    	  String log4jPath="src/main/resources/conf";
     	if(StringUtils.isNotEmpty(confPath)) {
     		log4jPath=confPath;
         	String env = System.getProperty("env","windowstest");

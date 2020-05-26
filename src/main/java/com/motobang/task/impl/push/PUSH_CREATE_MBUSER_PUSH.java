@@ -62,7 +62,7 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
 			for (Map<String, Object> map : result) {
 				String userid = (String) map.get("userid");
 				MBUserPushModel mbuser = new MBUserPushModel();
-				mbuser.userid = userid;
+				mbuser.userid= userid;
 				if (map.containsKey("city")) {
 					String city = (String) map.get("city");
 					// 获取北京的citydatamodel

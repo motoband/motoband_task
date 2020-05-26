@@ -9,6 +9,7 @@ import com.motoband.manager.ConfigManager;
 import com.motoband.manager.DBConnectionManager;
 import com.motoband.manager.DataVersionManager;
 import com.motoband.manager.MotoDataManager;
+import com.motoband.manager.YZManager;
 import com.motoband.utils.OkHttpClientUtil;
 
 /**
@@ -20,12 +21,15 @@ public class TaskTrackerStartup {
 	private static final Tracer _tracer = Tracer.create(TaskTrackerStartup.class);
 
     public static void main(String[] args) throws Exception {
+//    	System.setProperty("env_task","production_task");
     	DBConnectionManager.init();
+    	DBConnectionManager.init("production_task");
 		ConfigManager.getInstance().init("MotoBandTask");
 		MotoDataManager.getInstance().init();
 		DataVersionManager.getInstance().init();
 		DataVersionManager.getInstance().startCheck();	
 		OkHttpClientUtil.init();
+		YZManager.getInstance().refreshYZAccessToken();
 		String cfgPath=null;
 		if(args.length!=0) {
 			cfgPath = args[0];
