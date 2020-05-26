@@ -113,7 +113,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 			LOGGER.error(
 					String.format("taskid:%s 结束查询第 pici:%s 批次用户,用时:%s,userids:%s", taskid, pici,c.millis()-time, userids==null?0:userids.size()));
 		}
-		if(userids==null||userids.size()==0) {
+		if(userids==null||userids.size()==0||userids.size()<80000) {
 			TaskFinshe(taskid);
 			return ;
 		}
