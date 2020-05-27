@@ -18,8 +18,10 @@ import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.annotations.JsonAdapter;
+import com.motoband.common.Consts;
 import com.motoband.dao.newmotomodel.NewMotoModelDAO;
 import com.motoband.manager.MotoDataManager;
+import com.motoband.manager.RedisManager;
 import com.motoband.model.MotoModelModel;
 import com.motoband.model.NewMotoModel;
 import com.motoband.model.NewMotoModelV2;
@@ -57,23 +59,44 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		long starttime=now.plusMonths(-1).toInstant(ZoneOffset.of("+8")).toEpochMilli();
 		long endtime=now.toInstant(ZoneOffset.of("+8")).toEpochMilli();
 		//查询时间段内的线路
-		String sql="select brandid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed,count(id) hotcount from rideline \r\n" + 
+		String sql="select brandid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
 				"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY brandid";
 //		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed,count(id) usercount from rideline \r\n" + 
 //"where reporttime>=1585670400000 and reporttime<1585699200000 GROUP BY modelid";
-		List<Map> res=NewMotoModelDAO.selectList(sql);
+//		RedisManager.getInstance().hget(Consts.REDIS_SCHEME_NEWS, key, field)
+		List<Map<String,Object>> res=NewMotoModelDAO.selectList(sql);
 		List<NewMotoRankModel> result=Lists.newArrayList();
-		for (Map newMotoRankModel : res) {
+		for (Map<String,Object> newMotoRankModel : res) {
+			long hotcount = 0;
+			int brandid=Integer.parseInt(newMotoRankModel.get("brandid")+"");
+			newMotoRankModel.put("hotcount",hotcount);
+			
+			long prevmonthstarttime=now.plusMonths(-2).toInstant(ZoneOffset.of("+8")).toEpochMilli();
+			sql="select totalhotcount as count from motomodel_new_rank where brandid="+brandid+" ranktime="+prevmonthstarttime+" and ranktype=1";
+			int count=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("totalhotcount", count+hotcount);
+			
+			sql="select totalmileage as count from motomodel_new_rank where brandid="+brandid+"  ranktime="+prevmonthstarttime+" and ranktype=1";
+			count=NewMotoModelDAO.getCountByModelId(sql);
+			long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
+			newMotoRankModel.put("totalmileage", count+mileage);
+			
 			newMotoRankModel.put("ranktype", 1);
 			newMotoRankModel.put("ranktime", starttime);
 //			newMotoRankModel.put("rankid", MD5.stringToMD5(newMotoRankModel.get("brandid")+"-"+endtime));;
-			int brandid=Integer.parseInt(newMotoRankModel.get("brandid")+"");
 			sql="select count(1) as count from usergarage where brandid="+brandid+" and addtime>="+starttime+" and addtime<="+endtime+"\r\n" + 
 					"";
-			int count=NewMotoModelDAO.getCountByModelId(sql);
-			newMotoRankModel.put("usercount", count);
+			int usercount=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("usercount", usercount);
+			
+			
+			sql="select totalusercount as count from motomodel_new_rank where brandid="+brandid+" ranktime="+prevmonthstarttime+" and ranktype=1";
+			count=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("totalusercount", count+usercount);
+			
+			
 			sql="select DISTINCT(makertype) as makertype from motomodel_new_v2 where brandid="+brandid;
-			List<Map> makertypeList=NewMotoModelDAO.selectList(sql);
+			List<Map<String, Object>> makertypeList=NewMotoModelDAO.selectList(sql);
 			String makertypeStr="";
 			for (Map makertypeMap : makertypeList) {
 				if(makertypeMap!=null&&makertypeMap.containsKey("makertype")) {
@@ -94,7 +117,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			sql="select count(1) as count from mbuser where userid in(select userid from usergarage where brandid="+brandid+") and gender=1";
 			int girlcount=NewMotoModelDAO.getCountByModelId(sql);
 			newMotoRankModel.put("girlcount", girlcount);
-			
+			//年龄
 			long now_20=LocalDateTime.of(LocalDate.now().plusYears(-20), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
 			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age>"+now_20+"\r\n" + 
 					"";
@@ -123,6 +146,11 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			age_50_up=NewMotoModelDAO.getCountByModelId(sql);
 			newMotoRankModel.put("age_50_up", age_50_up);
 			
+			//地域
+			sql="select province,count(1) as count from mbuser where userid in (select DISTINCT(userid) from rideline \r\n" + 
+					"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY modelid) and LENGTH(province)>6 and province!=\"内蒙古\" GROUP BY province";
+			List<Map<String,Object>> diyulist=NewMotoModelDAO.selectList(sql);
+			newMotoRankModel.put("diyustr", JSON.toJSONString(diyulist));
 
 
 		}
@@ -139,13 +167,26 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 				"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY modelid";
 //		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed,count(id) usercount from rideline \r\n" + 
 //"where reporttime>=1585670400000 and reporttime<1585699200000 GROUP BY modelid";
-		List<Map> res=NewMotoModelDAO.selectList(sql);
+		List<Map<String, Object>> res=NewMotoModelDAO.selectList(sql);
 		List<NewMotoRankModel> result=Lists.newArrayList();
-		for (Map newMotoRankModel : res) {
-			newMotoRankModel.put("ranktime", starttime);
-//			newMotoRankModel.put("rankid", MD5.stringToMD5(newMotoRankModel.get("modelid")+"-"+endtime));;
+		for (Map<String, Object> newMotoRankModel : res) {
 			int modelid=Integer.parseInt(newMotoRankModel.get("modelid")+"");
-			List<NewMotoModelV2> newmotomodel=MotoDataManager.getInstance().getNewMotoModel(modelid);
+			newMotoRankModel.put("ranktime", starttime);
+			long hotcount = 0;
+			newMotoRankModel.put("hotcount",hotcount);
+			
+			long prevmonthstarttime=now.plusMonths(-2).toInstant(ZoneOffset.of("+8")).toEpochMilli();
+			sql="select totalhotcount as count from motomodel_new_rank where modelid="+modelid+" ranktime="+prevmonthstarttime+" and ranktype=0";
+			int count=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("totalhotcount", count+hotcount);
+			
+			sql="select totalmileage as count from motomodel_new_rank where modelid="+modelid+"  ranktime="+prevmonthstarttime+" and ranktype=1";
+			count=NewMotoModelDAO.getCountByModelId(sql);
+			long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
+			newMotoRankModel.put("totalmileage", count+mileage);
+			
+//			newMotoRankModel.put("rankid", MD5.stringToMD5(newMotoRankModel.get("modelid")+"-"+endtime));;
+			List<NewMotoModelV2> newmotomodel=MotoDataManager.getInstance().getNewMotoModelListByModelidV2(modelid);
 			String style="";
 			if(newmotomodel==null){
 				MotoModelModel motomodel=MotoDataManager.getInstance().getMotoModel(modelid);
@@ -164,10 +205,15 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			newMotoRankModel.put("style",style);
 			sql="select count(1) as count from usergarage where modelid="+modelid+" and addtime>="+starttime+" and addtime<="+endtime+"\r\n" + 
 					"";
-			int count=NewMotoModelDAO.getCountByModelId(sql);
+			count=NewMotoModelDAO.getCountByModelId(sql);
 			newMotoRankModel.put("usercount", count);
+			
+			sql="select totalusercount as count from motomodel_new_rank where modelid="+modelid+" ranktime="+prevmonthstarttime+" and ranktype=1";
+			long totalusercount=count=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("totalusercount", count+totalusercount);
+			
 			sql="select DISTINCT(makertype) as makertype from motomodel_new_v2 where modelid="+modelid;
-			List<Map> makertypeList=NewMotoModelDAO.selectList(sql);
+			List<Map<String, Object>> makertypeList=NewMotoModelDAO.selectList(sql);
 			String makertypeStr="";
 			for (Map makertypeMap : makertypeList) {
 				if(makertypeMap!=null&&makertypeMap.containsKey("makertype")) {
@@ -218,7 +264,13 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			age_50_up=NewMotoModelDAO.getCountByModelId(sql);
 			newMotoRankModel.put("age_50_up", age_50_up);
 
-
+			//地域
+			sql="select province,count(1) as count from mbuser where userid in (select DISTINCT(userid) from rideline \r\n" + 
+					"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY modelid) and LENGTH(province)>6 and province!=\"内蒙古\" GROUP BY province";
+			List<Map<String,Object>> diyulist=NewMotoModelDAO.selectList(sql);
+			newMotoRankModel.put("diyustr", JSON.toJSONString(diyulist));
+			
+			
 		}
 		result=JSON.parseArray(JSON.toJSONString(res), NewMotoRankModel.class);
 		NewMotoModelDAO.insertRankModel(result);
