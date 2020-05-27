@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -22,10 +23,14 @@ import com.motoband.common.Consts;
 import com.motoband.dao.newmotomodel.NewMotoModelDAO;
 import com.motoband.manager.MotoDataManager;
 import com.motoband.manager.RedisManager;
+import com.motoband.manager.newmotomodel.MotoCarRedisEsManager;
+import com.motoband.model.MotoBrandModelV2;
 import com.motoband.model.MotoModelModel;
+import com.motoband.model.MotoSeriesModel;
 import com.motoband.model.NewMotoModel;
 import com.motoband.model.NewMotoModelV2;
 import com.motoband.model.NewMotoRankModel;
+import com.motoband.utils.BeanUtils;
 import com.motoband.utils.MBUtil;
 import com.motoband.utils.MD5;
 
@@ -67,8 +72,16 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		List<Map<String,Object>> res=NewMotoModelDAO.selectList(sql);
 		List<NewMotoRankModel> result=Lists.newArrayList();
 		for (Map<String,Object> newMotoRankModel : res) {
-			long hotcount = 0;
+		
 			int brandid=Integer.parseInt(newMotoRankModel.get("brandid")+"");
+			long hotcount = 0;
+		try {
+			MotoBrandModelV2	motobrandv2=BeanUtils.mapToObject(RedisManager.getInstance().hgetAll(Consts.REDIS_SCHEME_RUN, brandid+MotoCarRedisEsManager.RUNKEY_MOTOBRANDV2INFO), MotoBrandModelV2.class);
+			hotcount=motobrandv2.userhotcount;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 			newMotoRankModel.put("hotcount",hotcount);
 			
 			long prevmonthstarttime=now.plusMonths(-2).toInstant(ZoneOffset.of("+8")).toEpochMilli();
@@ -155,6 +168,18 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 
 		}
 		result=JSON.parseArray(JSON.toJSONString(res), NewMotoRankModel.class);
+		result.sort(new Comparator<NewMotoRankModel>() {
+
+			@Override
+			public int compare(NewMotoRankModel o1, NewMotoRankModel o2) {
+				return Integer.parseInt((o2.hotcount-o1.hotcount)+"");
+			}
+		});
+		int c=0;
+		for (NewMotoRankModel newMotoRankModel : result) {
+			c++;
+			newMotoRankModel.rankindex=c;
+		}
 		NewMotoModelDAO.insertRankModel(result);		
 	}
 
@@ -172,7 +197,14 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		for (Map<String, Object> newMotoRankModel : res) {
 			int modelid=Integer.parseInt(newMotoRankModel.get("modelid")+"");
 			newMotoRankModel.put("ranktime", starttime);
-			long hotcount = 0;
+			long hotcount =0;
+			try {
+				MotoSeriesModel itemModel=BeanUtils.mapToObject(RedisManager.getInstance().hgetAll(Consts.REDIS_SCHEME_RUN, modelid+MotoCarRedisEsManager.RUNKEY_MOTOSERIESV2INFO), MotoSeriesModel.class);
+				hotcount=itemModel.serieshot;;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+	
 			newMotoRankModel.put("hotcount",hotcount);
 			
 			long prevmonthstarttime=now.plusMonths(-2).toInstant(ZoneOffset.of("+8")).toEpochMilli();
@@ -274,5 +306,19 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		}
 		result=JSON.parseArray(JSON.toJSONString(res), NewMotoRankModel.class);
 		NewMotoModelDAO.insertRankModel(result);
+	}
+	
+	public static void main(String[] args) {
+		List s=Lists.newArrayList(0,1,3,2,1,2);
+		s.sort(new Comparator<Integer>() {
+
+			@Override
+			public int compare(Integer o1, Integer o2) {
+				// TODO Auto-generated method stub
+				return o2-o1;
+			}
+		});
+		
+		System.out.println(JSON.toJSONString(s));
 	}
 }
