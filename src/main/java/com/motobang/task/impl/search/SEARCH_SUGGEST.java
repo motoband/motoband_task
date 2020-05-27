@@ -100,7 +100,7 @@ public class SEARCH_SUGGEST implements JobRunner  {
 
 	private void handleMoto() {
 		LinkedHashSet<String> list=Sets.newLinkedHashSet();
-		List<NewMotoModelV2> newmotomodel=MotoDataManager.getInstance().getNewMotoModels();
+		List<NewMotoModelV2> newmotomodel=MotoDataManager.getInstance().getNewMotoModelsV2();
 		for (NewMotoModelV2 newMotoModel2 : newmotomodel) {
 			list.add(newMotoModel2.name);
 			list.add(newMotoModel2.brandname);
