@@ -26,12 +26,9 @@ import com.motoband.manager.newmotomodel.MotoCarRedisEsManager;
 import com.motoband.model.MotoBrandModelV2;
 import com.motoband.model.MotoModelModel;
 import com.motoband.model.MotoSeriesModel;
-import com.motoband.model.NewMotoModel;
 import com.motoband.model.NewMotoModelV2;
 import com.motoband.model.NewMotoRankModel;
 import com.motoband.utils.BeanUtils;
-import com.motoband.utils.MBUtil;
-import com.motoband.utils.MD5;
 
 public class NEWMOTOMODEL_RANK implements JobRunner  {
     protected static final Logger LOGGER = LoggerFactory.getLogger(NEWMOTOMODEL_RANK.class);
@@ -52,9 +49,16 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		styleMap.put("新能源", 14);
 		styleMap.put("其它", 20);
 		LOGGER.error("NEWMOTOMODEL_RANK is start");	
+		LOGGER.debug("NEWMOTOMODEL_RANK is start");
+		LOGGER.info("NEWMOTOMODEL_RANK is start");
+		System.out.println(LOGGER.isErrorEnabled());
+		System.out.println(LOGGER.isDebugEnabled());
+		System.out.println(LOGGER.isInfoEnabled());
+
+
 		handleModelid(styleMap);
 		LOGGER.error("NEWMOTOMODEL_RANK is handleBrandid start");	
-//		handleBrandid(styleMap);
+		handleBrandid(styleMap);
 		return null;
 	}
 
@@ -71,7 +75,8 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		List<Map<String,Object>> res=NewMotoModelDAO.selectList(sql);
 		List<NewMotoRankModel> result=Lists.newArrayList();
 		for (Map<String,Object> newMotoRankModel : res) {
-		
+			System.out.println("newMotoRankModel="+JSON.toJSONString(newMotoRankModel));
+			
 			int brandid=Integer.parseInt(newMotoRankModel.get("brandid")+"");
 			long hotcount = 0;
 		try {
@@ -198,6 +203,8 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		List<Map<String, Object>> res=NewMotoModelDAO.selectList(sql);
 		List<NewMotoRankModel> result=Lists.newArrayList();
 		for (Map<String, Object> newMotoRankModel : res) {
+			System.out.println("newMotoRankModel="+JSON.toJSONString(newMotoRankModel));
+
 			int modelid=Integer.parseInt(newMotoRankModel.get("modelid")+"");
 			newMotoRankModel.put("ranktime", starttime);
 			long hotcount =0;
