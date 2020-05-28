@@ -82,7 +82,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		try {
 			MotoBrandModelV2	motobrandv2=BeanUtils.mapToObject(RedisManager.getInstance().hgetAll(Consts.REDIS_SCHEME_RUN, brandid+MotoCarRedisEsManager.RUNKEY_MOTOBRANDV2INFO), MotoBrandModelV2.class);
 			if(motobrandv2!=null) {
-				hotcount=motobrandv2.userhotcount;
+				hotcount=motobrandv2.brandhotcount;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -211,7 +211,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			try {
 				MotoSeriesModel itemModel=BeanUtils.mapToObject(RedisManager.getInstance().hgetAll(Consts.REDIS_SCHEME_RUN, modelid+MotoCarRedisEsManager.RUNKEY_MOTOSERIESV2INFO), MotoSeriesModel.class);
 				if(itemModel!=null) {
-					hotcount=itemModel.serieshot;;
+					hotcount=itemModel.serieshotcount;;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

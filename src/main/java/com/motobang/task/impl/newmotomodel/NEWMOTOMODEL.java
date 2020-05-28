@@ -38,7 +38,7 @@ public class NEWMOTOMODEL implements JobRunner  {
 
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
-		MotoCarRedisEsManager.getInstance().ininCarData();
+		MotoCarRedisEsManager.getInstance().initCarData();
 		return null;
 	}
 
