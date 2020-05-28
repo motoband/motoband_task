@@ -56,7 +56,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		System.out.println(LOGGER.isInfoEnabled());
 
 
-//		handleModelid(styleMap);
+		handleModelid(styleMap);
 		LOGGER.error("NEWMOTOMODEL_RANK is handleBrandid start");	
 		handleBrandid(styleMap);
 		return null;
@@ -67,10 +67,10 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		long starttime=now.plusMonths(-1).toInstant(ZoneOffset.of("+8")).toEpochMilli();
 		long endtime=now.toInstant(ZoneOffset.of("+8")).toEpochMilli();
 		//查询时间段内的线路
-//		String sql="select brandid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
-//				"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY brandid";
 		String sql="select brandid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
-" where reporttime>=1585670400000 and reporttime<1585699200000 GROUP BY brandid";
+				"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY brandid";
+//		String sql="select brandid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
+//" where reporttime>=1585670400000 and reporttime<1585699200000 GROUP BY brandid";
 //		RedisManager.getInstance().hget(Consts.REDIS_SCHEME_NEWS, key, field)
 		List<Map<String,Object>> res=NewMotoModelDAO.selectList(sql);
 		System.out.println("handleBrandid 縂共需處理count="+res.size());
@@ -204,10 +204,10 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		long starttime=now.plusMonths(-1).toInstant(ZoneOffset.of("+8")).toEpochMilli();
 		long endtime=now.toInstant(ZoneOffset.of("+8")).toEpochMilli();
 		//查询时间段内的线路
-//		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed,count(id) hotcount from rideline \r\n" + 
-//				"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY modelid";
-		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
-" where reporttime>=1585670400000 and reporttime<1585699200000 GROUP BY modelid";
+		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed,count(id) hotcount from rideline \r\n" + 
+				"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY modelid";
+//		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
+//" where reporttime>=1585670400000 and reporttime<1585699200000 GROUP BY modelid";
 		List<Map<String, Object>> res=NewMotoModelDAO.selectList(sql);
 		System.out.println("handleModelid 縂共需處理count="+res.size());
 		int indexcount=0;
