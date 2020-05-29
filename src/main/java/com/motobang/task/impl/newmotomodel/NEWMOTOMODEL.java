@@ -38,6 +38,7 @@ public class NEWMOTOMODEL implements JobRunner  {
 
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
+		LOGGER.info("NEWMOTOMODEL is start");
 		Consts.MOTOBAND_SEARCHSERVICE="http://10.0.0.11:8091/motoband-search/";
 		MotoCarRedisEsManager.getInstance().initCarData();
 		return null;
