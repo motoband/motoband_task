@@ -26,12 +26,9 @@ import com.motoband.manager.newmotomodel.MotoCarRedisEsManager;
 import com.motoband.model.MotoBrandModelV2;
 import com.motoband.model.MotoModelModel;
 import com.motoband.model.MotoSeriesModel;
-import com.motoband.model.NewMotoModel;
 import com.motoband.model.NewMotoModelV2;
 import com.motoband.model.NewMotoRankModel;
 import com.motoband.utils.BeanUtils;
-import com.motoband.utils.MBUtil;
-import com.motoband.utils.MD5;
 
 public class NEWMOTOMODEL_RANK implements JobRunner  {
     protected static final Logger LOGGER = LoggerFactory.getLogger(NEWMOTOMODEL_RANK.class);
@@ -52,9 +49,16 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		styleMap.put("新能源", 14);
 		styleMap.put("其它", 20);
 		LOGGER.error("NEWMOTOMODEL_RANK is start");	
+		LOGGER.debug("NEWMOTOMODEL_RANK is start");
+		LOGGER.info("NEWMOTOMODEL_RANK is start");
+		System.out.println(LOGGER.isErrorEnabled());
+		System.out.println(LOGGER.isDebugEnabled());
+		System.out.println(LOGGER.isInfoEnabled());
+
+
 		handleModelid(styleMap);
 		LOGGER.error("NEWMOTOMODEL_RANK is handleBrandid start");	
-//		handleBrandid(styleMap);
+		handleBrandid(styleMap);
 		return null;
 	}
 
@@ -65,13 +69,17 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		//查询时间段内的线路
 		String sql="select brandid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
 				"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY brandid";
-//		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
+//		String sql="select brandid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
 //" where reporttime>=1585670400000 and reporttime<1585699200000 GROUP BY brandid";
 //		RedisManager.getInstance().hget(Consts.REDIS_SCHEME_NEWS, key, field)
 		List<Map<String,Object>> res=NewMotoModelDAO.selectList(sql);
+		System.out.println("handleBrandid 縂共需處理count="+res.size());
+		int indexcount=0;
 		List<NewMotoRankModel> result=Lists.newArrayList();
 		for (Map<String,Object> newMotoRankModel : res) {
-		
+			indexcount++;
+			System.out.println("newMotoRankModel="+JSON.toJSONString(newMotoRankModel)+",count="+indexcount);
+			
 			int brandid=Integer.parseInt(newMotoRankModel.get("brandid")+"");
 			long hotcount = 0;
 		try {
@@ -124,49 +132,49 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 				newMotoRankModel.put("makertype", makertypeStr);
 			}
 			newMotoRankModel.put("modelid", null);
-			//男女比例
-			sql="select count(1) as count from mbuser where userid in(select userid from usergarage where brandid="+brandid+") and gender=0";
-			int boycount=NewMotoModelDAO.getCountByModelId(sql);
-			newMotoRankModel.put("boycount", boycount);
-			sql="select count(1) as count from mbuser where userid in(select userid from usergarage where brandid="+brandid+") and gender=1";
-			int girlcount=NewMotoModelDAO.getCountByModelId(sql);
-			newMotoRankModel.put("girlcount", girlcount);
-			//年龄
-			long now_20=LocalDateTime.of(LocalDate.now().plusYears(-20), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
-			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age>"+now_20+"\r\n" + 
-					"";
-			int age_20_down=NewMotoModelDAO.getCountByModelId(sql);
-			newMotoRankModel.put("age_20_down", age_20_down);
-			long age_20_30=LocalDateTime.of(LocalDate.now().plusYears(-30), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
-			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age,mbuser.* from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age>"+age_20_30+" and t.age<"+now_20+"\r\n" +
-					"";
-			age_20_30=NewMotoModelDAO.getCountByModelId(sql);
-			newMotoRankModel.put("age_20_30", age_20_30);
-			long age_30_40=LocalDateTime.of(LocalDate.now().plusYears(-40), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
-			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age,mbuser.* from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age>"+age_30_40+" and t.age<"+age_20_30+"\r\n" +
-					""; 
-			age_30_40=NewMotoModelDAO.getCountByModelId(sql);
-			newMotoRankModel.put("age_30_40", age_30_40);
-			
-			long age_40_50=LocalDateTime.of(LocalDate.now().plusYears(-50), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
-			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age,mbuser.* from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age>"+age_40_50+" and t.age<"+age_30_40+"\r\n" +
-					""; 
-			age_40_50=NewMotoModelDAO.getCountByModelId(sql);
-			newMotoRankModel.put("age_40_50", age_40_50);
-
-			long age_50_up=LocalDateTime.of(LocalDate.now().plusYears(-50), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
-			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age,mbuser.* from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age<"+age_50_up+"\r\n" +
-					""; 
-			age_50_up=NewMotoModelDAO.getCountByModelId(sql);
-			newMotoRankModel.put("age_50_up", age_50_up);
-			
-			//地域
-			sql="select province,count(1) as count from mbuser where userid in (select DISTINCT(userid) from rideline \r\n" + 
-					"where "
-//					+ "reporttime>="+starttime+" and reporttime<"+endtime+" and"
-							+ " brandid="+brandid+") and LENGTH(province)>6 and province!=\"内蒙古\" GROUP BY province";
-			List<Map<String,Object>> diyulist=NewMotoModelDAO.selectList(sql);
-			newMotoRankModel.put("diyustr", JSON.toJSONString(diyulist));
+//			//男女比例
+//			sql="select count(1) as count from mbuser where userid in(select userid from usergarage where brandid="+brandid+") and gender=0";
+//			int boycount=NewMotoModelDAO.getCountByModelId(sql);
+//			newMotoRankModel.put("boycount", boycount);
+//			sql="select count(1) as count from mbuser where userid in(select userid from usergarage where brandid="+brandid+") and gender=1";
+//			int girlcount=NewMotoModelDAO.getCountByModelId(sql);
+//			newMotoRankModel.put("girlcount", girlcount);
+//			//年龄
+//			long now_20=LocalDateTime.of(LocalDate.now().plusYears(-20), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
+//			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age>"+now_20+"\r\n" + 
+//					"";
+//			int age_20_down=NewMotoModelDAO.getCountByModelId(sql);
+//			newMotoRankModel.put("age_20_down", age_20_down);
+//			long age_20_30=LocalDateTime.of(LocalDate.now().plusYears(-30), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
+//			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age,mbuser.* from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age>"+age_20_30+" and t.age<"+now_20+"\r\n" +
+//					"";
+//			age_20_30=NewMotoModelDAO.getCountByModelId(sql);
+//			newMotoRankModel.put("age_20_30", age_20_30);
+//			long age_30_40=LocalDateTime.of(LocalDate.now().plusYears(-40), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
+//			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age,mbuser.* from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age>"+age_30_40+" and t.age<"+age_20_30+"\r\n" +
+//					""; 
+//			age_30_40=NewMotoModelDAO.getCountByModelId(sql);
+//			newMotoRankModel.put("age_30_40", age_30_40);
+//			
+//			long age_40_50=LocalDateTime.of(LocalDate.now().plusYears(-50), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
+//			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age,mbuser.* from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age>"+age_40_50+" and t.age<"+age_30_40+"\r\n" +
+//					""; 
+//			age_40_50=NewMotoModelDAO.getCountByModelId(sql);
+//			newMotoRankModel.put("age_40_50", age_40_50);
+//
+//			long age_50_up=LocalDateTime.of(LocalDate.now().plusYears(-50), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
+//			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age,mbuser.* from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age<"+age_50_up+"\r\n" +
+//					""; 
+//			age_50_up=NewMotoModelDAO.getCountByModelId(sql);
+//			newMotoRankModel.put("age_50_up", age_50_up);
+//			
+//			//地域
+//			sql="select province,count(1) as count from mbuser where userid in (select DISTINCT(userid) from rideline \r\n" + 
+//					"where "
+////					+ "reporttime>="+starttime+" and reporttime<"+endtime+" and"
+//							+ " brandid="+brandid+") and LENGTH(province)>6 and province!=\"内蒙古\" GROUP BY province";
+//			List<Map<String,Object>> diyulist=NewMotoModelDAO.selectList(sql);
+//			newMotoRankModel.put("diyustr", JSON.toJSONString(diyulist));
 
 
 		}
@@ -183,7 +191,12 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			c++;
 			newMotoRankModel.rankindex=c;
 		}
-		NewMotoModelDAO.insertRankModel(result);		
+		NewMotoModelDAO.insertRankModel(result);	
+		try {
+			MotoCarRedisEsManager.getInstance().initRank(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		};
 	}
 
 	private void handleModelid(Map<String, Integer> styleMap) {
@@ -191,13 +204,18 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		long starttime=now.plusMonths(-1).toInstant(ZoneOffset.of("+8")).toEpochMilli();
 		long endtime=now.toInstant(ZoneOffset.of("+8")).toEpochMilli();
 		//查询时间段内的线路
-//		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed,count(id) hotcount from rideline \r\n" + 
-//				"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY modelid";
-		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
-" where reporttime>=1585670400000 and reporttime<1585699200000 GROUP BY modelid";
+		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed,count(id) hotcount from rideline \r\n" + 
+				"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY modelid";
+//		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
+//" where reporttime>=1585670400000 and reporttime<1585699200000 GROUP BY modelid";
 		List<Map<String, Object>> res=NewMotoModelDAO.selectList(sql);
+		System.out.println("handleModelid 縂共需處理count="+res.size());
+		int indexcount=0;
 		List<NewMotoRankModel> result=Lists.newArrayList();
 		for (Map<String, Object> newMotoRankModel : res) {
+			indexcount++;
+			System.out.println("newMotoRankModel="+JSON.toJSONString(newMotoRankModel)+",indexcount="+indexcount);
+
 			int modelid=Integer.parseInt(newMotoRankModel.get("modelid")+"");
 			newMotoRankModel.put("ranktime", starttime);
 			long hotcount =0;
@@ -231,13 +249,18 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 					 style+=styleMap.get(motomodel.style);
 				}
 			}else{
-				for (NewMotoRankModel newMotoRankModel2 : result) {
-					 int tempstyle=styleMap.get(newMotoRankModel2.style);
-					 style+=tempstyle+",";
+				for (NewMotoModelV2 newMotoRankModel2 : newmotomodel) {
+					 Integer tempstyle=styleMap.get(newMotoRankModel2.style);
+					 if(tempstyle!=null){
+						 style+=tempstyle+",";
+					 }
 				}
-				if(style.charAt(style.length()-1)==',') {
-					style=style.substring(0,style.length()-1);
+				if(StringUtils.isNotBlank(style)){
+					if(style.charAt(style.length()-1)==',') {
+						style=style.substring(0,style.length()-1);
+					}
 				}
+
 			}  
 			if(!style.equals("null")&&StringUtils.isNotBlank(style)){
 				newMotoRankModel.put("style",style);
@@ -314,7 +337,25 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			
 		}
 		result=JSON.parseArray(JSON.toJSONString(res), NewMotoRankModel.class);
+		result.sort(new Comparator<NewMotoRankModel>() {
+
+			@Override
+			public int compare(NewMotoRankModel o1, NewMotoRankModel o2) {
+				return Integer.parseInt(o2.hotcount-o1.hotcount+"");
+			}
+		});
+		int c=0;
+		for (NewMotoRankModel newMotoRankModel : result) {
+			c++;
+			newMotoRankModel.rankindex=c;
+		}
 		NewMotoModelDAO.insertRankModel(result);
+		try {
+			MotoCarRedisEsManager.getInstance().initRank(result);
+		} catch (Exception e) {
+			e.printStackTrace();
+		};
+	
 	}
 	
 	public static void main(String[] args) {
