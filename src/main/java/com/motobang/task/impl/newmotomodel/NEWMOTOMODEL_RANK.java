@@ -25,12 +25,14 @@ import com.motoband.manager.MotoDataManager;
 import com.motoband.manager.RedisManager;
 import com.motoband.manager.UserManager;
 import com.motoband.manager.newmotomodel.MotoCarRedisEsManager;
+import com.motoband.model.CityDataModel;
 import com.motoband.model.MotoBrandModelV2;
 import com.motoband.model.MotoModelModel;
 import com.motoband.model.MotoSeriesModel;
 import com.motoband.model.NewMotoModelV2;
 import com.motoband.model.NewMotoRankModel;
 import com.motoband.utils.BeanUtils;
+import com.motoband.utils.PinYinUtil;
 import com.motoband.utils.collection.CollectionUtil;
 
 import redis.clients.jedis.Pipeline;
@@ -372,6 +374,14 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		try {
 			int boycount=0;
 			int girlcount=0;
+//			int beijingshicount=0;
+//			int tianjincount=0;
+//			int hebeishengcount=0;
+//			int shanxicount=0;
+//			int neimengguzizhiqucount=0;
+//			int liaoningshengcount=0;
+//			int jilinshengcount=0;
+//			int heilongjiangshengcount=0;
 			String sql="select DISTINCT userid from usergarage where modelid="+modelid;
 			List<Map<String, Object>> userids=NewMotoModelDAO.selectList(sql);
 			if(CollectionUtil.isNotEmpty(userids)) {
@@ -394,11 +404,63 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 									girlcount++;
 								}
 							}
-							
 						}
-						
+					}
+					//处理省
+					for (Map<String, Object> useridsMap : map) {
+						if(useridsMap.get("userid")!=null) {
+							String userid=(String) useridsMap.get("userid");
+							String key=userid+UserManager.USERKEY_USER;
+							pipeline.hget(key, UserManager.MAPKEY_PROVINCE);
+						}
+						List<Object> result=pipeline.syncAndReturnAll();
+						for (Object obj : result) {
+							if(obj!=null) {
+								String genderstr=(String) obj;
+								CityDataModel res=MotoDataManager.getInstance().getCityDataByProvinceName(genderstr);
+								if(res!=null) {
+									String pinfull=PinYinUtil.getFullSpell(res.province);
+									if(newMotoRankModel.containsKey(pinfull)) {
+										int c=Integer.parseInt(newMotoRankModel.get(pinfull).toString());
+										c++;
+										newMotoRankModel.put(pinfull, c);
+									}else {
+										newMotoRankModel.put(pinfull, 1);
+										}
+									}
+								}
+						}
+					}
+					
+					//年龄分布
+					for (Map<String, Object> useridsMap : map) {
+						if(useridsMap.get("userid")!=null) {
+							String userid=(String) useridsMap.get("userid");
+							String key=userid+UserManager.USERKEY_USER;
+							pipeline.hget(key, UserManager.MAPKEY_BIRTH);
+						}
+						List<Object> result=pipeline.syncAndReturnAll();
+						for (Object obj : result) {
+							if(obj!=null) {
+								String genderstr=(String) obj;
+								CityDataModel res=MotoDataManager.getInstance().getCityDataByProvinceName(genderstr);
+								if(res!=null) {
+									String pinfull=PinYinUtil.getFullSpell(res.province);
+									if(newMotoRankModel.containsKey(pinfull)) {
+										int c=Integer.parseInt(newMotoRankModel.get(pinfull).toString());
+										c++;
+										newMotoRankModel.put(pinfull, c);
+									}else {
+										newMotoRankModel.put(pinfull, 1);
+										}
+									}
+								}
+						}
 					}
 				}
+				newMotoRankModel.put("boycount", boycount);
+				newMotoRankModel.put("girlcount", girlcount);
+//				newMotoRankModel.put("beijingshicount", beijingshicount);
 			}
 		} finally {
 			RedisManager.getInstance().close(pipeline);
@@ -415,16 +477,17 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 	}
 
 	public static void main(String[] args) {
-		List s=Lists.newArrayList(0,1,3,2,1,2);
-		s.sort(new Comparator<Integer>() {
-
-			@Override
-			public int compare(Integer o1, Integer o2) {
-				// TODO Auto-generated method stub
-				return o2-o1;
-			}
-		});
-		
-		System.out.println(JSON.toJSONString(s));
+//		List s=Lists.newArrayList(0,1,3,2,1,2);
+//		s.sort(new Comparator<Integer>() {
+//
+//			@Override
+//			public int compare(Integer o1, Integer o2) {
+//				// TODO Auto-generated method stub
+//				return o2-o1;
+//			}
+//		});
+//		
+//		System.out.println(JSON.toJSONString(s));
+		System.out.println(PinYinUtil.getFullSpell("内蒙古自治区"));
 	}
 }
