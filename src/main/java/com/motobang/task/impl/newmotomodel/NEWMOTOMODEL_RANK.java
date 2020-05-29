@@ -22,6 +22,7 @@ import com.motoband.common.Consts;
 import com.motoband.dao.newmotomodel.NewMotoModelDAO;
 import com.motoband.manager.MotoDataManager;
 import com.motoband.manager.RedisManager;
+import com.motoband.manager.UserManager;
 import com.motoband.manager.newmotomodel.MotoCarRedisEsManager;
 import com.motoband.model.MotoBrandModelV2;
 import com.motoband.model.MotoModelModel;
@@ -29,6 +30,9 @@ import com.motoband.model.MotoSeriesModel;
 import com.motoband.model.NewMotoModelV2;
 import com.motoband.model.NewMotoRankModel;
 import com.motoband.utils.BeanUtils;
+import com.motoband.utils.collection.CollectionUtil;
+
+import redis.clients.jedis.Pipeline;
 
 public class NEWMOTOMODEL_RANK implements JobRunner  {
     protected static final Logger LOGGER = LoggerFactory.getLogger(NEWMOTOMODEL_RANK.class);
@@ -291,6 +295,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			newMotoRankModel.put("ranktype", 0);
 			newMotoRankModel.put("brandid",null);
 			//男女比例
+			getBoyGirlCount(newMotoRankModel,modelid);
 			sql="select count(1) as count from mbuser where userid in(select userid from usergarage where modelid="+modelid+") and gender=0";
 			int boycount=NewMotoModelDAO.getCountByModelId(sql);
 			newMotoRankModel.put("boycount", boycount);
@@ -358,6 +363,40 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 	
 	}
 	
+	private void getBoyGirlCount(Map<String, Object> newMotoRankModel, int modelid) {
+		Pipeline pipeline=RedisManager.getInstance().getPipeline(Consts.REDIS_SCHEME_USER);
+		try {
+			String sql="select userid from usergarage where modelid="+modelid;
+			List<Map<String, Object>> userids=NewMotoModelDAO.selectList(sql);
+			if(CollectionUtil.isNotEmpty(userids)) {
+				List<List<Map<String, Object>>> newuserids=CollectionUtil.averageAssign(userids, userids.size()/5000);
+				for (List<Map<String, Object>> map : newuserids) {
+					
+					for (Map<String, Object> useridsMap : map) {
+						if(useridsMap.get("userid")!=null) {
+							String userid=(String) useridsMap.get("userid");
+							String key=userid+UserManager.USERKEY_USER;
+							pipeline.hget(key, UserManager.MAPKEY_GENDER);
+						}
+						
+						
+					}
+				}
+			}
+		} finally {
+			RedisManager.getInstance().close(pipeline);
+		}
+
+	
+
+		sql="select count(1) as count from mbuser where userid in(select userid from usergarage where modelid="+modelid+") and gender=0";
+		int boycount=NewMotoModelDAO.getCountByModelId(sql);
+		newMotoRankModel.put("boycount", boycount);
+		sql="select count(1) as count from mbuser where userid in(select userid from usergarage where modelid="+modelid+") and gender=1";
+		int girlcount=NewMotoModelDAO.getCountByModelId(sql);
+		newMotoRankModel.put("girlcount", girlcount);		
+	}
+
 	public static void main(String[] args) {
 		List s=Lists.newArrayList(0,1,3,2,1,2);
 		s.sort(new Comparator<Integer>() {
