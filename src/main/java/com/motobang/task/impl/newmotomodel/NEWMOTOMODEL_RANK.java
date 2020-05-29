@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import com.motoband.model.MotoSeriesModel;
 import com.motoband.model.NewMotoModelV2;
 import com.motoband.model.NewMotoRankModel;
 import com.motoband.utils.BeanUtils;
+import com.motoband.utils.collection.CollectionUtil;
 
 public class NEWMOTOMODEL_RANK implements JobRunner  {
     protected static final Logger LOGGER = LoggerFactory.getLogger(NEWMOTOMODEL_RANK.class);
@@ -132,49 +134,49 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 				newMotoRankModel.put("makertype", makertypeStr);
 			}
 			newMotoRankModel.put("modelid", null);
-//			//男女比例
-//			sql="select count(1) as count from mbuser where userid in(select userid from usergarage where brandid="+brandid+") and gender=0";
-//			int boycount=NewMotoModelDAO.getCountByModelId(sql);
-//			newMotoRankModel.put("boycount", boycount);
-//			sql="select count(1) as count from mbuser where userid in(select userid from usergarage where brandid="+brandid+") and gender=1";
-//			int girlcount=NewMotoModelDAO.getCountByModelId(sql);
-//			newMotoRankModel.put("girlcount", girlcount);
-//			//年龄
-//			long now_20=LocalDateTime.of(LocalDate.now().plusYears(-20), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
-//			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age>"+now_20+"\r\n" + 
-//					"";
-//			int age_20_down=NewMotoModelDAO.getCountByModelId(sql);
-//			newMotoRankModel.put("age_20_down", age_20_down);
-//			long age_20_30=LocalDateTime.of(LocalDate.now().plusYears(-30), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
-//			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age,mbuser.* from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age>"+age_20_30+" and t.age<"+now_20+"\r\n" +
-//					"";
-//			age_20_30=NewMotoModelDAO.getCountByModelId(sql);
-//			newMotoRankModel.put("age_20_30", age_20_30);
-//			long age_30_40=LocalDateTime.of(LocalDate.now().plusYears(-40), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
-//			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age,mbuser.* from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age>"+age_30_40+" and t.age<"+age_20_30+"\r\n" +
-//					""; 
-//			age_30_40=NewMotoModelDAO.getCountByModelId(sql);
-//			newMotoRankModel.put("age_30_40", age_30_40);
-//			
-//			long age_40_50=LocalDateTime.of(LocalDate.now().plusYears(-50), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
-//			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age,mbuser.* from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age>"+age_40_50+" and t.age<"+age_30_40+"\r\n" +
-//					""; 
-//			age_40_50=NewMotoModelDAO.getCountByModelId(sql);
-//			newMotoRankModel.put("age_40_50", age_40_50);
-//
-//			long age_50_up=LocalDateTime.of(LocalDate.now().plusYears(-50), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
-//			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age,mbuser.* from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age<"+age_50_up+"\r\n" +
-//					""; 
-//			age_50_up=NewMotoModelDAO.getCountByModelId(sql);
-//			newMotoRankModel.put("age_50_up", age_50_up);
-//			
-//			//地域
-//			sql="select province,count(1) as count from mbuser where userid in (select DISTINCT(userid) from rideline \r\n" + 
-//					"where "
-////					+ "reporttime>="+starttime+" and reporttime<"+endtime+" and"
-//							+ " brandid="+brandid+") and LENGTH(province)>6 and province!=\"内蒙古\" GROUP BY province";
-//			List<Map<String,Object>> diyulist=NewMotoModelDAO.selectList(sql);
-//			newMotoRankModel.put("diyustr", JSON.toJSONString(diyulist));
+			//男女比例
+			sql="select count(1) as count from mbuser where userid in(select DISTINCT userid from usergarage where brandid="+brandid+") and gender=0";
+			int boycount=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("boycount", boycount);
+			sql="select count(1) as count from mbuser where userid in(select DISTINCT userid from usergarage where brandid="+brandid+") and gender=1";
+			int girlcount=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("girlcount", girlcount);
+			//年龄
+			long now_20=LocalDateTime.of(LocalDate.now().plusYears(-20), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
+			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age>"+now_20+"\r\n" + 
+					"";
+			int age_20_down=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("age_20_down", age_20_down);
+			long age_20_30=LocalDateTime.of(LocalDate.now().plusYears(-30), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
+			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age,mbuser.* from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age>"+age_20_30+" and t.age<"+now_20+"\r\n" +
+					"";
+			age_20_30=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("age_20_30", age_20_30);
+			long age_30_40=LocalDateTime.of(LocalDate.now().plusYears(-40), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
+			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age,mbuser.* from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age>"+age_30_40+" and t.age<"+age_20_30+"\r\n" +
+					""; 
+			age_30_40=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("age_30_40", age_30_40);
+			
+			long age_40_50=LocalDateTime.of(LocalDate.now().plusYears(-50), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
+			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age,mbuser.* from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age>"+age_40_50+" and t.age<"+age_30_40+"\r\n" +
+					""; 
+			age_40_50=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("age_40_50", age_40_50);
+
+			long age_50_up=LocalDateTime.of(LocalDate.now().plusYears(-50), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
+			sql="select count(1) as count from (select REPLACE(unix_timestamp(birth),'.','')/1000 as age,mbuser.* from mbuser where userid in(select userid from usergarage where brandid="+brandid+")) as t where t.age<"+age_50_up+"\r\n" +
+					""; 
+			age_50_up=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("age_50_up", age_50_up);
+			
+			//地域
+			sql="select province,count(1) as count from mbuser where userid in (select DISTINCT(userid) from rideline \r\n" + 
+					"where "
+//					+ "reporttime>="+starttime+" and reporttime<"+endtime+" and"
+							+ " brandid="+brandid+") and LENGTH(province)>6 and province!=\"内蒙古\" GROUP BY province";
+			List<Map<String,Object>> diyulist=NewMotoModelDAO.selectList(sql);
+			newMotoRankModel.put("diyustr", JSON.toJSONString(diyulist));
 
 
 		}
@@ -204,7 +206,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		long starttime=now.plusMonths(-1).toInstant(ZoneOffset.of("+8")).toEpochMilli();
 		long endtime=now.toInstant(ZoneOffset.of("+8")).toEpochMilli();
 		//查询时间段内的线路
-		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed,count(id) hotcount from rideline \r\n" + 
+		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
 				"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY modelid";
 //		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
 //" where reporttime>=1585670400000 and reporttime<1585699200000 GROUP BY modelid";
@@ -213,10 +215,13 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		int indexcount=0;
 		List<NewMotoRankModel> result=Lists.newArrayList();
 		for (Map<String, Object> newMotoRankModel : res) {
+			int modelid=Integer.parseInt(newMotoRankModel.get("modelid")+"");
+			List<NewMotoModelV2> newMotoModelV2=MotoDataManager.getInstance().getNewMotoModelListByModelidV2(modelid);
+			if(CollectionUtil.isEmpty(newMotoModelV2)){
+				continue;
+			}
 			indexcount++;
 			System.out.println("newMotoRankModel="+JSON.toJSONString(newMotoRankModel)+",indexcount="+indexcount);
-
-			int modelid=Integer.parseInt(newMotoRankModel.get("modelid")+"");
 			newMotoRankModel.put("ranktime", starttime);
 			long hotcount =0;
 			try {
@@ -291,10 +296,10 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			newMotoRankModel.put("ranktype", 0);
 			newMotoRankModel.put("brandid",null);
 			//男女比例
-			sql="select count(1) as count from mbuser where userid in(select userid from usergarage where modelid="+modelid+") and gender=0";
+			sql="select count(1) as count from mbuser where userid in(select DISTINCT userid from usergarage where modelid="+modelid+") and gender=0";
 			int boycount=NewMotoModelDAO.getCountByModelId(sql);
 			newMotoRankModel.put("boycount", boycount);
-			sql="select count(1) as count from mbuser where userid in(select userid from usergarage where modelid="+modelid+") and gender=1";
+			sql="select count(1) as count from mbuser where userid in(select DISTINCT userid from usergarage where modelid="+modelid+") and gender=1";
 			int girlcount=NewMotoModelDAO.getCountByModelId(sql);
 			newMotoRankModel.put("girlcount", girlcount);
 			
@@ -327,9 +332,9 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			newMotoRankModel.put("age_50_up", age_50_up);
 
 			//地域
-			sql="select province,count(1) as count from mbuser where userid in (select DISTINCT(userid) from rideline \r\n" + 
+			sql="select province,count(1) as count from mbuser where userid in (select DISTINCT(userid) from usergarage \r\n" + 
 					"where "
-//					+ "reporttime>="+starttime+" and reporttime<"+endtime+" and "
+//					+ "addtime>="+starttime+" and addtime<"+endtime+" and "
 							+ "modelid="+modelid+") and LENGTH(province)>6 and province!=\"内蒙古\" GROUP BY province";
 			List<Map<String,Object>> diyulist=NewMotoModelDAO.selectList(sql);
 			newMotoRankModel.put("diyustr", JSON.toJSONString(diyulist));
