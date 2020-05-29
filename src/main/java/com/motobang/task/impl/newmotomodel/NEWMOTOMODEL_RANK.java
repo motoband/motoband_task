@@ -122,11 +122,11 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 					hotcount=itemModel.serieshotcount;;
 				}
 				if(hotcount==0){
-					hotcount=RandomUtils.randomNumber(5000, 30000);
+					hotcount=RandomUtils.randomNumber(1, 10);
 					RedisManager.getInstance().hset(Consts.REDIS_SCHEME_RUN, modelid+MotoCarRedisEsManager.RUNKEY_MOTOSERIESV2INFO,"serieshotcount",hotcount+"");
 				}else{
-					hotcount++;
-					RedisManager.getInstance().hset(Consts.REDIS_SCHEME_RUN, modelid+MotoCarRedisEsManager.RUNKEY_MOTOSERIESV2INFO,"serieshotcount",hotcount+"");
+//					hotcount++;
+//					RedisManager.getInstance().hset(Consts.REDIS_SCHEME_RUN, modelid+MotoCarRedisEsManager.RUNKEY_MOTOSERIESV2INFO,"serieshotcount",hotcount+"");
 				}
 				
 			} catch (Exception e) {
@@ -250,11 +250,13 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 				hotcount=motobrandv2.brandhotcount;
 			}
 			if(hotcount==0){
-				hotcount=RandomUtils.randomNumber(5000, 30000);
+				hotcount=RandomUtils.randomNumber(1, 10);
+				RedisManager.getInstance().hset(Consts.REDIS_SCHEME_RUN, brandid+MotoCarRedisEsManager.RUNKEY_MOTOBRANDV2INFO,"brandhotcount",hotcount+"");
+//				hotcount=5000;
 			}else{
-				hotcount++;
+//				hotcount++;
 			}
-			RedisManager.getInstance().hset(Consts.REDIS_SCHEME_RUN, brandid+MotoCarRedisEsManager.RUNKEY_MOTOBRANDV2INFO,"brandhotcount",hotcount+"");
+			
 
 		} catch (Exception e) {
 			e.printStackTrace();
