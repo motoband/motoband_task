@@ -93,7 +93,7 @@ public class TestJobRunnerTester extends JobRunnerTester {
      	job.setParam("type", MessageTaskModel.NEWMOTOMODEL_RANK);
      	job.setTaskId("test_newmotomodel_rank"+RandomUtils.randomNumber(0, 999999));
      	job.setParam("year","2020");
-     	job.setParam("month","5");
+     	job.setParam("month","1");
      	System.out.println(JSON.toJSONString(job.getExtParams()));
     	JobContext jobContext = new JobContext();
         jobContext.setJob(job);

@@ -425,6 +425,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 							if(StringUtils.isEmpty(bitrh)){
 								continue;
 							}
+							LOGGER.info("bitrh="+bitrh);
 							long age=DateUtil.date(bitrh).getTime();
 							if(age>age_20) {
 								age_20_down++;
