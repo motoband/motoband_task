@@ -14,6 +14,7 @@ import com.github.ltsopensource.tasktracker.runner.JobExtInfo;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import com.github.ltsopensource.tasktracker.runner.JobRunnerTester;
 import com.google.common.collect.Lists;
+import com.google.gson.annotations.JsonAdapter;
 import com.motoband.common.Consts;
 import com.motoband.common.trace.TraceLevel;
 import com.motoband.common.trace.Tracer;
@@ -87,8 +88,13 @@ public class TestJobRunnerTester extends JobRunnerTester {
 //		job.setTriggerTime(taskModel.starttime);
 //
      	Job job=new Job();
+//     	job.setParam("type", MessageTaskModel.NEWMOTOMODEL);
+//     	job.setTaskId("test_newmotomodel_"+RandomUtils.randomNumber(0, 999999));
      	job.setParam("type", MessageTaskModel.NEWMOTOMODEL_RANK);
-     	job.setTaskId("test_newmotomodel_rank_"+RandomUtils.randomNumber(0, 999999));
+     	job.setTaskId("test_newmotomodel_rank"+RandomUtils.randomNumber(0, 999999));
+     	job.setParam("year","2020");
+     	job.setParam("month","5");
+     	System.out.println(JSON.toJSONString(job.getExtParams()));
     	JobContext jobContext = new JobContext();
         jobContext.setJob(job);
 
