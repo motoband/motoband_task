@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.github.ltsopensource.core.logger.Logger;
@@ -63,9 +64,9 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 //		LOGGER.error("NEWMOTOMODEL_RANK is start");	
 //		LOGGER.debug("NEWMOTOMODEL_RANK is start");
 		LOGGER.info("NEWMOTOMODEL_RANK is start,job="+com.github.ltsopensource.core.json.JSON.toJSONString(jobContext.getJob()));
-//		System.out.println(LOGGER.isErrorEnabled());
-//		System.out.println(LOGGER.isDebugEnabled());
-//		System.out.println(LOGGER.isInfoEnabled());
+//		LOGGER.info(LOGGER.isErrorEnabled());
+//		LOGGER.info(LOGGER.isDebugEnabled());
+//		LOGGER.info(LOGGER.isInfoEnabled());
 		int year=LocalDate.now().getYear();
 		String yearstr=jobContext.getJob().getParam("year");
 		if(StringUtils.isNotEmpty(yearstr)){
@@ -92,7 +93,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		LocalDateTime now=LocalDateTime.of(year, month, 1,0,0,0);
 		long starttime=now.plusMonths(-1).toInstant(ZoneOffset.of("+8")).toEpochMilli();
 		long endtime=now.toInstant(ZoneOffset.of("+8")).toEpochMilli();
-		LOGGER.info("現在開始統計車型,"+now.getYear()+"年"+now.plusMonths(-1).getMonthValue()+"月"+",到"+now.getYear()+"年"+now.getMonthValue()+"月");
+		LOGGER.info("現在開始統計車型,"+now.getYear()+"年"+now.plusMonths(-1).getMonthValue()+"月"+",到"+DateUtil.getDateTimeOfTimestamp(starttime).getYear()+"年"+now.getMonthValue()+"月");
 
 		//查询时间段内的线路
 		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
@@ -100,7 +101,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 //		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
 //" where reporttime>=1585670400000 and reporttime<1585699200000 GROUP BY modelid";
 		List<Map<String, Object>> res=NewMotoModelDAO.selectList(sql);
-		System.out.println("handleModelid 縂共需處理count="+res.size());
+		LOGGER.info("handleModelid 縂共需處理count="+res.size());
 		int indexcount=0;
 		List<NewMotoRankModel> result=Lists.newArrayList();
 		for (Map<String, Object> newMotoRankModel : res) {
@@ -113,7 +114,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			newMotoRankModel.put("brandid", null);
 
 			indexcount++;
-			System.out.println("newMotoRankModel="+JSON.toJSONString(newMotoRankModel)+",indexcount="+indexcount+",time"+System.currentTimeMillis());
+			LOGGER.info("newMotoRankModel="+JSON.toJSONString(newMotoRankModel)+",indexcount="+indexcount+",time"+System.currentTimeMillis());
 			newMotoRankModel.put("ranktime", starttime);
 			long hotcount =0;
 			try {
@@ -227,7 +228,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		LocalDateTime now=LocalDateTime.of(year, month, 1,0,0,0);
 		long starttime=now.plusMonths(-1).toInstant(ZoneOffset.of("+8")).toEpochMilli();
 		long endtime=now.toInstant(ZoneOffset.of("+8")).toEpochMilli();
-		LOGGER.info("現在開始統計品牌,"+now.getYear()+"年"+now.plusMonths(-1).getMonthValue()+"月"+",到"+now.getYear()+"年"+now.getMonthValue()+"月");
+		LOGGER.info("現在開始統計品牌,"+now.getYear()+"年"+now.plusMonths(-1).getMonthValue()+"月"+",到"+DateUtil.getDateTimeOfTimestamp(starttime).getYear()+"年"+now.getMonthValue()+"月");
 		//查询时间段内的线路
 		String sql="select brandid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
 				"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY brandid";
@@ -235,12 +236,12 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 //" where reporttime>=1585670400000 and reporttime<1585699200000 GROUP BY brandid";
 //		RedisManager.getInstance().hget(Consts.REDIS_SCHEME_NEWS, key, field)
 		List<Map<String,Object>> res=NewMotoModelDAO.selectList(sql);
-		System.out.println("handleBrandid 縂共需處理count="+res.size());
+		LOGGER.info("handleBrandid 縂共需處理count="+res.size());
 		int indexcount=0;
 		List<NewMotoRankModel> result=Lists.newArrayList();
 		for (Map<String,Object> newMotoRankModel : res) {
 			indexcount++;
-			System.out.println("newMotoRankModel="+JSON.toJSONString(newMotoRankModel)+",count="+indexcount);
+			LOGGER.info("newMotoRankModel="+JSON.toJSONString(newMotoRankModel)+",count="+indexcount);
 			newMotoRankModel.put("ranktime", starttime);
 			int brandid=Integer.parseInt(newMotoRankModel.get("brandid")+"");
 			long hotcount = 0;
@@ -421,7 +422,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 					if(obj!=null) {
 						String bitrh=(String) obj;
 						try {
-							if(StringUtils.isBlank(bitrh)){
+							if(StringUtils.isEmpty(bitrh)){
 								continue;
 							}
 							long age=DateUtil.date(bitrh).getTime();
@@ -437,7 +438,8 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 								age_50_up++;
 							}
 						} catch (ParseException e) {
-							e.printStackTrace();
+//							e.printStackTrace();
+							LOGGER.error("bitrh="+bitrh+",Error="+ExceptionUtils.getStackTrace(e));
 							continue;
 						}
 						}
@@ -493,7 +495,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 //			}
 //		});
 //		
-//		System.out.println(JSON.toJSONString(s));
+//		LOGGER.info(JSON.toJSONString(s));
 		List<String> s=Lists.newArrayList("北京市",
 				"天津市",
 				"河北省",
@@ -529,17 +531,17 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 				"香港特别行政区",
 				"澳门特别行政区",
 				"外国");
-		System.out.println(PinYinUtil.getFullSpell("内蒙古自治区"));
+		LOGGER.info(PinYinUtil.getFullSpell("内蒙古自治区"));
 		for (String string : s) {
-//			System.out.println("ALTER TABLE motomodel_new_rank ADD COLUMN  "+PinYinUtil.getFullSpell(string)+" bigint(20)  COMMENT '"+string+"';");
-//			System.out.println("ALTER TABLE motomodel_new_v2 DROP  COLUMN  "+PinYinUtil.getFullSpell(string)+" ;");
-			System.out.println("public long "+PinYinUtil.getFullSpell(string)+";//"+string+"");
-//			System.out.println("#{item."+PinYinUtil.getFullSpell(string)+"},");
+//			LOGGER.info("ALTER TABLE motomodel_new_rank ADD COLUMN  "+PinYinUtil.getFullSpell(string)+" bigint(20)  COMMENT '"+string+"';");
+//			LOGGER.info("ALTER TABLE motomodel_new_v2 DROP  COLUMN  "+PinYinUtil.getFullSpell(string)+" ;");
+			LOGGER.info("public long "+PinYinUtil.getFullSpell(string)+";//"+string+"");
+//			LOGGER.info("#{item."+PinYinUtil.getFullSpell(string)+"},");
 //			System.out.print(","+PinYinUtil.getFullSpell(string)+"=VALUES("+PinYinUtil.getFullSpell(string)+")");
 
 		}
-//		System.out.println(DateUtil.date("1986-04-28").getTime());;
-//		System.out.println(LocalDateTime.of(LocalDate.now().plusYears(-20), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli());
-//		System.out.println(LocalDateTime.of(LocalDate.now().plusYears(-30), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli());
+//		LOGGER.info(DateUtil.date("1986-04-28").getTime());;
+//		LOGGER.info(LocalDateTime.of(LocalDate.now().plusYears(-20), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli());
+//		LOGGER.info(LocalDateTime.of(LocalDate.now().plusYears(-30), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli());
 	}
 }
