@@ -423,39 +423,44 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 				result=pipeline.syncAndReturnAll();
 				for (Object obj : result) {
 					if(obj!=null) {
-						String bitrh=(String) obj;
-						if(StringUtils.isEmpty(bitrh)){
+						try {
+							String bitrh=(String) obj;
+							if(StringUtils.isEmpty(bitrh)){
+								continue;
+							}
+							bitrh=bitrh.trim();
+//								LocalDateTime localDateTime = LocalDateTime.parse(bitrh, timeDtf).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
+//								ZoneId zone = ZoneId.systemDefault();
+//								Instant instant = localDateTime.atZone(zone).toInstant()
+//								long age=DateUtil.date(bitrh).getTime();
+//					        LocalDate localDate = LocalDate.parse(bitrh);
+					        long age=0;
+//					        System.out.println(  LocalDateTime.of(LocalDate.parse("1981-12-11", pattern), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli());
+							if(bitrh.indexOf("-")!=-1) {
+//								System.out.println(bitrh.equals("1981-12-11"));
+//						        System.out.println( LocalDateTime.of(LocalDate.parse(bitrh, pattern), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli());
+
+								age=LocalDateTime.of(LocalDate.parse(bitrh, pattern), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();
+							}else if(bitrh.indexOf("/")!=-1) {
+//								age=LocalDateTime.of(LocalDate.parse(bitrh, pattern2), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();
+								
+							}
+//							long age=LocalDateTime.parse(bitrh, timeDtf).toInstant(ZoneOffset.of("+8")).toEpochMilli();
+							if(age>age_20) {
+								age_20_down++;
+							}else if(age>age_30&&age<age_20) {
+								age_20_30++;
+							}else if(age>age_40&&age<age_30) {
+								age_30_40++;
+							}else if(age>age_50&&age<age_40) {
+								age_40_50++;
+							}else if(age<age_50) {
+								age_50_up++;
+							}
+						} catch (Exception e) {
 							continue;
 						}
-						bitrh=bitrh.trim();
-//							LocalDateTime localDateTime = LocalDateTime.parse(bitrh, timeDtf).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
-//							ZoneId zone = ZoneId.systemDefault();
-//							Instant instant = localDateTime.atZone(zone).toInstant()
-//							long age=DateUtil.date(bitrh).getTime();
-//				        LocalDate localDate = LocalDate.parse(bitrh);
-				        long age=0;
-//				        System.out.println(  LocalDateTime.of(LocalDate.parse("1981-12-11", pattern), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli());
-						if(bitrh.indexOf("-")!=-1) {
-//							System.out.println(bitrh.equals("1981-12-11"));
-//					        System.out.println( LocalDateTime.of(LocalDate.parse(bitrh, pattern), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli());
 
-							age=LocalDateTime.of(LocalDate.parse(bitrh, pattern), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();
-						}else if(bitrh.indexOf("/")!=-1) {
-							age=LocalDateTime.of(LocalDate.parse(bitrh, pattern2), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();
-
-						}
-//						long age=LocalDateTime.parse(bitrh, timeDtf).toInstant(ZoneOffset.of("+8")).toEpochMilli();
-						if(age>age_20) {
-							age_20_down++;
-						}else if(age>age_30&&age<age_20) {
-							age_20_30++;
-						}else if(age>age_40&&age<age_30) {
-							age_30_40++;
-						}else if(age>age_50&&age<age_40) {
-							age_40_50++;
-						}else if(age<age_50) {
-							age_50_up++;
-						}
 						}
 				}
 			}
@@ -500,14 +505,14 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 
 	public static void main(String[] args) throws ParseException {
 //        LocalDate localDate = LocalDate.parse("2019-12-07");
-        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 //        	localDate = LocalDate.parse("2019-12-07",pattern);
 //        LocalDateTime.of(LocalDate.parse("2019-12-07", pattern), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();
 //        long endSecond = LocalDateTime.parse("2019-12-07 ",DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toEpochSecond(ZoneOffset.of("+8"));
 //        System.out.println(endSecond);
 //        LocalDateTime.of(LocalDate.parse("2019-12-07", pattern), time)
-        System.out.println(LocalDate.parse("1981-12-11", pattern));
-        System.out.println(  LocalDateTime.of(LocalDate.parse("1981-12-11", pattern), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli());
+        System.out.println(LocalDate.parse("2017/7/9", pattern));
+        System.out.println(  LocalDateTime.of(LocalDate.parse("2017/7/9", pattern), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli());
 
 
 
