@@ -5,15 +5,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.github.ltsopensource.core.logger.Logger;
@@ -23,7 +22,6 @@ import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.gson.annotations.JsonAdapter;
 import com.motoband.common.Consts;
 import com.motoband.dao.newmotomodel.NewMotoModelDAO;
 import com.motoband.manager.MotoDataManager;
@@ -349,7 +347,10 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 	}
 
 	private void modelidOrBrandhandle(Map<String, Object> newMotoRankModel, Pipeline pipeline, int boycount, int girlcount, int age_20_down, int age_20_30, int age_30_40, int age_40_50, int age_50_up, String sql) {
-		DateTimeFormatter timeDtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter pattern2 = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+
+
 		List<Map<String, Object>> userids=NewMotoModelDAO.selectList(sql);
 		if(CollectionUtil.isNotEmpty(userids)) {
 			List<List<Map<String, Object>>> newuserids=CollectionUtil.averageAssign(userids, userids.size()/10000+1);
@@ -430,7 +431,15 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 //							ZoneId zone = ZoneId.systemDefault();
 //							Instant instant = localDateTime.atZone(zone).toInstant()
 //							long age=DateUtil.date(bitrh).getTime();
-						long age=LocalDateTime.parse(bitrh, timeDtf).toInstant(ZoneOffset.of("+8")).toEpochMilli();
+//				        LocalDate localDate = LocalDate.parse(bitrh);
+				        long age=0;
+						if(bitrh.indexOf("-")!=-1) {
+							age=LocalDateTime.of(LocalDate.parse(bitrh, pattern), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();
+						}else if(bitrh.indexOf("/")!=-1) {
+							age=LocalDateTime.of(LocalDate.parse(bitrh, pattern2), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();
+
+						}
+//						long age=LocalDateTime.parse(bitrh, timeDtf).toInstant(ZoneOffset.of("+8")).toEpochMilli();
 						if(age>age_20) {
 							age_20_down++;
 						}else if(age>age_30&&age<age_20) {
@@ -485,6 +494,20 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 	}
 
 	public static void main(String[] args) throws ParseException {
+        LocalDate localDate = LocalDate.parse("2019-12-07");
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        	localDate = LocalDate.parse("2019-12-07",pattern);
+        System.out.println(localDate);
+
+//		 ZonedDateTime zdt = ZonedDateTime.parse("1981-12-11");
+//	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//	        System.out.println(formatter.format(zdt));
+//
+//	        DateTimeFormatter zhFormatter = DateTimeFormatter.ofPattern("yyyy MMM dd EE HH:mm", Locale.CHINA);
+//	        System.out.println(zhFormatter.format(zdt));
+//
+//	        DateTimeFormatter usFormatter = DateTimeFormatter.ofPattern("E, MMMM/dd/yyyy HH:mm", Locale.US);
+//	        System.out.println(usFormatter.format(zdt));
 //		List s=Lists.newArrayList(0,1,3,2,1,2);
 //		s.sort(new Comparator<Integer>() {
 //
@@ -496,50 +519,50 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 //		});
 //		
 //		LOGGER.info(JSON.toJSONString(s));
-		List<String> s=Lists.newArrayList("北京市",
-				"天津市",
-				"河北省",
-				"山西省",
-				"内蒙古自治区",
-				"辽宁省",
-				"吉林省",
-				"黑龙江省",
-				"上海市",
-				"江苏省",
-				"浙江省",
-				"安徽省",
-				"福建省",
-				"江西省",
-				"山东省",
-				"河南省",
-				"湖北省",
-				"湖南省",
-				"广东省",
-				"广西壮族自治区",
-				"海南省",
-				"重庆市",
-				"四川省",
-				"贵州省",
-				"云南省",
-				"西藏自治区",
-				"陕西省",
-				"甘肃省",
-				"青海省",
-				"宁夏回族自治区",
-				"新疆维吾尔自治区",
-				"台湾省",
-				"香港特别行政区",
-				"澳门特别行政区",
-				"外国");
-		LOGGER.info(PinYinUtil.getFullSpell("内蒙古自治区"));
-		for (String string : s) {
+//		List<String> s=Lists.newArrayList("北京市",
+//				"天津市",
+//				"河北省",
+//				"山西省",
+//				"内蒙古自治区",
+//				"辽宁省",
+//				"吉林省",
+//				"黑龙江省",
+//				"上海市",
+//				"江苏省",
+//				"浙江省",
+//				"安徽省",
+//				"福建省",
+//				"江西省",
+//				"山东省",
+//				"河南省",
+//				"湖北省",
+//				"湖南省",
+//				"广东省",
+//				"广西壮族自治区",
+//				"海南省",
+//				"重庆市",
+//				"四川省",
+//				"贵州省",
+//				"云南省",
+//				"西藏自治区",
+//				"陕西省",
+//				"甘肃省",
+//				"青海省",
+//				"宁夏回族自治区",
+//				"新疆维吾尔自治区",
+//				"台湾省",
+//				"香港特别行政区",
+//				"澳门特别行政区",
+//				"外国");
+//		LOGGER.info(PinYinUtil.getFullSpell("内蒙古自治区"));
+//		for (String string : s) {
 //			LOGGER.info("ALTER TABLE motomodel_new_rank ADD COLUMN  "+PinYinUtil.getFullSpell(string)+" bigint(20)  COMMENT '"+string+"';");
 //			LOGGER.info("ALTER TABLE motomodel_new_v2 DROP  COLUMN  "+PinYinUtil.getFullSpell(string)+" ;");
-			LOGGER.info("public long "+PinYinUtil.getFullSpell(string)+";//"+string+"");
+//			LOGGER.info("public long "+PinYinUtil.getFullSpell(string)+";//"+string+"");
 //			LOGGER.info("#{item."+PinYinUtil.getFullSpell(string)+"},");
 //			System.out.print(","+PinYinUtil.getFullSpell(string)+"=VALUES("+PinYinUtil.getFullSpell(string)+")");
 
-		}
+//		}
 //		LOGGER.info(DateUtil.date("1986-04-28").getTime());;
 //		LOGGER.info(LocalDateTime.of(LocalDate.now().plusYears(-20), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli());
 //		LOGGER.info(LocalDateTime.of(LocalDate.now().plusYears(-30), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli());
