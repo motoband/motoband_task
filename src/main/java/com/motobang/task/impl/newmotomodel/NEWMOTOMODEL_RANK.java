@@ -183,15 +183,20 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			sql="select DISTINCT(makertype) as makertype from motomodel_new_v2 where modelid="+modelid;
 			List<Map<String, Object>> makertypeList=NewMotoModelDAO.selectList(sql);
 			String makertypeStr="";
+			List<String> makert=Lists.newArrayList();
 			for (Map makertypeMap : makertypeList) {
 				if(makertypeMap!=null&&makertypeMap.containsKey("makertype")) {
-					makertypeStr+=makertypeMap.get("makertype")+",";
+					if(makertypeMap.get("makertype")!=null) {
+						makert.add(makertypeMap.get("makertype").toString());
+					}
+//					makertypeStr+=makertypeMap.get("makertype")+",";
 				}
 			}
-			if(StringUtils.isNotBlank(makertypeStr)) {
-				if(makertypeStr.charAt(makertypeStr.length()-1)==',') {
-					makertypeStr=makertypeStr.substring(0,makertypeStr.length()-1);
-				}
+			if(CollectionUtil.isNotEmpty(makert)) {
+//				if(makertypeStr.charAt(makertypeStr.length()-1)==',') {
+//					makertypeStr=makertypeStr.substring(0,makertypeStr.length()-1);
+//				}
+				makertypeStr=CollectionUtil.join(makert, ",");
 				newMotoRankModel.put("makertype", makertypeStr);
 			}
 			newMotoRankModel.put("ranktype", 0);
