@@ -494,10 +494,17 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 	}
 
 	public static void main(String[] args) throws ParseException {
-        LocalDate localDate = LocalDate.parse("2019-12-07");
+//        LocalDate localDate = LocalDate.parse("2019-12-07");
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        	localDate = LocalDate.parse("2019-12-07",pattern);
-        System.out.println(localDate);
+//        	localDate = LocalDate.parse("2019-12-07",pattern);
+//        LocalDateTime.of(LocalDate.parse("2019-12-07", pattern), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();
+//        long endSecond = LocalDateTime.parse("2019-12-07 ",DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toEpochSecond(ZoneOffset.of("+8"));
+//        System.out.println(endSecond);
+//        LocalDateTime.of(LocalDate.parse("2019-12-07", pattern), time)
+        System.out.println(LocalDate.parse("2019-12-07", pattern));
+        System.out.println(  LocalDateTime.of(LocalDate.parse("2019-12-07", pattern), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli());
+
+
 
 //		 ZonedDateTime zdt = ZonedDateTime.parse("1981-12-11");
 //	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
