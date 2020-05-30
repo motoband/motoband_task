@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -348,6 +349,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 	}
 
 	private void modelidOrBrandhandle(Map<String, Object> newMotoRankModel, Pipeline pipeline, int boycount, int girlcount, int age_20_down, int age_20_30, int age_30_40, int age_40_50, int age_50_up, String sql) {
+		DateTimeFormatter timeDtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		List<Map<String, Object>> userids=NewMotoModelDAO.selectList(sql);
 		if(CollectionUtil.isNotEmpty(userids)) {
 			List<List<Map<String, Object>>> newuserids=CollectionUtil.averageAssign(userids, userids.size()/10000+1);
@@ -421,27 +423,24 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 				for (Object obj : result) {
 					if(obj!=null) {
 						String bitrh=(String) obj;
-						try {
-							if(StringUtils.isEmpty(bitrh)){
-								continue;
-							}
-							LOGGER.info("bitrh="+bitrh);
-							long age=DateUtil.date(bitrh).getTime();
-							if(age>age_20) {
-								age_20_down++;
-							}else if(age>age_30&&age<age_20) {
-								age_20_30++;
-							}else if(age>age_40&&age<age_30) {
-								age_30_40++;
-							}else if(age>age_50&&age<age_40) {
-								age_40_50++;
-							}else if(age<age_50) {
-								age_50_up++;
-							}
-						} catch (ParseException e) {
-//							e.printStackTrace();
-							LOGGER.error("bitrh="+bitrh+",Error="+ExceptionUtils.getStackTrace(e));
+						if(StringUtils.isEmpty(bitrh)){
 							continue;
+						}
+//							LocalDateTime localDateTime = LocalDateTime.parse(bitrh, timeDtf).toInstant(ZoneOffset.of("+8")).toEpochMilli();;
+//							ZoneId zone = ZoneId.systemDefault();
+//							Instant instant = localDateTime.atZone(zone).toInstant()
+//							long age=DateUtil.date(bitrh).getTime();
+						long age=LocalDateTime.parse(bitrh, timeDtf).toInstant(ZoneOffset.of("+8")).toEpochMilli();
+						if(age>age_20) {
+							age_20_down++;
+						}else if(age>age_30&&age<age_20) {
+							age_20_30++;
+						}else if(age>age_40&&age<age_30) {
+							age_30_40++;
+						}else if(age>age_50&&age<age_40) {
+							age_40_50++;
+						}else if(age<age_50) {
+							age_50_up++;
 						}
 						}
 				}
