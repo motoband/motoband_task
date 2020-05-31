@@ -224,6 +224,10 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		try {
 			if (month==LocalDateTime.now().getMonthValue()&&year==LocalDateTime.now().getYear()) {
 				MotoCarRedisEsManager.getInstance().initSeriesRank(result);
+				LOGGER.info("同步当月车型排行榜缓存,month="+month);
+			}else {
+				LOGGER.info("不同步当月品牌排行榜缓存,month="+month);
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -333,6 +337,9 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		try {
 			if (month==LocalDateTime.now().getMonthValue()&&year==LocalDateTime.now().getYear()) {
 				MotoCarRedisEsManager.getInstance().initBrandRank(result);
+				LOGGER.info("同步当月品牌排行榜缓存,month="+month);
+			}else {
+				LOGGER.info("不同步当月品牌排行榜缓存,month="+month);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
