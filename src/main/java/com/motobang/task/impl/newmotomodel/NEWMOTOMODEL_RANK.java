@@ -40,6 +40,7 @@ import com.motoband.utils.PinYinUtil;
 import com.motoband.utils.RandomUtils;
 import com.motoband.utils.collection.CollectionUtil;
 
+import net.sf.cglib.core.Local;
 import redis.clients.jedis.Pipeline;
 
 public class NEWMOTOMODEL_RANK implements JobRunner  {
@@ -221,7 +222,9 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		}
 		NewMotoModelDAO.insertRankModel(result);
 		try {
-			MotoCarRedisEsManager.getInstance().initSeriesRank(result);
+			if (month==LocalDateTime.now().getMonthValue()&&year==LocalDateTime.now().getYear()) {
+				MotoCarRedisEsManager.getInstance().initSeriesRank(result);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		};
@@ -328,7 +331,9 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		}
 		NewMotoModelDAO.insertRankModel(result);	
 		try {
-			MotoCarRedisEsManager.getInstance().initBrandRank(result);
+			if (month==LocalDateTime.now().getMonthValue()&&year==LocalDateTime.now().getYear()) {
+				MotoCarRedisEsManager.getInstance().initBrandRank(result);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		};
