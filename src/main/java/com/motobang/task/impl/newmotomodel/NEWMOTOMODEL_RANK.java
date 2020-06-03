@@ -59,8 +59,8 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		styleMap.put("旅行", 10);
 		styleMap.put("拉力探险", 11);
 		styleMap.put("经典/复古", 13);
-		styleMap.put("新能源", 14);
-		styleMap.put("其它", 20);
+//		styleMap.put("新能源", 14);
+//		styleMap.put("其它", 20);
 //		LOGGER.error("NEWMOTOMODEL_RANK is start");	
 //		LOGGER.debug("NEWMOTOMODEL_RANK is start");
 		LOGGER.info("NEWMOTOMODEL_RANK is start,job="+com.github.ltsopensource.core.json.JSON.toJSONString(jobContext.getJob()));
