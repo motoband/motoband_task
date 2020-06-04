@@ -219,6 +219,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		for (NewMotoRankModel newMotoRankModel : result) {
 			c++;
 			newMotoRankModel.rankindex=c;
+			newMotoRankModel.updatetime=System.currentTimeMillis();
 		}
 		NewMotoModelDAO.insertRankModel(result);
 		try {
@@ -337,11 +338,13 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		for (NewMotoRankModel newMotoRankModel : result) {
 			c++;
 			newMotoRankModel.rankindex=c;
+			newMotoRankModel.updatetime=System.currentTimeMillis();
 		}
 		NewMotoModelDAO.insertRankModel(result);	
 		try {
 			if (month==LocalDateTime.now().getMonthValue()&&year==LocalDateTime.now().getYear()) {
 				MotoCarRedisEsManager.getInstance().initBrandRank(result);
+				MotoCarRedisEsManager.getInstance().initMotoBrandsV2();
 				LOGGER.info("同步当月品牌排行榜缓存,month="+month);
 			}else {
 				LOGGER.info("不同步当月品牌排行榜缓存,month="+month);
