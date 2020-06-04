@@ -59,8 +59,8 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		styleMap.put("旅行", 10);
 		styleMap.put("拉力探险", 11);
 		styleMap.put("经典/复古", 13);
-		styleMap.put("新能源", 14);
-		styleMap.put("其它", 20);
+//		styleMap.put("新能源", 14);
+//		styleMap.put("其它", 20);
 //		LOGGER.error("NEWMOTOMODEL_RANK is start");	
 //		LOGGER.debug("NEWMOTOMODEL_RANK is start");
 		LOGGER.info("NEWMOTOMODEL_RANK is start,job="+com.github.ltsopensource.core.json.JSON.toJSONString(jobContext.getJob()));
@@ -219,6 +219,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		for (NewMotoRankModel newMotoRankModel : result) {
 			c++;
 			newMotoRankModel.rankindex=c;
+			newMotoRankModel.updatetime=System.currentTimeMillis();
 		}
 		NewMotoModelDAO.insertRankModel(result);
 		try {
@@ -337,11 +338,13 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		for (NewMotoRankModel newMotoRankModel : result) {
 			c++;
 			newMotoRankModel.rankindex=c;
+			newMotoRankModel.updatetime=System.currentTimeMillis();
 		}
 		NewMotoModelDAO.insertRankModel(result);	
 		try {
 			if (month==LocalDateTime.now().getMonthValue()&&year==LocalDateTime.now().getYear()) {
 				MotoCarRedisEsManager.getInstance().initBrandRank(result);
+				MotoCarRedisEsManager.getInstance().initMotoBrandsV2();
 				LOGGER.info("同步当月品牌排行榜缓存,month="+month);
 			}else {
 				LOGGER.info("不同步当月品牌排行榜缓存,month="+month);
