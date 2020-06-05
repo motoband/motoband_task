@@ -178,12 +178,13 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 				}
 			}else{
 				List<NewMotoModelV2> newmotomodel=MotoDataManager.getInstance().getNewMotoModelListByModelidV2(modelid);
-
-				for (NewMotoModelV2 newMotoRankModel2 : newmotomodel) {
-					 Integer tempstyle=newMotoRankModel2.style;
-					 if(tempstyle!=null){
-						 style+=tempstyle+",";
-					 }
+				if(CollectionUtil.isNotEmpty(newmotomodel)) {
+					for (NewMotoModelV2 newMotoRankModel2 : newmotomodel) {
+						 Integer tempstyle=newMotoRankModel2.style;
+						 if(tempstyle!=null){
+							 style+=tempstyle+",";
+						 }
+					}
 				}
 				if(StringUtils.isNotBlank(style)){
 					if(style.charAt(style.length()-1)==',') {
