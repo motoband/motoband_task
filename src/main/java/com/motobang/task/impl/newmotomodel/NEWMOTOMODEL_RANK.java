@@ -360,12 +360,14 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			List<Map<String, Object>> makertypeList=NewMotoModelDAO.selectList(sql);
 			String makertypeStr="";
 			List<String> makert=Lists.newArrayList();
-			for (Map makertypeMap : makertypeList) {
-				if(makertypeMap!=null&&makertypeMap.containsKey("makertype")) {
-					if(makertypeMap.get("makertype")!=null) {
-						makert.add(makertypeMap.get("makertype").toString());
+			if(CollectionUtil.isNotEmpty(makertypeList)) {
+				for (Map makertypeMap : makertypeList) {
+					if(makertypeMap!=null&&makertypeMap.containsKey("makertype")) {
+						if(makertypeMap.get("makertype")!=null) {
+							makert.add(makertypeMap.get("makertype").toString());
+						}
+//						makertypeStr+=makertypeMap.get("makertype")+",";
 					}
-//					makertypeStr+=makertypeMap.get("makertype")+",";
 				}
 			}
 			if(CollectionUtil.isNotEmpty(makert)) {
