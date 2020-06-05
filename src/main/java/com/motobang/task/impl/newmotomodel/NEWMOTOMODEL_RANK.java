@@ -154,8 +154,13 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			
 			sql="select totalmileage as count from motomodel_new_rank where modelid="+modelid+" and ranktime="+prevmonthstarttime+" and ranktype=0";
 			count=NewMotoModelDAO.getCountByModelId(sql);
-			long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
-			newMotoRankModel.put("totalmileage", count+mileage);
+			if(newMotoRankModel.containsKey("mileage")) {
+				long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
+				newMotoRankModel.put("totalmileage", count+mileage);
+			}else {
+				newMotoRankModel.put("totalmileage", count);
+			}
+			
 			
 			sql="select count(1) as count from usergarage where modelid="+modelid+" and addtime>="+starttime+" and addtime<="+endtime+"\r\n" + 
 					"";
@@ -317,8 +322,13 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			
 			sql="select totalmileage as count from motomodel_new_rank where brandid="+brandid+" and ranktime="+prevmonthstarttime+" and ranktype=1";
 			count=NewMotoModelDAO.getCountByModelId(sql);
-			long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
-			newMotoRankModel.put("totalmileage", count+mileage);
+			if(newMotoRankModel.containsKey("mileage")) {
+				long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
+				newMotoRankModel.put("totalmileage", count+mileage);
+			}else {
+				newMotoRankModel.put("totalmileage", count);
+			}
+//			newMotoRankModel.put("totalmileage", count+mileage);
 			
 			newMotoRankModel.put("ranktype", 1);
 			newMotoRankModel.put("ranktime", starttime);
