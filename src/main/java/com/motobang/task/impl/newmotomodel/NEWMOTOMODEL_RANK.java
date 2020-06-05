@@ -306,6 +306,8 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 				sql="select count(DISTINCT userid) as count from usergarage where brandid="+brandid+" and addtime<=1577808000000";
 				long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
 				newMotoRankModel.put("totalusercount", totalusercount);
+				LOGGER.info("brandid="+brandid+",totalusercount="+totalusercount);
+
 			}else {
 				sql="select totalusercount as count from motomodel_new_rank where brandid="+brandid+" and ranktime="+prevmonthstarttime+" and ranktype=1";
 				count=NewMotoModelDAO.getCountByModelId(sql);
