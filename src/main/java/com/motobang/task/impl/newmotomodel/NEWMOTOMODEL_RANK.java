@@ -118,7 +118,10 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			 sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline where modelid ="+modelid +" and reporttime>="+starttime+" and reporttime<"+endtime;;
 			 List<Map<String, Object>> mileageAndMaxspeedAndAvgSpeedMap=NewMotoModelDAO.selectList(sql);
 			 if(CollectionUtil.isNotEmpty(mileageAndMaxspeedAndAvgSpeedMap)) {
-				 newMotoRankModel.putAll(mileageAndMaxspeedAndAvgSpeedMap.get(0));
+				 Map<String, Object> map=mileageAndMaxspeedAndAvgSpeedMap.get(0);
+				 if(map!=null) {
+					 newMotoRankModel.putAll(map);
+				 }
 			 }
 //			 newMotoRankModel.putAll(m);
 //			 newMotoRankModel.put("mileage", value)
@@ -281,7 +284,10 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			sql="select SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline where brandid="+brandid+" and reporttime>="+starttime+" and reporttime<"+endtime;
 			 List<Map<String, Object>> mileageAndMaxspeedAndAvgSpeedMap=NewMotoModelDAO.selectList(sql);
 			 if(CollectionUtil.isNotEmpty(mileageAndMaxspeedAndAvgSpeedMap)) {
-				 newMotoRankModel.putAll(mileageAndMaxspeedAndAvgSpeedMap.get(0));
+				 Map<String, Object> map=mileageAndMaxspeedAndAvgSpeedMap.get(0);
+				 if(map!=null) {
+					 newMotoRankModel.putAll(map);
+				 }
 			 }
 			long hotcount = 0;
 		try {
