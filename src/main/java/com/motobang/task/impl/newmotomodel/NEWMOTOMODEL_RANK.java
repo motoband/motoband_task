@@ -96,8 +96,9 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		LOGGER.info("現在開始統計車型,"+now.getYear()+"年"+now.plusMonths(-1).getMonthValue()+"月"+",到"+DateUtil.getDateTimeOfTimestamp(starttime).getYear()+"年"+now.getMonthValue()+"月");
 
 		//查询时间段内的线路
-		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
-				"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY modelid ";
+		String sql="select modelid from motoseries";
+//		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
+//				"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY modelid ";
 //		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
 //" where reporttime>=1585670400000 and reporttime<1585699200000 GROUP BY modelid";
 		List<Map<String, Object>> res=NewMotoModelDAO.selectList(sql);
@@ -106,15 +107,25 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		List<NewMotoRankModel> result=Lists.newArrayList();
 		for (Map<String, Object> newMotoRankModel : res) {
 			int modelid=Integer.parseInt(newMotoRankModel.get("modelid")+"");
-			List<NewMotoModelV2> newMotoModelV2=MotoDataManager.getInstance().getNewMotoModelListByModelidV2(modelid);
-			if(CollectionUtil.isEmpty(newMotoModelV2)){
-//				res.remove(newMotoModelV2);
-				continue;
-			}
-			newMotoRankModel.put("brandid", null);
+			LOGGER.info("modelid="+modelid+",indexcount="+indexcount+",ranktime="+starttime);
 
+//			List<NewMotoModelV2> newMotoModelV2=MotoDataManager.getInstance().getNewMotoModelListByModelidV2(modelid);
+//			if(CollectionUtil.isEmpty(newMotoModelV2)){
+////				res.remove(newMotoModelV2);
+//				continue;
+//			}
+			newMotoRankModel.put("brandid", null);
+			 sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline where modelid ="+modelid +" and reporttime>="+starttime+" and reporttime<"+endtime;;
+			 List<Map<String, Object>> mileageAndMaxspeedAndAvgSpeedMap=NewMotoModelDAO.selectList(sql);
+			 if(CollectionUtil.isNotEmpty(mileageAndMaxspeedAndAvgSpeedMap)) {
+				 Map<String, Object> map=mileageAndMaxspeedAndAvgSpeedMap.get(0);
+				 if(map!=null) {
+					 newMotoRankModel.putAll(map);
+				 }
+			 }
+//			 newMotoRankModel.putAll(m);
+//			 newMotoRankModel.put("mileage", value)
 			indexcount++;
-			LOGGER.info("newMotoRankModel="+JSON.toJSONString(newMotoRankModel)+",indexcount="+indexcount+",time"+System.currentTimeMillis());
 			newMotoRankModel.put("ranktime", starttime);
 			long hotcount =0;
 			try {
@@ -141,11 +152,23 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			int count=NewMotoModelDAO.getCountByModelId(sql);
 			newMotoRankModel.put("totalhotcount", count+hotcount);
 			
-			sql="select totalmileage as count from motomodel_new_rank where modelid="+modelid+" and ranktime="+prevmonthstarttime+" and ranktype=1";
+			sql="select totalmileage as count from motomodel_new_rank where modelid="+modelid+" and ranktime="+prevmonthstarttime+" and ranktype=0";
 			count=NewMotoModelDAO.getCountByModelId(sql);
-			long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
-			newMotoRankModel.put("totalmileage", count+mileage);
+			if(newMotoRankModel.containsKey("mileage")) {
+				long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
+				newMotoRankModel.put("totalmileage", count+mileage);
+			}else {
+				newMotoRankModel.put("totalmileage", count);
+			}
 			
+			
+			sql="select count(1) as count from usergarage where modelid="+modelid+" and addtime>="+starttime+" and addtime<="+endtime+"\r\n" + 
+					"";
+			count=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("usercount", count);
+			sql="select count(DISTINCT userid) as count from usergarage where modelid="+modelid+" and addtime<="+endtime;
+			long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("totalusercount", totalusercount);
 //			newMotoRankModel.put("rankid", MD5.stringToMD5(newMotoRankModel.get("modelid")+"-"+endtime));;
 			MotoModelModel motomodel=MotoDataManager.getInstance().getMotoModel(modelid);
 			String style="";
@@ -155,12 +178,13 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 				}
 			}else{
 				List<NewMotoModelV2> newmotomodel=MotoDataManager.getInstance().getNewMotoModelListByModelidV2(modelid);
-
-				for (NewMotoModelV2 newMotoRankModel2 : newmotomodel) {
-					 Integer tempstyle=newMotoRankModel2.style;
-					 if(tempstyle!=null){
-						 style+=tempstyle+",";
-					 }
+				if(CollectionUtil.isNotEmpty(newmotomodel)) {
+					for (NewMotoModelV2 newMotoRankModel2 : newmotomodel) {
+						 Integer tempstyle=newMotoRankModel2.style;
+						 if(tempstyle!=null){
+							 style+=tempstyle+",";
+						 }
+					}
 				}
 				if(StringUtils.isNotBlank(style)){
 					if(style.charAt(style.length()-1)==',') {
@@ -172,13 +196,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			if(!style.equals("null")&&StringUtils.isNotBlank(style)){
 				newMotoRankModel.put("style",style);
 			}
-			sql="select count(1) as count from usergarage where modelid="+modelid+" and addtime>="+starttime+" and addtime<="+endtime+"\r\n" + 
-					"";
-			count=NewMotoModelDAO.getCountByModelId(sql);
-			newMotoRankModel.put("usercount", count);
-			sql="select count(DISTINCT userid) as count from usergarage where modelid="+modelid+" and addtime<="+endtime;
-			long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
-			newMotoRankModel.put("totalusercount", totalusercount);
+
 //			if(endtime==1577808000000l) {
 //				sql="select count(DISTINCT userid) as count from usergarage where modelid="+modelid+" and addtime<=1577808000000";
 //				long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
@@ -195,12 +213,14 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			List<Map<String, Object>> makertypeList=NewMotoModelDAO.selectList(sql);
 			String makertypeStr="";
 			List<String> makert=Lists.newArrayList();
-			for (Map makertypeMap : makertypeList) {
-				if(makertypeMap!=null&&makertypeMap.containsKey("makertype")) {
-					if(makertypeMap.get("makertype")!=null) {
-						makert.add(makertypeMap.get("makertype").toString());
+			if(CollectionUtil.isNotEmpty(makertypeList)) {
+				for (Map makertypeMap : makertypeList) {
+					if(makertypeMap!=null&&makertypeMap.containsKey("makertype")) {
+						if(makertypeMap.get("makertype")!=null) {
+							makert.add(makertypeMap.get("makertype").toString());
+						}
+//						makertypeStr+=makertypeMap.get("makertype")+",";
 					}
-//					makertypeStr+=makertypeMap.get("makertype")+",";
 				}
 			}
 			if(CollectionUtil.isNotEmpty(makert)) {
@@ -254,8 +274,9 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		long endtime=now.toInstant(ZoneOffset.of("+8")).toEpochMilli();
 		LOGGER.info("現在開始統計品牌,"+now.getYear()+"年"+now.plusMonths(-1).getMonthValue()+"月"+",到"+DateUtil.getDateTimeOfTimestamp(starttime).getYear()+"年"+now.getMonthValue()+"月");
 		//查询时间段内的线路
-		String sql="select brandid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
-				"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY brandid";
+//		String sql="select brandid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
+//				"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY brandid";
+		String sql ="select brandid from motobrand_v2";
 //		String sql="select brandid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
 //" where reporttime>=1585670400000 and reporttime<1585699200000 GROUP BY brandid";
 //		RedisManager.getInstance().hget(Consts.REDIS_SCHEME_NEWS, key, field)
@@ -264,10 +285,19 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		int indexcount=0;
 		List<NewMotoRankModel> result=Lists.newArrayList();
 		for (Map<String,Object> newMotoRankModel : res) {
-			indexcount++;
-			LOGGER.info("newMotoRankModel="+JSON.toJSONString(newMotoRankModel)+",count="+indexcount);
-			newMotoRankModel.put("ranktime", starttime);
 			int brandid=Integer.parseInt(newMotoRankModel.get("brandid")+"");
+			indexcount++;
+			newMotoRankModel.put("ranktime", starttime);
+			LOGGER.info("brandid="+brandid+",count="+indexcount+",ranktime="+starttime);
+
+			sql="select SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline where brandid="+brandid+" and reporttime>="+starttime+" and reporttime<"+endtime;
+			 List<Map<String, Object>> mileageAndMaxspeedAndAvgSpeedMap=NewMotoModelDAO.selectList(sql);
+			 if(CollectionUtil.isNotEmpty(mileageAndMaxspeedAndAvgSpeedMap)) {
+				 Map<String, Object> map=mileageAndMaxspeedAndAvgSpeedMap.get(0);
+				 if(map!=null) {
+					 newMotoRankModel.putAll(map);
+				 }
+			 }
 			long hotcount = 0;
 		try {
 			MotoBrandModelV2	motobrandv2=BeanUtils.mapToObject(RedisManager.getInstance().hgetAll(Consts.REDIS_SCHEME_RUN, brandid+MotoCarRedisEsManager.RUNKEY_MOTOBRANDV2INFO), MotoBrandModelV2.class);
@@ -296,8 +326,13 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			
 			sql="select totalmileage as count from motomodel_new_rank where brandid="+brandid+" and ranktime="+prevmonthstarttime+" and ranktype=1";
 			count=NewMotoModelDAO.getCountByModelId(sql);
-			long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
-			newMotoRankModel.put("totalmileage", count+mileage);
+			if(newMotoRankModel.containsKey("mileage")) {
+				long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
+				newMotoRankModel.put("totalmileage", count+mileage);
+			}else {
+				newMotoRankModel.put("totalmileage", count);
+			}
+//			newMotoRankModel.put("totalmileage", count+mileage);
 			
 			newMotoRankModel.put("ranktype", 1);
 			newMotoRankModel.put("ranktime", starttime);
@@ -325,12 +360,14 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			List<Map<String, Object>> makertypeList=NewMotoModelDAO.selectList(sql);
 			String makertypeStr="";
 			List<String> makert=Lists.newArrayList();
-			for (Map makertypeMap : makertypeList) {
-				if(makertypeMap!=null&&makertypeMap.containsKey("makertype")) {
-					if(makertypeMap.get("makertype")!=null) {
-						makert.add(makertypeMap.get("makertype").toString());
+			if(CollectionUtil.isNotEmpty(makertypeList)) {
+				for (Map makertypeMap : makertypeList) {
+					if(makertypeMap!=null&&makertypeMap.containsKey("makertype")) {
+						if(makertypeMap.get("makertype")!=null) {
+							makert.add(makertypeMap.get("makertype").toString());
+						}
+//						makertypeStr+=makertypeMap.get("makertype")+",";
 					}
-//					makertypeStr+=makertypeMap.get("makertype")+",";
 				}
 			}
 			if(CollectionUtil.isNotEmpty(makert)) {
