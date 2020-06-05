@@ -107,7 +107,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		List<NewMotoRankModel> result=Lists.newArrayList();
 		for (Map<String, Object> newMotoRankModel : res) {
 			int modelid=Integer.parseInt(newMotoRankModel.get("modelid")+"");
-			LOGGER.info("modelid="+modelid+",indexcount="+indexcount+",time"+System.currentTimeMillis());
+			LOGGER.info("modelid="+modelid+",indexcount="+indexcount+",ranktime="+starttime);
 
 //			List<NewMotoModelV2> newMotoModelV2=MotoDataManager.getInstance().getNewMotoModelListByModelidV2(modelid);
 //			if(CollectionUtil.isEmpty(newMotoModelV2)){
@@ -284,8 +284,9 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		for (Map<String,Object> newMotoRankModel : res) {
 			int brandid=Integer.parseInt(newMotoRankModel.get("brandid")+"");
 			indexcount++;
-			LOGGER.info("brandid="+brandid+",count="+indexcount);
 			newMotoRankModel.put("ranktime", starttime);
+			LOGGER.info("brandid="+brandid+",count="+indexcount+",ranktime="+starttime);
+
 			sql="select SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline where brandid="+brandid+" and reporttime>="+starttime+" and reporttime<"+endtime;
 			 List<Map<String, Object>> mileageAndMaxspeedAndAvgSpeedMap=NewMotoModelDAO.selectList(sql);
 			 if(CollectionUtil.isNotEmpty(mileageAndMaxspeedAndAvgSpeedMap)) {
