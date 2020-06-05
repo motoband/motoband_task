@@ -108,7 +108,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			int modelid=Integer.parseInt(newMotoRankModel.get("modelid")+"");
 			List<NewMotoModelV2> newMotoModelV2=MotoDataManager.getInstance().getNewMotoModelListByModelidV2(modelid);
 			if(CollectionUtil.isEmpty(newMotoModelV2)){
-				res.remove(newMotoModelV2);
+//				res.remove(newMotoModelV2);
 				continue;
 			}
 			newMotoRankModel.put("brandid", null);
@@ -176,16 +176,19 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 					"";
 			count=NewMotoModelDAO.getCountByModelId(sql);
 			newMotoRankModel.put("usercount", count);
-			if(endtime==1577808000000l) {
-				sql="select count(DISTINCT userid) as count from usergarage where modelid="+modelid+" and addtime<=1577808000000";
-				long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
-				newMotoRankModel.put("totalusercount", totalusercount);
-			}else {
-				sql="select totalusercount as count from motomodel_new_rank where modelid="+modelid+" and ranktime="+prevmonthstarttime+" and ranktype=0";
-				long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
-
-				newMotoRankModel.put("totalusercount", count+totalusercount);
-			}
+			sql="select count(DISTINCT userid) as count from usergarage where modelid="+modelid+" and addtime<="+endtime;
+			long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("totalusercount", totalusercount);
+//			if(endtime==1577808000000l) {
+//				sql="select count(DISTINCT userid) as count from usergarage where modelid="+modelid+" and addtime<=1577808000000";
+//				long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
+//				newMotoRankModel.put("totalusercount", totalusercount);
+//			}else {
+//				sql="select totalusercount as count from motomodel_new_rank where modelid="+modelid+" and ranktime="+prevmonthstarttime+" and ranktype=0";
+//				long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
+//
+//				newMotoRankModel.put("totalusercount", count+totalusercount);
+//			}
 			
 			
 			sql="select DISTINCT(makertype) as makertype from motomodel_new_v2 where modelid="+modelid;
@@ -301,16 +304,18 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 					"";
 			int usercount=NewMotoModelDAO.getCountByModelId(sql);
 			newMotoRankModel.put("usercount", usercount);
-			
-			if(endtime==1577808000000l) {
-				sql="select count(DISTINCT userid) as count from usergarage where brandid="+brandid+" and addtime<=1577808000000";
-				long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
-				newMotoRankModel.put("totalusercount", totalusercount);
-			}else {
-				sql="select totalusercount as count from motomodel_new_rank where brandid="+brandid+" and ranktime="+prevmonthstarttime+" and ranktype=1";
-				count=NewMotoModelDAO.getCountByModelId(sql);
-				newMotoRankModel.put("totalusercount", count+usercount);
-			}
+			sql="select count(DISTINCT userid) as count from usergarage where brandid="+brandid+" and addtime<="+endtime;
+			long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("totalusercount", totalusercount);
+//			if(endtime==1577808000000l) {
+//				sql="select count(DISTINCT userid) as count from usergarage where brandid="+brandid+" and addtime<=1577808000000";
+//				long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
+//				newMotoRankModel.put("totalusercount", totalusercount);
+//			}else {
+//				sql="select totalusercount as count from motomodel_new_rank where brandid="+brandid+" and ranktime="+prevmonthstarttime+" and ranktype=1";
+//				count=NewMotoModelDAO.getCountByModelId(sql);
+//				newMotoRankModel.put("totalusercount", count+usercount);
+//			}
 	
 			
 			
