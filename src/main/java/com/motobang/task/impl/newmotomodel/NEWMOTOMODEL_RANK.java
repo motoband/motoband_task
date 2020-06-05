@@ -176,10 +176,17 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 					"";
 			count=NewMotoModelDAO.getCountByModelId(sql);
 			newMotoRankModel.put("usercount", count);
+			if(prevmonthstarttime==1577808000000l) {
+				sql="select DISTINCT userid from usergarage where modelid="+modelid+" and addtime<=1577808000000";
+				long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
+				newMotoRankModel.put("totalusercount", totalusercount);
+			}else {
+				sql="select totalusercount as count from motomodel_new_rank where modelid="+modelid+" and ranktime="+prevmonthstarttime+" and ranktype=1";
+				long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
+
+				newMotoRankModel.put("totalusercount", count+totalusercount);
+			}
 			
-			sql="select totalusercount as count from motomodel_new_rank where modelid="+modelid+" and ranktime="+prevmonthstarttime+" and ranktype=1";
-			long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
-			newMotoRankModel.put("totalusercount", count+totalusercount);
 			
 			sql="select DISTINCT(makertype) as makertype from motomodel_new_v2 where modelid="+modelid;
 			List<Map<String, Object>> makertypeList=NewMotoModelDAO.selectList(sql);
@@ -295,10 +302,16 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			int usercount=NewMotoModelDAO.getCountByModelId(sql);
 			newMotoRankModel.put("usercount", usercount);
 			
-			
-			sql="select totalusercount as count from motomodel_new_rank where brandid="+brandid+" and ranktime="+prevmonthstarttime+" and ranktype=1";
-			count=NewMotoModelDAO.getCountByModelId(sql);
-			newMotoRankModel.put("totalusercount", count+usercount);
+			if(prevmonthstarttime==1577808000000l) {
+				sql="select DISTINCT userid from usergarage where brandid="+brandid+" and addtime<=1577808000000";
+				long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
+				newMotoRankModel.put("totalusercount", totalusercount);
+			}else {
+				sql="select totalusercount as count from motomodel_new_rank where brandid="+brandid+" and ranktime="+prevmonthstarttime+" and ranktype=1";
+				count=NewMotoModelDAO.getCountByModelId(sql);
+				newMotoRankModel.put("totalusercount", count+usercount);
+			}
+	
 			
 			
 			sql="select DISTINCT(makertype) as makertype from motomodel_new_v2 where brandid="+brandid;
