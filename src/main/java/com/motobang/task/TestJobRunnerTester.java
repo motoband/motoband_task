@@ -88,12 +88,12 @@ public class TestJobRunnerTester extends JobRunnerTester {
 //		job.setTriggerTime(taskModel.starttime);
 //
      	Job job=new Job();
-     	job.setParam("type", MessageTaskModel.NEWMOTOMODEL);
-     	job.setTaskId("test_newmotomodel_"+RandomUtils.randomNumber(0, 999999));
-//     	job.setParam("type", MessageTaskModel.NEWMOTOMODEL_RANK);
-//     	job.setTaskId("test_newmotomodel_rank"+RandomUtils.randomNumber(0, 999999));
-//     	job.setParam("year","2020");
-//     	job.setParam("month","1");
+//     	job.setParam("type", MessageTaskModel.NEWMOTOMODEL);
+//     	job.setTaskId("test_newmotomodel_"+RandomUtils.randomNumber(0, 999999));
+     	job.setParam("type", MessageTaskModel.NEWMOTOMODEL_RANK);
+     	job.setTaskId("test_newmotomodel_rank"+RandomUtils.randomNumber(0, 999999));
+     	job.setParam("year","2020");
+     	job.setParam("month","1");
      	System.out.println(JSON.toJSONString(job.getExtParams()));
     	JobContext jobContext = new JobContext();
         jobContext.setJob(job);
