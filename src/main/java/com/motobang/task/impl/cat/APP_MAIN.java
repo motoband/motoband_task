@@ -42,6 +42,7 @@ import okhttp3.Headers;
 import okhttp3.Response;
 
 /**
+ * 废弃
  * 客户端SHA1WithRSA加签解签demo
  */
 public class APP_MAIN implements JobRunner  {
