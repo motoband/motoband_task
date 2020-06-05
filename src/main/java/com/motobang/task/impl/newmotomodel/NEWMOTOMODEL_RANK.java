@@ -218,6 +218,8 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 
 		}
 //		result=JSON.parseArray(JSON.toJSONString(res), NewMotoRankModel.class);
+		//排序时应对无论当月有没有骑行的车型都要排序 因为如果当月没有骑行它的排名还是旧的。
+		sql="";
 		result.sort(new Comparator<NewMotoRankModel>() {
 
 			@Override
@@ -345,6 +347,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 
 		}
 //		result=JSON.parseArray(JSON.toJSONString(res), NewMotoRankModel.class);
+		//排序时应对无论当月有没有骑行的车型都要排序
 		result.sort(new Comparator<NewMotoRankModel>() {
 
 			@Override
