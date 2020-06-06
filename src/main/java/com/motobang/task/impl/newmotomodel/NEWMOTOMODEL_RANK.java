@@ -122,7 +122,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 				 if(map!=null) {
 					 newMotoRankModel.putAll(map);
 					 if(newMotoRankModel.containsKey("mileage")){
-						 Long mileage=(Long) newMotoRankModel.get("mileage");
+						 Long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
 						 mileage=mileage*3+RandomUtils.randomNumber(1, 3);
 						 newMotoRankModel.put("mileage", mileage);
 					 }
@@ -304,7 +304,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 				 if(map!=null) {
 					 newMotoRankModel.putAll(map);
 					 if(newMotoRankModel.containsKey("mileage")){
-						 Long mileage=(Long) newMotoRankModel.get("mileage");
+						 Long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
 						 mileage=mileage*3+RandomUtils.randomNumber(1, 3);
 						 newMotoRankModel.put("mileage", mileage);
 					 }
