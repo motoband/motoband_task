@@ -153,24 +153,24 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 	
 			newMotoRankModel.put("hotcount",hotcount);
 			
-//			long prevmonthstarttime=now.plusMonths(-2).toInstant(ZoneOffset.of("+8")).toEpochMilli();
-//			sql="select totalhotcount as count from motomodel_new_rank where modelid="+modelid+" and  ranktime="+prevmonthstarttime+" and ranktype=0";
-//			int count=NewMotoModelDAO.getCountByModelId(sql);
-//			newMotoRankModel.put("totalhotcount", count+hotcount);
-//			
-//			sql="select totalmileage as count from motomodel_new_rank where modelid="+modelid+" and ranktime="+prevmonthstarttime+" and ranktype=0";
-//			count=NewMotoModelDAO.getCountByModelId(sql);
-//			if(newMotoRankModel.containsKey("mileage")) {
-//				long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
-//				newMotoRankModel.put("totalmileage", count+mileage);
-//			}else {
-//				newMotoRankModel.put("totalmileage", count);
-//			}
+			long prevmonthstarttime=now.plusMonths(-2).toInstant(ZoneOffset.of("+8")).toEpochMilli();
+			sql="select totalhotcount as count from motomodel_new_rank where modelid="+modelid+" and  ranktime="+prevmonthstarttime+" and ranktype=0";
+			long count=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("totalhotcount", count+hotcount);
+			
+			sql="select totalmileage as count from motomodel_new_rank where modelid="+modelid+" and ranktime="+prevmonthstarttime+" and ranktype=0";
+			count=NewMotoModelDAO.getCountByModelId(sql);
+			if(newMotoRankModel.containsKey("mileage")) {
+				long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
+				newMotoRankModel.put("totalmileage", count+mileage);
+			}else {
+				newMotoRankModel.put("totalmileage", count);
+			}
 			
 			
 			sql="select count(1) as count from usergarage where modelid="+modelid+" and addtime>="+starttime+" and addtime<="+endtime+"\r\n" + 
 					"";
-			long count=NewMotoModelDAO.getCountByModelId(sql);
+			 count=NewMotoModelDAO.getCountByModelId(sql);
 			newMotoRankModel.put("usercount", count);
 			sql="select count(DISTINCT userid) as count from usergarage where modelid="+modelid+" and addtime<="+endtime;
 			long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
@@ -332,19 +332,19 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 
 			newMotoRankModel.put("hotcount",hotcount);
 			
-//			long prevmonthstarttime=now.plusMonths(-2).toInstant(ZoneOffset.of("+8")).toEpochMilli();
-//			sql="select totalhotcount as count from motomodel_new_rank where brandid="+brandid+" and ranktime="+prevmonthstarttime+" and ranktype=1";
-//			int count=NewMotoModelDAO.getCountByModelId(sql);
-//			newMotoRankModel.put("totalhotcount", count+hotcount);
-//			
-//			sql="select totalmileage as count from motomodel_new_rank where brandid="+brandid+" and ranktime="+prevmonthstarttime+" and ranktype=1";
-//			count=NewMotoModelDAO.getCountByModelId(sql);
-//			if(newMotoRankModel.containsKey("mileage")) {
-//				long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
-//				newMotoRankModel.put("totalmileage", count+mileage);
-//			}else {
-//				newMotoRankModel.put("totalmileage", count);
-//			}
+			long prevmonthstarttime=now.plusMonths(-2).toInstant(ZoneOffset.of("+8")).toEpochMilli();
+			sql="select totalhotcount as count from motomodel_new_rank where brandid="+brandid+" and ranktime="+prevmonthstarttime+" and ranktype=1";
+			long count=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("totalhotcount", count+hotcount);
+			
+			sql="select totalmileage as count from motomodel_new_rank where brandid="+brandid+" and ranktime="+prevmonthstarttime+" and ranktype=1";
+			count=NewMotoModelDAO.getCountByModelId(sql);
+			if(newMotoRankModel.containsKey("mileage")) {
+				long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
+				newMotoRankModel.put("totalmileage", count+mileage);
+			}else {
+				newMotoRankModel.put("totalmileage", count);
+			}
 //			newMotoRankModel.put("totalmileage", count+mileage);
 			
 			newMotoRankModel.put("ranktype", 1);
