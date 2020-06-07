@@ -281,6 +281,10 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			c++;
 			newMotoRankModel.rankindex=c;
 			newMotoRankModel.updatetime=System.currentTimeMillis();
+			Map<String,Object> map=Maps.newHashMap();
+			map.put("modelid", newMotoRankModel.modelid);
+			map.put("serieshotcount", newMotoRankModel.hotcount);
+			ElasticSearchManager.getInstance().syncUpdateByQuery(NewMotoModelV2.class,JSON.toJSONString(map));
 		}
 		NewMotoModelDAO.insertRankModel(result);
 		try {
