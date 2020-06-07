@@ -28,10 +28,12 @@ import com.motoband.manager.MotoDataManager;
 import com.motoband.manager.RedisManager;
 import com.motoband.manager.UserManager;
 import com.motoband.manager.newmotomodel.MotoCarRedisEsManager;
+import com.motoband.manager.search.ElasticSearchManager;
 import com.motoband.model.CityDataModel;
 import com.motoband.model.MotoBrandModelV2;
 import com.motoband.model.MotoModelModel;
 import com.motoband.model.MotoSeriesModel;
+import com.motoband.model.NewMotoModel;
 import com.motoband.model.NewMotoModelV2;
 import com.motoband.model.NewMotoRankModel;
 import com.motoband.utils.BeanUtils;
@@ -78,10 +80,10 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		if(StringUtils.isNotEmpty(monthstr)){
 			mongth=Integer.parseInt(monthstr);
 		}
+			handleModelid(year,mongth,styleMap);
+			LOGGER.info("NEWMOTOMODEL_RANK is handleBrandid start");	
+			handleBrandid(year,mongth,styleMap);
 
-		handleModelid(year,mongth,styleMap);
-		LOGGER.info("NEWMOTOMODEL_RANK is handleBrandid start");	
-		handleBrandid(year,mongth,styleMap);
 		return null;
 	}
 
@@ -117,12 +119,13 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			newMotoRankModel.put("brandid", null);
 			 sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline where modelid ="+modelid +" and reporttime>="+starttime+" and reporttime<"+endtime;;
 			 List<Map<String, Object>> mileageAndMaxspeedAndAvgSpeedMap=NewMotoModelDAO.selectList(sql);
+			 Long mileage=0l;
 			 if(CollectionUtil.isNotEmpty(mileageAndMaxspeedAndAvgSpeedMap)) {
 				 Map<String, Object> map=mileageAndMaxspeedAndAvgSpeedMap.get(0);
 				 if(map!=null) {
 					 newMotoRankModel.putAll(map);
 					 if(newMotoRankModel.containsKey("mileage")){
-						 Long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
+						 mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
 						 mileage=mileage*3+RandomUtils.randomNumber(1, 3);
 						 newMotoRankModel.put("mileage", mileage);
 					 }
@@ -133,47 +136,69 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 //			 newMotoRankModel.put("mileage", value)
 			indexcount++;
 			newMotoRankModel.put("ranktime", starttime);
-			long hotcount =0;
-			try {
-				MotoSeriesModel itemModel=BeanUtils.mapToObject(RedisManager.getInstance().hgetAll(Consts.REDIS_SCHEME_RUN, modelid+MotoCarRedisEsManager.RUNKEY_MOTOSERIESV2INFO), MotoSeriesModel.class);
-				if(itemModel!=null) {
-					hotcount=itemModel.serieshotcount*1000;;
-				}
-				if(hotcount==0){
-					hotcount=RandomUtils.randomNumber(1, 10)*1000;
-//					RedisManager.getInstance().hset(Consts.REDIS_SCHEME_RUN, modelid+MotoCarRedisEsManager.RUNKEY_MOTOSERIESV2INFO,"serieshotcount",hotcount+"");
-				}
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+//			long hotcount =0;
+//			try {
+//				MotoSeriesModel itemModel=BeanUtils.mapToObject(RedisManager.getInstance().hgetAll(Consts.REDIS_SCHEME_RUN, modelid+MotoCarRedisEsManager.RUNKEY_MOTOSERIESV2INFO), MotoSeriesModel.class);
+//				if(itemModel!=null) {
+//					hotcount=itemModel.serieshotcount*1000;;
+//				}
+//				if(hotcount==0){
+//					hotcount=RandomUtils.randomNumber(1, 10)*1000;
+////					RedisManager.getInstance().hset(Consts.REDIS_SCHEME_RUN, modelid+MotoCarRedisEsManager.RUNKEY_MOTOSERIESV2INFO,"serieshotcount",hotcount+"");
+//				}
+//				
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
 	
-			newMotoRankModel.put("hotcount",hotcount);
+//			newMotoRankModel.put("hotcount",hotcount);
 			
 			long prevmonthstarttime=now.plusMonths(-2).toInstant(ZoneOffset.of("+8")).toEpochMilli();
-			sql="select totalhotcount as count from motomodel_new_rank where modelid="+modelid+" and  ranktime="+prevmonthstarttime+" and ranktype=0";
-			long count=NewMotoModelDAO.getCountByModelId(sql);
-			newMotoRankModel.put("totalhotcount", count+hotcount);
-			
+//			sql="select totalhotcount as count from motomodel_new_rank where modelid="+modelid+" and  ranktime="+prevmonthstarttime+" and ranktype=0";
+//			long count=NewMotoModelDAO.getCountByModelId(sql);
+//			newMotoRankModel.put("totalhotcount", count+hotcount);
+			long totalmileage=0l;
+			long totalreadcount=0l;
 			sql="select totalmileage as count from motomodel_new_rank where modelid="+modelid+" and ranktime="+prevmonthstarttime+" and ranktype=0";
-			count=NewMotoModelDAO.getCountByModelId(sql);
+			long count=NewMotoModelDAO.getCountByModelId(sql);
 			if(newMotoRankModel.containsKey("mileage")) {
-				long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
+//					mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
+				totalmileage=count+mileage;
 				newMotoRankModel.put("totalmileage", count+mileage);
 			}else {
+				totalmileage=count;
 				newMotoRankModel.put("totalmileage", count);
 			}
 			
 			
 			sql="select count(1) as count from usergarage where modelid="+modelid+" and addtime>="+starttime+" and addtime<="+endtime+"\r\n" + 
 					"";
-			 count=NewMotoModelDAO.getCountByModelId(sql);
-			newMotoRankModel.put("usercount", count);
+			long usercount=NewMotoModelDAO.getCountByModelId(sql);
+			newMotoRankModel.put("usercount", usercount);
 			sql="select count(DISTINCT userid) as count from usergarage where modelid="+modelid+" and addtime<="+endtime;
 			long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
 				 totalusercount=totalusercount*3+RandomUtils.randomNumber(1, 3);
 			newMotoRankModel.put("totalusercount", totalusercount);
-//			newMotoRankModel.put("rankid", MD5.stringToMD5(newMotoRankModel.get("modelid")+"-"+endtime));;
+			
+			
+			String seriesreadcountstr=RedisManager.getInstance().hget(Consts.REDIS_SCHEME_RUN, modelid+MotoCarRedisEsManager.RUNKEY_NEWMOTOMODELV2INFO, MotoCarRedisEsManager.MAPKEY_SERIES_READCOUNT);
+			if(StringUtils.isBlank(seriesreadcountstr)) {
+				seriesreadcountstr="0";
+			}
+			long brandreadcount=Long.valueOf(seriesreadcountstr);
+			long totalhotcount=brandreadcount+totalmileage+totalusercount;
+			totalreadcount=brandreadcount;
+			newMotoRankModel.put("totalhotcount",totalhotcount);
+			newMotoRankModel.put("totalreadcount",totalreadcount);
+			//当月的totalreadcount-上月个totalreadcount
+			long prevranktime= now.plusMonths(-2).toInstant(ZoneOffset.of("+8")).toEpochMilli();
+			sql="select totalreadcount as count from motomodel_new_rank where modelid="+modelid+" and ranktime<="+prevranktime;
+			long prevtotalreadcount=NewMotoModelDAO.getCountByModelId(sql);
+			long readcount=totalreadcount-prevtotalreadcount;
+			newMotoRankModel.put("readcount",readcount);
+			long hotcount=readcount+mileage+usercount;
+			newMotoRankModel.put("hotcount",hotcount);
+			
 			MotoModelModel motomodel=MotoDataManager.getInstance().getMotoModel(modelid);
 			String style="";
 			if(motomodel!=null){
@@ -296,51 +321,34 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 
 			sql="select SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline where brandid="+brandid+" and reporttime>="+starttime+" and reporttime<"+endtime;
 			 List<Map<String, Object>> mileageAndMaxspeedAndAvgSpeedMap=NewMotoModelDAO.selectList(sql);
+			 Long mileage=0l;
 			 if(CollectionUtil.isNotEmpty(mileageAndMaxspeedAndAvgSpeedMap)) {
 				 Map<String, Object> map=mileageAndMaxspeedAndAvgSpeedMap.get(0);
 				 if(map!=null) {
 					 newMotoRankModel.putAll(map);
 					 if(newMotoRankModel.containsKey("mileage")){
-						 Long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
+						 mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
 						 mileage=mileage*3+RandomUtils.randomNumber(1, 3);
 						 newMotoRankModel.put("mileage", mileage);
 					 }
 				 }
 			 }
-			long hotcount = 0;
-		try {
-			MotoBrandModelV2	motobrandv2=BeanUtils.mapToObject(RedisManager.getInstance().hgetAll(Consts.REDIS_SCHEME_RUN, brandid+MotoCarRedisEsManager.RUNKEY_MOTOBRANDV2INFO), MotoBrandModelV2.class);
-			if(motobrandv2!=null) {
-				hotcount=motobrandv2.brandhotcount*1000;
-			}
-//			hotcount=RandomUtils.randomNumber(1, 10)*1000;
-			if(hotcount==0){
-				hotcount=RandomUtils.randomNumber(1, 10)*1000;
-//				RedisManager.getInstance().hset(Consts.REDIS_SCHEME_RUN, brandid+MotoCarRedisEsManager.RUNKEY_MOTOBRANDV2INFO,"brandhotcount",hotcount+"");
-//				hotcount=5000;
-			}else{
-//				hotcount++;
-			}
-			
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-			newMotoRankModel.put("hotcount",hotcount);
-			
+			long totalhotcount = 0;
+			long totalreadcount=0;
 			long prevmonthstarttime=now.plusMonths(-2).toInstant(ZoneOffset.of("+8")).toEpochMilli();
-			sql="select totalhotcount as count from motomodel_new_rank where brandid="+brandid+" and ranktime="+prevmonthstarttime+" and ranktype=1";
-			long count=NewMotoModelDAO.getCountByModelId(sql);
-			newMotoRankModel.put("totalhotcount", count+hotcount);
-			
+//			sql="select totalhotcount as count from motomodel_new_rank where brandid="+brandid+" and ranktime="+prevmonthstarttime+" and ranktype=1";
+//			long count=NewMotoModelDAO.getCountByModelId(sql);
+//			newMotoRankModel.put("totalhotcount", count+hotcount);
+			long totalmileage=0;
 			sql="select totalmileage as count from motomodel_new_rank where brandid="+brandid+" and ranktime="+prevmonthstarttime+" and ranktype=1";
-			count=NewMotoModelDAO.getCountByModelId(sql);
+			long count=NewMotoModelDAO.getCountByModelId(sql);
 			if(newMotoRankModel.containsKey("mileage")) {
-				long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
-				newMotoRankModel.put("totalmileage", count+mileage);
+//				long mileage=Long.parseLong(newMotoRankModel.get("mileage").toString());
+				totalmileage=count+mileage;
+				newMotoRankModel.put("totalmileage",totalmileage);
 			}else {
-				newMotoRankModel.put("totalmileage", count);
+				totalmileage=count;
+				newMotoRankModel.put("totalmileage", totalmileage);
 			}
 //			newMotoRankModel.put("totalmileage", count+mileage);
 			
@@ -356,6 +364,23 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
 			totalusercount=totalusercount*3+RandomUtils.randomNumber(1, 3);
 			newMotoRankModel.put("totalusercount", totalusercount);
+			String brandreadcountstr=RedisManager.getInstance().hget(Consts.REDIS_SCHEME_RUN, brandid+MotoCarRedisEsManager.RUNKEY_MOTOBRANDV2INFO, MotoCarRedisEsManager.MAPKEY_BRAND_READCOUNT);
+			if(StringUtils.isBlank(brandreadcountstr)) {
+				brandreadcountstr="0";
+			}
+			long brandreadcount=Long.valueOf(brandreadcountstr);
+			totalhotcount=brandreadcount+totalmileage+totalusercount;
+			totalreadcount=brandreadcount;
+			newMotoRankModel.put("totalhotcount",totalhotcount);
+			newMotoRankModel.put("totalreadcount",totalreadcount);
+			//当月的totalreadcount-上月个totalreadcount
+			long prevranktime= now.plusMonths(-2).toInstant(ZoneOffset.of("+8")).toEpochMilli();
+			sql="select totalreadcount as count from motomodel_new_rank where brandid="+brandid+" and ranktime<="+prevranktime;
+			long prevtotalreadcount=NewMotoModelDAO.getCountByModelId(sql);
+			long readcount=totalreadcount-prevtotalreadcount;
+			newMotoRankModel.put("readcount",readcount);
+			long hotcount=readcount+mileage+usercount;
+			newMotoRankModel.put("hotcount",hotcount);
 //			if(endtime==1577808000000l) {
 //				sql="select count(DISTINCT userid) as count from usergarage where brandid="+brandid+" and addtime<=1577808000000";
 //				long totalusercount=NewMotoModelDAO.getCountByModelId(sql);
@@ -410,12 +435,18 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			c++;
 			newMotoRankModel.rankindex=c;
 			newMotoRankModel.updatetime=System.currentTimeMillis();
+			Map<String,Object> map=Maps.newHashMap();
+			map.put("brandid", newMotoRankModel.brandid);
+			map.put("brandhotcount", newMotoRankModel.hotcount);
+			ElasticSearchManager.getInstance().syncUpdateByQuery(NewMotoModelV2.class,JSON.toJSONString(map));
 		}
 		NewMotoModelDAO.insertRankModel(result);	
 		try {
 			if (month==LocalDateTime.now().getMonthValue()&&year==LocalDateTime.now().getYear()) {
 				MotoCarRedisEsManager.getInstance().initBrandRank(result);
 				MotoCarRedisEsManager.getInstance().initMotoBrandsV2();
+				//同步ESserieshotcount;
+				
 				LOGGER.info("同步当月品牌排行榜缓存,month="+month);
 			}else {
 				LOGGER.info("不同步当月品牌排行榜缓存,month="+month);
