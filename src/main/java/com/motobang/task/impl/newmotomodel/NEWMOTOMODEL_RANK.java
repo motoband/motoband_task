@@ -96,7 +96,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 		LOGGER.info("現在開始統計車型,"+now.getYear()+"年"+now.plusMonths(-1).getMonthValue()+"月"+",到"+DateUtil.getDateTimeOfTimestamp(starttime).getYear()+"年"+now.getMonthValue()+"月");
 
 		//查询时间段内的线路
-		String sql="select modelid from motoseries";
+		String sql="select modelid from motomodel_new_v2 GROUP BY modelid";
 //		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
 //				"where reporttime>="+starttime+" and reporttime<"+endtime+" GROUP BY modelid ";
 //		String sql="select modelid,SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline \r\n" + 
@@ -137,13 +137,10 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			try {
 				MotoSeriesModel itemModel=BeanUtils.mapToObject(RedisManager.getInstance().hgetAll(Consts.REDIS_SCHEME_RUN, modelid+MotoCarRedisEsManager.RUNKEY_MOTOSERIESV2INFO), MotoSeriesModel.class);
 				if(itemModel!=null) {
-					hotcount=itemModel.serieshotcount*1000;;
+					hotcount=itemModel.serieshotcount*100;;
 				}
 				if(hotcount==0){
-					hotcount=RandomUtils.randomNumber(1, 10)*1000;
-//					RedisManager.getInstance().hset(Consts.REDIS_SCHEME_RUN, modelid+MotoCarRedisEsManager.RUNKEY_MOTOSERIESV2INFO,"serieshotcount",hotcount+"");
-				}else{
-//					hotcount++;
+					hotcount=RandomUtils.randomNumber(1, 10)*100;
 //					RedisManager.getInstance().hset(Consts.REDIS_SCHEME_RUN, modelid+MotoCarRedisEsManager.RUNKEY_MOTOSERIESV2INFO,"serieshotcount",hotcount+"");
 				}
 				
