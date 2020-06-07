@@ -192,7 +192,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			newMotoRankModel.put("totalreadcount",totalreadcount);
 			//当月的totalreadcount-上月个totalreadcount
 			long prevranktime= now.plusMonths(-2).toInstant(ZoneOffset.of("+8")).toEpochMilli();
-			sql="select totalreadcount as count from motomodel_new_rank where modelid="+modelid+" and ranktime<="+prevranktime;
+			sql="select totalreadcount as count from motomodel_new_rank where modelid="+modelid+" and ranktime="+prevranktime;
 			long prevtotalreadcount=NewMotoModelDAO.getCountByModelId(sql);
 			long readcount=totalreadcount-prevtotalreadcount;
 			newMotoRankModel.put("readcount",readcount);
@@ -375,7 +375,7 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			newMotoRankModel.put("totalreadcount",totalreadcount);
 			//当月的totalreadcount-上月个totalreadcount
 			long prevranktime= now.plusMonths(-2).toInstant(ZoneOffset.of("+8")).toEpochMilli();
-			sql="select totalreadcount as count from motomodel_new_rank where brandid="+brandid+" and ranktime<="+prevranktime;
+			sql="select totalreadcount as count from motomodel_new_rank where brandid="+brandid+" and ranktime="+prevranktime;
 			long prevtotalreadcount=NewMotoModelDAO.getCountByModelId(sql);
 			long readcount=totalreadcount-prevtotalreadcount;
 			newMotoRankModel.put("readcount",readcount);
