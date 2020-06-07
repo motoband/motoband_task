@@ -137,10 +137,10 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 			try {
 				MotoSeriesModel itemModel=BeanUtils.mapToObject(RedisManager.getInstance().hgetAll(Consts.REDIS_SCHEME_RUN, modelid+MotoCarRedisEsManager.RUNKEY_MOTOSERIESV2INFO), MotoSeriesModel.class);
 				if(itemModel!=null) {
-					hotcount=itemModel.serieshotcount*100;;
+					hotcount=itemModel.serieshotcount*1000;;
 				}
 				if(hotcount==0){
-					hotcount=RandomUtils.randomNumber(1, 10)*100;
+					hotcount=RandomUtils.randomNumber(1, 10)*1000;
 //					RedisManager.getInstance().hset(Consts.REDIS_SCHEME_RUN, modelid+MotoCarRedisEsManager.RUNKEY_MOTOSERIESV2INFO,"serieshotcount",hotcount+"");
 				}
 				
