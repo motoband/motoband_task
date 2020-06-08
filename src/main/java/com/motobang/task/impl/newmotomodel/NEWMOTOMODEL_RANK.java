@@ -333,17 +333,19 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 			}else {
 				newMotoRankModel.rankindex=c;
 			}
-			
 			newMotoRankModel.updatetime=System.currentTimeMillis();
-			Map<String,Object> map=Maps.newHashMap();
-			map.put("modelid", newMotoRankModel.modelid);
-			map.put("serieshotcount", newMotoRankModel.hotcount);
-			ElasticSearchManager.getInstance().syncUpdateByQuery(NewMotoModelV2.class,JSON.toJSONString(map));
+
 		}
 		NewMotoModelDAO.insertRankModel(result);
 		try {
 			if (month==LocalDateTime.now().getMonthValue()&&year==LocalDateTime.now().getYear()) {
 				MotoCarRedisEsManager.getInstance().initSeriesRank(result);
+				for (NewMotoRankModel newMotoRankModel : result) {
+					Map<String,Object> map=Maps.newHashMap();
+					map.put("modelid", newMotoRankModel.modelid);
+					map.put("serieshotcount", newMotoRankModel.hotcount);
+					ElasticSearchManager.getInstance().syncUpdateByQuery(NewMotoModelV2.class,JSON.toJSONString(map));
+				}
 				LOGGER.info("同步当月车型排行榜缓存,month="+month);
 			}else {
 				LOGGER.info("不同步当月品牌排行榜缓存,month="+month);
@@ -534,18 +536,19 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 				newMotoRankModel.rankindex=c;
 			}
 			newMotoRankModel.updatetime=System.currentTimeMillis();
-			Map<String,Object> map=Maps.newHashMap();
-			map.put("brandid", newMotoRankModel.brandid);
-			map.put("brandhotcount", newMotoRankModel.hotcount);
-			ElasticSearchManager.getInstance().syncUpdateByQuery(NewMotoModelV2.class,JSON.toJSONString(map));
 		}
 		NewMotoModelDAO.insertRankModel(result);	
 		try {
 			if (month==LocalDateTime.now().getMonthValue()&&year==LocalDateTime.now().getYear()) {
 				MotoCarRedisEsManager.getInstance().initBrandRank(result);
 				MotoCarRedisEsManager.getInstance().initMotoBrandsV2();
-				//同步ESserieshotcount;
-				
+				//同步brandhotcount;
+				for (NewMotoRankModel newMotoRankModel : result) {
+					Map<String,Object> map=Maps.newHashMap();
+					map.put("brandid", newMotoRankModel.brandid);
+					map.put("brandhotcount", newMotoRankModel.hotcount);
+					ElasticSearchManager.getInstance().syncUpdateByQuery(NewMotoModelV2.class,JSON.toJSONString(map));
+				}
 				LOGGER.info("同步当月品牌排行榜缓存,month="+month);
 			}else {
 				LOGGER.info("不同步当月品牌排行榜缓存,month="+month);
