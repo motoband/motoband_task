@@ -93,12 +93,8 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 				LOGGER.info("NEWMOTOMODEL_RANK is handleBrandid start");	
 				handleBrandid(year,mongth,styleMap);
 		} catch (Exception e) {
-        	if(e.getMessage().contains("interrupt")) {
-        		return null;
-        	}else {
         		LOGGER.error("ERROR="+ExceptionUtils.getStackTrace(e));
                 return new Result(Action.EXECUTE_FAILED, ExceptionUtils.getStackTrace(e));
-        	}
 		}
 		return null;
 	}
