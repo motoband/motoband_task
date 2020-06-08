@@ -530,7 +530,7 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 		int c=0;
 		for (NewMotoRankModel newMotoRankModel : result) {
 			c++;
-			if(newMotoRankModel.modelid.equals("0")) {
+			if(newMotoRankModel.brandid.equals("0")) {
 				newMotoRankModel.rankindex=999;
 			}else {
 				newMotoRankModel.rankindex=c;
