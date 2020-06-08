@@ -316,6 +316,12 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 			@Override
 			public int compare(NewMotoRankModel o1, NewMotoRankModel o2) {
 //				return Integer.parseInt(o2.hotcount-o1.hotcount+"");
+				if(o1.modelid.equals("0")) {
+					return 1;
+				}
+				if(o2.modelid.equals("0")) {
+					return -1;
+				}
 				if(o1.hotcount==o2.hotcount) {
 					return 0;
 				}else {
@@ -505,6 +511,12 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 			@Override
 			public int compare(NewMotoRankModel o1, NewMotoRankModel o2) {
 //				return Integer.parseInt((o2.hotcount-o1.hotcount)+"");
+				if(o1.brandid.equals("0")) {
+					return 1;
+				}
+				if(o2.brandid.equals("0")) {
+					return -1;
+				}
 				if(o1.hotcount==o2.hotcount) {
 					return 0;
 				}else {
@@ -718,6 +730,15 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 
 			@Override
 			public int compare(Integer o1, Integer o2) {
+				System.out.println(JSON.toJSONString(list));
+				System.out.println("o1="+o1);
+				System.out.println("o2="+o2);
+				if(o1==10) {
+					return 1;
+				}
+				if(o2==10) {
+					return -1;
+				}
 				if(o1==o2) {
 					return 0;
 				}else {
