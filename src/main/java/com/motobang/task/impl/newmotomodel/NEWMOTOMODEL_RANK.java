@@ -332,7 +332,12 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 		int c=0;
 		for (NewMotoRankModel newMotoRankModel : result) {
 			c++;
-			newMotoRankModel.rankindex=c;
+			if(newMotoRankModel.modelid.equals("0")) {
+				newMotoRankModel.rankindex=9999;
+			}else {
+				newMotoRankModel.rankindex=c;
+			}
+			
 			newMotoRankModel.updatetime=System.currentTimeMillis();
 			Map<String,Object> map=Maps.newHashMap();
 			map.put("modelid", newMotoRankModel.modelid);
@@ -527,7 +532,11 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 		int c=0;
 		for (NewMotoRankModel newMotoRankModel : result) {
 			c++;
-			newMotoRankModel.rankindex=c;
+			if(newMotoRankModel.modelid.equals("0")) {
+				newMotoRankModel.rankindex=999;
+			}else {
+				newMotoRankModel.rankindex=c;
+			}
 			newMotoRankModel.updatetime=System.currentTimeMillis();
 			Map<String,Object> map=Maps.newHashMap();
 			map.put("brandid", newMotoRankModel.brandid);
