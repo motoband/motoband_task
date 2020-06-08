@@ -371,11 +371,11 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 				@Override
 				public void run() {
 					try {
-						for (Map<String,Object> newMotoRankModel : res) {
+						for (Map<String,Object> newMotoRankModel : list) {
 							int brandid=Integer.parseInt(newMotoRankModel.get("brandid")+"");
 							indexcount.incrementAndGet();
 							newMotoRankModel.put("ranktime", starttime);
-							LOGGER.info("brandid="+brandid+",count="+indexcount+",ranktime="+starttime);
+							LOGGER.info("brandid="+brandid+",indexcount="+indexcount+",ranktime="+starttime);
 
 							String sql="select SUM(mileage) as mileage ,AVG(maxspeed) avgmaxspeed,AVG(avgspeed) avgspeed from rideline where brandid="+brandid+" and reporttime>="+starttime+" and reporttime<"+endtime;
 							 List<Map<String, Object>> mileageAndMaxspeedAndAvgSpeedMap=NewMotoModelDAO.selectList(sql);
@@ -429,6 +429,8 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 							long brandreadcount=Long.valueOf(brandreadcountstr);
 							totalhotcount=brandreadcount+totalmileage+totalusercount;
 							totalreadcount=brandreadcount;
+							LOGGER.info("brandid="+brandid+",totalhotcount="+totalhotcount+",ranktime="+starttime);
+
 							newMotoRankModel.put("totalhotcount",totalhotcount);
 							newMotoRankModel.put("totalreadcount",totalreadcount);
 							//当月的totalreadcount-上月个totalreadcount
@@ -438,6 +440,7 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 							long readcount=totalreadcount-prevtotalreadcount;
 							newMotoRankModel.put("readcount",readcount);
 							long hotcount=readcount+mileage+usercount;
+							LOGGER.info("brandid="+brandid+",hotcount="+hotcount+",ranktime="+starttime);
 							newMotoRankModel.put("hotcount",hotcount);
 //							if(endtime==1577808000000l) {
 //								sql="select count(DISTINCT userid) as count from usergarage where brandid="+brandid+" and addtime<=1577808000000";
