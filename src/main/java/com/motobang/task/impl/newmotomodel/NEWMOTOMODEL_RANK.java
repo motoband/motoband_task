@@ -200,6 +200,7 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 			long brandreadcount=Long.valueOf(seriesreadcountstr);
 			long totalhotcount=brandreadcount+totalmileage+totalusercount;
 			totalreadcount=brandreadcount;
+			LOGGER.info("modelid="+modelid+",totalhotcount="+totalhotcount+",ranktime="+starttime);
 			newMotoRankModel.put("totalhotcount",totalhotcount);
 			newMotoRankModel.put("totalreadcount",totalreadcount);
 			//当月的totalreadcount-上月个totalreadcount
@@ -209,6 +210,7 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 			long readcount=totalreadcount-prevtotalreadcount;
 			newMotoRankModel.put("readcount",readcount);
 			long hotcount=readcount+mileage+usercount;
+			LOGGER.info("modelid="+modelid+",hotcount="+hotcount+",ranktime="+starttime);
 			newMotoRankModel.put("hotcount",hotcount);
 			
 			MotoModelModel motomodel=MotoDataManager.getInstance().getMotoModel(modelid);
