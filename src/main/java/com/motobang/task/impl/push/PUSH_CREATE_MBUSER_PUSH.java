@@ -135,7 +135,7 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
 			}
 		} catch (Exception e) {
 				if(e instanceof InterruptedException) {
-        		
+        		return null;
         	}else {
         		LOGGER.error("ERROR="+ExceptionUtils.getStackTrace(e));
                 return new Result(Action.EXECUTE_FAILED, ExceptionUtils.getStackTrace(e));
