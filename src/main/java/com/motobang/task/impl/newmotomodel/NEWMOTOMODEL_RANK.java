@@ -315,7 +315,12 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 
 			@Override
 			public int compare(NewMotoRankModel o1, NewMotoRankModel o2) {
-				return Integer.parseInt(o2.hotcount-o1.hotcount+"");
+//				return Integer.parseInt(o2.hotcount-o1.hotcount+"");
+				if(o1.hotcount==o2.hotcount) {
+					return 0;
+				}else {
+					return o1.hotcount > o2.hotcount ? -1 :1;
+				}
 			}
 		});
 		int c=0;
@@ -496,7 +501,12 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 
 			@Override
 			public int compare(NewMotoRankModel o1, NewMotoRankModel o2) {
-				return Integer.parseInt((o2.hotcount-o1.hotcount)+"");
+//				return Integer.parseInt((o2.hotcount-o1.hotcount)+"");
+				if(o1.hotcount==o2.hotcount) {
+					return 0;
+				}else {
+					return o1.hotcount > o2.hotcount ? -1 :1;
+				}
 			}
 		});
 		int c=0;
@@ -700,15 +710,28 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 	}
 
 	public static void main(String[] args) throws ParseException {
+		List<Integer> list=Lists.newArrayList(1,10,2,5,1,2,3);
+		list.sort(new Comparator<Integer>() {
+
+			@Override
+			public int compare(Integer o1, Integer o2) {
+				if(o1==o2) {
+					return 0;
+				}else {
+					return o1 > o2 ? -1 :1;
+				}
+			}
+		});
+		System.out.println(JSON.toJSONString(list));
 //        LocalDate localDate = LocalDate.parse("2019-12-07");
-        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+//        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 //        	localDate = LocalDate.parse("2019-12-07",pattern);
 //        LocalDateTime.of(LocalDate.parse("2019-12-07", pattern), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();
 //        long endSecond = LocalDateTime.parse("2019-12-07 ",DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toEpochSecond(ZoneOffset.of("+8"));
 //        System.out.println(endSecond);
 //        LocalDateTime.of(LocalDate.parse("2019-12-07", pattern), time)
-        System.out.println(LocalDate.parse("2017/7/9", pattern));
-        System.out.println(  LocalDateTime.of(LocalDate.parse("2017/7/9", pattern), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli());
+//        System.out.println(LocalDate.parse("2017/7/9", pattern));
+//        System.out.println(  LocalDateTime.of(LocalDate.parse("2017/7/9", pattern), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli());
 
 
 
