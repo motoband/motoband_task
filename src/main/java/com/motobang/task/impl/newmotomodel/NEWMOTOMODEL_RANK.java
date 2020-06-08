@@ -8,16 +8,20 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.alibaba.fastjson.JSON;
+import com.github.ltsopensource.core.domain.Action;
 import com.github.ltsopensource.core.logger.Logger;
 import com.github.ltsopensource.core.logger.LoggerFactory;
 import com.github.ltsopensource.tasktracker.Result;
+import com.github.ltsopensource.tasktracker.runner.InterruptibleJobRunner;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import com.google.common.collect.Lists;
@@ -45,45 +49,53 @@ import com.motoband.utils.collection.CollectionUtil;
 import net.sf.cglib.core.Local;
 import redis.clients.jedis.Pipeline;
 
-public class NEWMOTOMODEL_RANK implements JobRunner  {
+public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
     protected static final Logger LOGGER = LoggerFactory.getLogger(NEWMOTOMODEL_RANK.class);
 
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
-		Map<String, Integer> styleMap=Maps.newHashMap();
-		styleMap.put("踏板", 1);
-		styleMap.put("弯梁", 2);
-		styleMap.put("越野滑胎", 3);
-		styleMap.put("跑车", 4);
-		styleMap.put("街车", 5);
-		styleMap.put("三轮", 6);
-		styleMap.put("巡航", 7);
-		styleMap.put("旅行", 10);
-		styleMap.put("拉力探险", 11);
-		styleMap.put("经典/复古", 13);
-//		styleMap.put("新能源", 14);
-//		styleMap.put("其它", 20);
-//		LOGGER.error("NEWMOTOMODEL_RANK is start");	
-//		LOGGER.debug("NEWMOTOMODEL_RANK is start");
-		LOGGER.info("NEWMOTOMODEL_RANK is start,job="+com.github.ltsopensource.core.json.JSON.toJSONString(jobContext.getJob()));
-//		LOGGER.info(LOGGER.isErrorEnabled());
-//		LOGGER.info(LOGGER.isDebugEnabled());
-//		LOGGER.info(LOGGER.isInfoEnabled());
-		int year=LocalDate.now().getYear();
-		String yearstr=jobContext.getJob().getParam("year");
-		if(StringUtils.isNotEmpty(yearstr)){
-			year=Integer.parseInt(yearstr);
+		try {
+			Map<String, Integer> styleMap=Maps.newHashMap();
+			styleMap.put("踏板", 1);
+			styleMap.put("弯梁", 2);
+			styleMap.put("越野滑胎", 3);
+			styleMap.put("跑车", 4);
+			styleMap.put("街车", 5);
+			styleMap.put("三轮", 6);
+			styleMap.put("巡航", 7);
+			styleMap.put("旅行", 10);
+			styleMap.put("拉力探险", 11);
+			styleMap.put("经典/复古", 13);
+//			styleMap.put("新能源", 14);
+//			styleMap.put("其它", 20);
+//			LOGGER.error("NEWMOTOMODEL_RANK is start");	
+//			LOGGER.debug("NEWMOTOMODEL_RANK is start");
+			LOGGER.info("NEWMOTOMODEL_RANK is start,job="+com.github.ltsopensource.core.json.JSON.toJSONString(jobContext.getJob()));
+//			LOGGER.info(LOGGER.isErrorEnabled());
+//			LOGGER.info(LOGGER.isDebugEnabled());
+//			LOGGER.info(LOGGER.isInfoEnabled());
+			int year=LocalDate.now().getYear();
+			String yearstr=jobContext.getJob().getParam("year");
+			if(StringUtils.isNotEmpty(yearstr)){
+				year=Integer.parseInt(yearstr);
+			}
+			
+			int mongth=LocalDate.now().getMonthValue();
+			String monthstr=jobContext.getJob().getParam("month");
+			if(StringUtils.isNotEmpty(monthstr)){
+				mongth=Integer.parseInt(monthstr);
+			}
+				handleModelid(year,mongth,styleMap);
+				LOGGER.info("NEWMOTOMODEL_RANK is handleBrandid start");	
+				handleBrandid(year,mongth,styleMap);
+		} catch (Exception e) {
+        	if(e.getMessage().contains("interrupt")) {
+        		return null;
+        	}else {
+        		LOGGER.error("ERROR="+ExceptionUtils.getStackTrace(e));
+                return new Result(Action.EXECUTE_FAILED, ExceptionUtils.getStackTrace(e));
+        	}
 		}
-		
-		int mongth=LocalDate.now().getMonthValue();
-		String monthstr=jobContext.getJob().getParam("month");
-		if(StringUtils.isNotEmpty(monthstr)){
-			mongth=Integer.parseInt(monthstr);
-		}
-			handleModelid(year,mongth,styleMap);
-			LOGGER.info("NEWMOTOMODEL_RANK is handleBrandid start");	
-			handleBrandid(year,mongth,styleMap);
-
 		return null;
 	}
 
@@ -714,5 +726,14 @@ public class NEWMOTOMODEL_RANK implements JobRunner  {
 //		LOGGER.info(DateUtil.date("1986-04-28").getTime());;
 //		LOGGER.info(LocalDateTime.of(LocalDate.now().plusYears(-20), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli());
 //		LOGGER.info(LocalDateTime.of(LocalDate.now().plusYears(-30), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli());
+	}
+
+
+
+
+
+	@Override
+	public void interrupt() {
+		LOGGER.error("中断");
 	}
 }
