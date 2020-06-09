@@ -59,10 +59,13 @@ public class SEARCH_SUGGEST implements JobRunner  {
 		List<String> list=Lists.newArrayList();
 		int pageno=1;
 		do {
+			//商品名字
 			r=YZManager.getInstance().searchYzProduct(pageno, 300, null);
 			for (MallProductModel model : r) {
 				list.add(model.title);
 			}
+			//商品品牌
+			//商品分类
 			pageno++;
 			LOGGER.info("handleMall pageno="+pageno);
 			if(r.size()==0){
