@@ -66,6 +66,22 @@ public class SEARCH_SUGGEST implements JobRunner  {
 			}
 			//商品品牌
 			//商品分类
+			list.add("头盔");
+			list.add("骑行服");
+			list.add("骑行裤");
+			list.add("手套");
+			list.add("鞋");
+			list.add("靴");
+			list.add("护具");
+			list.add("周边文化");
+			list.add("户外");
+			list.add("包");
+			list.add("电子");
+			list.add("蓝牙");
+			list.add("配件");
+			list.add("锁具");
+			list.add("养护清洁");
+			list.add("改装");
 			pageno++;
 			LOGGER.info("handleMall pageno="+pageno);
 			if(r.size()==0){
