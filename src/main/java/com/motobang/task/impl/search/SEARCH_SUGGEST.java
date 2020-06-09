@@ -28,6 +28,7 @@ import com.motoband.model.SuggestModel;
 import com.motoband.utils.MD5;
 import com.motoband.utils.OkHttpClientUtil;
 import com.motoband.utils.collection.CollectionUtil;
+import com.qcloud.cmq.client.protocol.Common.consumedata;
 
 public class SEARCH_SUGGEST implements JobRunner  {
     protected static final Logger LOGGER = LoggerFactory.getLogger(SEARCH_SUGGEST.class);
@@ -60,7 +61,13 @@ public class SEARCH_SUGGEST implements JobRunner  {
 		int pageno=1;
 		do {
 			//商品名字
-			r=YZManager.getInstance().searchYzProduct(pageno, 300, null);
+			try {
+				r=YZManager.getInstance().searchYzProduct(pageno, 300, null);
+			} catch (Exception e) {
+				e.printStackTrace();
+				continue;
+			}
+			
 			for (MallProductModel model : r) {
 				list.add(model.title);
 			}
