@@ -131,7 +131,7 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
 				}
 				mbuser.updatetime = System.currentTimeMillis();
 				UserDAO.inserUserPush(mbuser);
-				LOGGER.debug("更新用戶有效性over");
+				LOGGER.info("更新用戶有效性over mbuser="+JSON.toJSONString(mbuser));
 			}
 		} catch (Exception e) {
 				if(e instanceof InterruptedException) {
