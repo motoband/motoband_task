@@ -203,12 +203,13 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 							newMotoRankModel.put("totalusercount", totalusercount);
 							
 							
-							String seriesreadcountstr=RedisManager.getInstance().hget(Consts.REDIS_SCHEME_RUN, modelid+MotoCarRedisEsManager.RUNKEY_NEWMOTOMODELV2INFO, MotoCarRedisEsManager.MAPKEY_SERIES_READCOUNT);
+							String seriesreadcountstr=RedisManager.getInstance().hget(Consts.REDIS_SCHEME_RUN, modelid+MotoCarRedisEsManager.RUNKEY_MOTOSERIESV2INFO, MotoCarRedisEsManager.MAPKEY_SERIES_READCOUNT);
 							if(StringUtils.isBlank(seriesreadcountstr)) {
 								seriesreadcountstr="0";
 							}
 							long brandreadcount=Long.valueOf(seriesreadcountstr);
-							long totalhotcount=brandreadcount+totalmileage+totalusercount*1000;
+//							long totalhotcount=brandreadcount+totalmileage+totalusercount*1000;
+							long totalhotcount=brandreadcount*30;
 							totalreadcount=brandreadcount;
 							LOGGER.info("modelid="+modelid+",totalhotcount="+totalhotcount+",ranktime="+starttime);
 							newMotoRankModel.put("totalhotcount",totalhotcount);
@@ -439,8 +440,8 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 								brandreadcountstr="0";
 							}
 							long brandreadcount=Long.valueOf(brandreadcountstr);
-							totalhotcount=brandreadcount+totalmileage+totalusercount*1000;
-							totalreadcount=brandreadcount;
+//							totalhotcount=brandreadcount+totalmileage+totalusercount*1000;
+							totalreadcount=brandreadcount*30;
 							LOGGER.info("brandid="+brandid+",totalhotcount="+totalhotcount+",ranktime="+starttime);
 
 							newMotoRankModel.put("totalhotcount",totalhotcount);
