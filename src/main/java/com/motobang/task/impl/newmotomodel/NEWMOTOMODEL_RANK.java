@@ -87,7 +87,7 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 			int mongth=LocalDate.now().getMonthValue();
 			String monthstr=jobContext.getJob().getParam("month");
 			if(StringUtils.isNotEmpty(monthstr)){
-				mongth=Integer.parseInt(monthstr);
+				mongth=Integer.parseInt(monthstr)+1;
 			}
 				handleModelid(year,mongth,styleMap);
 				LOGGER.info("NEWMOTOMODEL_RANK is handleBrandid start");	
