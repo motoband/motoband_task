@@ -205,7 +205,7 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 								seriesreadcountstr="0";
 							}
 							long brandreadcount=Long.valueOf(seriesreadcountstr);
-							long totalhotcount=brandreadcount+totalmileage+totalusercount;
+							long totalhotcount=brandreadcount+totalmileage+totalusercount*1000;
 							totalreadcount=brandreadcount;
 							LOGGER.info("modelid="+modelid+",totalhotcount="+totalhotcount+",ranktime="+starttime);
 							newMotoRankModel.put("totalhotcount",totalhotcount);
@@ -216,7 +216,7 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 							long prevtotalreadcount=NewMotoModelDAO.getCountByModelId(sql);
 							long readcount=totalreadcount-prevtotalreadcount;
 							newMotoRankModel.put("readcount",readcount);
-							long hotcount=readcount+mileage+usercount;
+							long hotcount=readcount+mileage+usercount*1000;
 							LOGGER.info("modelid="+modelid+",hotcount="+hotcount+",ranktime="+starttime);
 							newMotoRankModel.put("hotcount",hotcount);
 							
@@ -436,7 +436,7 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 								brandreadcountstr="0";
 							}
 							long brandreadcount=Long.valueOf(brandreadcountstr);
-							totalhotcount=brandreadcount+totalmileage+totalusercount;
+							totalhotcount=brandreadcount+totalmileage+totalusercount*1000;
 							totalreadcount=brandreadcount;
 							LOGGER.info("brandid="+brandid+",totalhotcount="+totalhotcount+",ranktime="+starttime);
 
@@ -448,7 +448,7 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 							long prevtotalreadcount=NewMotoModelDAO.getCountByModelId(sql);
 							long readcount=totalreadcount-prevtotalreadcount;
 							newMotoRankModel.put("readcount",readcount);
-							long hotcount=readcount+mileage+usercount;
+							long hotcount=readcount+mileage+usercount*1000;
 							LOGGER.info("brandid="+brandid+",hotcount="+hotcount+",ranktime="+starttime);
 							newMotoRankModel.put("hotcount",hotcount);
 //							if(endtime==1577808000000l) {
