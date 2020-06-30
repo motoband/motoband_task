@@ -64,7 +64,8 @@ public class SEARCH_SUGGEST implements JobRunner  {
 			try {
 				r=YZManager.getInstance().searchYzProduct(pageno, 300, null);
 			} catch (Exception e) {
-				e.printStackTrace();
+				LOGGER.error(e);
+				pageno++;
 				continue;
 			}
 			
