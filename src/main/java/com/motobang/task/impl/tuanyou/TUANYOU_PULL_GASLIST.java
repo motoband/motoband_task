@@ -25,10 +25,14 @@ public class TUANYOU_PULL_GASLIST implements JobRunner {
 			if(StringUtils.isNotBlank(Consts.TUAN_YOU_ADMIN_TOKEN)) {
 				YouZhanManager.getInstance().refreshAdminToken();
 			}
+			LOGGER.info("开始执行刷新全量油站");
 			//刷新全量油站，
 			YouZhanManager.getInstance().getYouZhanManner(Consts.TUAN_YOU_ADMIN_MOBILENO,Consts.TUAN_YOU_ADMIN_TOKEN);
+			LOGGER.info("结束执行刷新全量油站");
+			LOGGER.info("开始执行刷新油站品牌");
 			//刷新油站品牌
 			YouZhanManager.getInstance().getYouZhanPrice(Consts.TUAN_YOU_ADMIN_MOBILENO,Consts.TUAN_YOU_ADMIN_TOKEN);
+			LOGGER.info("j结束执行刷新油站品牌");
 //			刷新油站距离
 //			TuanYouManager.getInstance().getYouZhanJuli();
         } catch (Exception e) {
