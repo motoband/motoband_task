@@ -83,12 +83,13 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 			if(StringUtils.isNotEmpty(yearstr)){
 				year=Integer.parseInt(yearstr);
 			}
-			
+			LOGGER.info("year="+year);
 			int mongth=LocalDate.now().getMonthValue();
 			String monthstr=jobContext.getJob().getParam("month");
 			if(StringUtils.isNotEmpty(monthstr)){
 				mongth=Integer.parseInt(monthstr)+1;
 			}
+			LOGGER.info("mongth="+mongth);
 				handleModelid(year,mongth,styleMap);
 				LOGGER.info("NEWMOTOMODEL_RANK is handleBrandid start");	
 				handleBrandid(year,mongth,styleMap);
