@@ -342,7 +342,7 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 		}
 		NewMotoModelDAO.insertRankModel(result);
 		try {
-			if (month==LocalDateTime.now().getMonthValue()&&year==LocalDateTime.now().getYear()) {
+//			if (month==LocalDateTime.now().getMonthValue()&&year==LocalDateTime.now().getYear()) {
 				MotoCarRedisEsManager.getInstance().initSeriesRank(result);
 				for (NewMotoRankModel newMotoRankModel : result) {
 					Map<String,Object> map=Maps.newHashMap();
@@ -351,10 +351,10 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 					ElasticSearchManager.getInstance().syncUpdateByQuery(NewMotoModelV2.class,JSON.toJSONString(map));
 				}
 				LOGGER.info("同步当月车型排行榜缓存,month="+month);
-			}else {
-				LOGGER.info("不同步当月品牌排行榜缓存,month="+month);
-
-			}
+//			}else {
+//				LOGGER.info("不同步当月品牌排行榜缓存,month="+month);
+//
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		};
@@ -543,7 +543,7 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 		}
 		NewMotoModelDAO.insertRankModel(result);	
 		try {
-			if (month==LocalDateTime.now().getMonthValue()&&year==LocalDateTime.now().getYear()) {
+//			if (month==LocalDateTime.now().getMonthValue()&&year==LocalDateTime.now().getYear()) {
 				MotoCarRedisEsManager.getInstance().initBrandRank(result);
 				MotoCarRedisEsManager.getInstance().initMotoBrandsV2();
 				//同步brandhotcount;
@@ -554,9 +554,9 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 					ElasticSearchManager.getInstance().syncUpdateByQuery(NewMotoModelV2.class,JSON.toJSONString(map));
 				}
 				LOGGER.info("同步当月品牌排行榜缓存,month="+month);
-			}else {
-				LOGGER.info("不同步当月品牌排行榜缓存,month="+month);
-			}
+//			}else {
+//				LOGGER.info("不同步当月品牌排行榜缓存,month="+month);
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		};
