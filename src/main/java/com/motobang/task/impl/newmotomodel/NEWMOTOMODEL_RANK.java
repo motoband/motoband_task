@@ -59,6 +59,7 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
 		try {
+			Consts.MOTOBAND_SEARCHSERVICE="http://10.0.0.11:8091/motoband-search/";
 			Map<String, Integer> styleMap=Maps.newHashMap();
 			styleMap.put("踏板", 1);
 			styleMap.put("弯梁", 2);
