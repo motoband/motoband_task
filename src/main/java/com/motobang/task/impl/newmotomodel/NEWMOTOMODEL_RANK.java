@@ -455,7 +455,7 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 							long readcount=totalreadcount-prevtotalreadcount;
 							newMotoRankModel.put("readcount",readcount);
 //							long hotcount=readcount+mileage+usercount*1000;
-							long hotcount=brandreadcount*30;
+							long hotcount=readcount*30;
 							LOGGER.info("brandid="+brandid+",hotcount="+hotcount+",ranktime="+starttime);
 							newMotoRankModel.put("hotcount",hotcount);
 //							if(endtime==1577808000000l) {
