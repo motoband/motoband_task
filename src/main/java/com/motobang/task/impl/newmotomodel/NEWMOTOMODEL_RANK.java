@@ -218,9 +218,10 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 							long prevranktime= now.plusMonths(-2).toInstant(ZoneOffset.of("+8")).toEpochMilli();
 							sql="select totalreadcount as count from motomodel_new_rank where modelid="+modelid+" and ranktime="+prevranktime;
 							long prevtotalreadcount=NewMotoModelDAO.getCountByModelId(sql);
-							long readcount=totalreadcount-prevtotalreadcount;
+							long readcount=Math.abs(totalreadcount-prevtotalreadcount);
 							newMotoRankModel.put("readcount",readcount);
-							long hotcount=readcount+mileage+usercount*1000;
+//							long hotcount=readcount+mileage+usercount*1000;
+							long hotcount=readcount*30;
 							LOGGER.info("modelid="+modelid+",hotcount="+hotcount+",ranktime="+starttime);
 							newMotoRankModel.put("hotcount",hotcount);
 							
@@ -441,7 +442,8 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 							}
 							long brandreadcount=Long.valueOf(brandreadcountstr);
 //							totalhotcount=brandreadcount+totalmileage+totalusercount*1000;
-							totalreadcount=brandreadcount*30;
+							totalhotcount=brandreadcount*30;
+							totalreadcount=brandreadcount;
 							LOGGER.info("brandid="+brandid+",totalhotcount="+totalhotcount+",ranktime="+starttime);
 
 							newMotoRankModel.put("totalhotcount",totalhotcount);
@@ -452,7 +454,8 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 							long prevtotalreadcount=NewMotoModelDAO.getCountByModelId(sql);
 							long readcount=totalreadcount-prevtotalreadcount;
 							newMotoRankModel.put("readcount",readcount);
-							long hotcount=readcount+mileage+usercount*1000;
+//							long hotcount=readcount+mileage+usercount*1000;
+							long hotcount=brandreadcount*30;
 							LOGGER.info("brandid="+brandid+",hotcount="+hotcount+",ranktime="+starttime);
 							newMotoRankModel.put("hotcount",hotcount);
 //							if(endtime==1577808000000l) {
