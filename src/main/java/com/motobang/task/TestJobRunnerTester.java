@@ -51,16 +51,14 @@ public class TestJobRunnerTester extends JobRunnerTester {
     		//川
     		List<String> userids=Lists.newArrayList("86-15910301209");
     		//正威
-//    		userids.add("8CA00FA094C14FBC88FC8ECFF92152A0");
+    		userids.add("417AA7D361914B38ABA6B59D74A9CE26");
 //    		userids.add("E2CD901A398C4B66A4BB16CE1603B3B1");
 //    		userids.add("E2CD901A398C4B66A4BB16CE1603B3B1");
     		taskModel.userpushmodel.userids=userids;
     	}else {
-    		List<String> userids=Lists.newArrayList("1C90B36CAA8D4B4EAF59A866CA7170E9");
+    		List<String> userids=Lists.newArrayList("86-15910301209");
     		//正威
-    		userids.add("8CA00FA094C14FBC88FC8ECFF92152A0");
-    		userids.add("E2CD901A398C4B66A4BB16CE1603B3B1");
-    		userids.add("E2CD901A398C4B66A4BB16CE1603B3B1");
+    		userids.add("417AA7D361914B38ABA6B59D74A9CE26");
 
     		
     		taskModel.userpushmodel.userids=userids;
