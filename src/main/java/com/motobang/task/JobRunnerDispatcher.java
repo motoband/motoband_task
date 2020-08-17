@@ -48,6 +48,7 @@ public class JobRunnerDispatcher implements JobRunner {
         JOB_RUNNER_MAP.put(MessageTaskModel.NEWMOTOMODEL, new NEWMOTOMODEL());
         
 //        JOB_RUNNER_MAP.put(MessageTaskModel.HEWEATHERNOW, new HEWEATHERNOW());
+        JOB_RUNNER_MAP.put(MessageTaskModel.GPS_CHECKERRORRD, new NEWMOTOMODEL());
 
     }
 

@@ -3,6 +3,7 @@ package com.motobang.task;
 import com.github.ltsopensource.core.logger.Logger;
 import com.github.ltsopensource.core.logger.LoggerFactory;
 import com.github.ltsopensource.tasktracker.TaskTracker;
+import com.motoband.common.Consts;
 import com.motoband.common.trace.TraceLevel;
 import com.motoband.common.trace.Tracer;
 import com.motoband.manager.ConfigManager;
@@ -24,6 +25,7 @@ public class TaskTrackerStartup {
 //    	System.setProperty("env_task","production_task");
     	DBConnectionManager.init();
     	DBConnectionManager.init("production_task");
+    	DBConnectionManager.init("production_gps");
 		ConfigManager.getInstance().init("MotoBandTask");
 		MotoDataManager.getInstance().init();
 		DataVersionManager.getInstance().init();
