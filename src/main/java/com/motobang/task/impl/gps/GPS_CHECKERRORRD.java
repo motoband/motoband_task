@@ -28,35 +28,42 @@ public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
 
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
+		LOGGER.info("GPS_CHECKERRORRD is start");
 		long max=System.currentTimeMillis()-5*60*1000;
 		Set<String> rdSet=RedisManager.getInstance().zrangbyscore(Consts.REDIS_SCHEME_RUN, EFullUploadReport.GPS_REPORT_INFO_SET, 0, max);
-		for (String rd : rdSet) {
-			try {
-				Map<String,Object> map=Maps.newHashMap();
-				map.put("rd", rd);
-				map.put("head", "8");
-				List<GPSBaseReportInfoModel> list=HardwareGPSDao.getGPSReportInfoList(map);
-				if(CollectionUtil.isEmpty(list)) {
-					String reportjsonstr=RedisManager.getInstance().string_get(Consts.REDIS_SCHEME_RUN, rd+EFullUploadReport.GPS_REPORT_INFO);
-					GPSBaseReportInfoModel report = JSON.parseObject(reportjsonstr, GPSBaseReportInfoModel.class);
-					GarageModel garagemodel = UserGarageDAO.getUserGaragesBygpssn(report.sn);
-					if (garagemodel == null || StringUtils.isBlank(garagemodel.userid)) {
-						return null;
+		if(CollectionUtil.isNotEmpty(rdSet)) {
+			for (String rd : rdSet) {
+				try {
+					Map<String,Object> map=Maps.newHashMap();
+					map.put("rd", rd);
+					map.put("head", "8");
+					List<GPSBaseReportInfoModel> list=HardwareGPSDao.getGPSReportInfoList(map);
+					if(CollectionUtil.isEmpty(list)) {
+						String reportjsonstr=RedisManager.getInstance().string_get(Consts.REDIS_SCHEME_RUN, rd+EFullUploadReport.GPS_REPORT_INFO);
+						GPSBaseReportInfoModel report = JSON.parseObject(reportjsonstr, GPSBaseReportInfoModel.class);
+						GarageModel garagemodel = UserGarageDAO.getUserGaragesBygpssn(report.sn);
+						if (garagemodel == null || StringUtils.isBlank(garagemodel.userid)) {
+							return null;
+						}
+						report.head="8";
+						report.wm=2;
+						report.eng=2;
+						HardwareGPSDao.insertBaseUploadReportInfo(report);
+						new EFullUploadReport().countGPS(report);
+
 					}
-					report.head="8";
-					report.wm=2;
-					report.eng=2;
-					HardwareGPSDao.insertBaseUploadReportInfo(report);
-					new EFullUploadReport().countGPS(report, garagemodel);
-
+				} catch (Exception e) {
+					LOGGER.error(e);
+					continue;
 				}
-			} catch (Exception e) {
-				LOGGER.error(e);
-				continue;
-			}
 
+			}
+			
+			RedisManager.getInstance().zremrangeByScore(Consts.REDIS_SCHEME_RUN, EFullUploadReport.GPS_REPORT_INFO_SET, 0, max);
 		}
-		RedisManager.getInstance().zremrangeByScore(Consts.REDIS_SCHEME_RUN, EFullUploadReport.GPS_REPORT_INFO_SET, 0, max);
+			
+
+		LOGGER.info("GPS_CHECKERRORRD is end");
 		return null;
 	}
 
