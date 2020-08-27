@@ -33,12 +33,12 @@ public class TestJobRunnerTester extends JobRunnerTester {
 
     public static void main(String[] args) throws Throwable {
     	 System.setProperty("push_flag","0");
-         System.setProperty("env","windowstest");
-         System.setProperty("env_task","windowstest_task");
-         System.setProperty("env_gps","windowstest_gps");
-     	DBConnectionManager.init("windowstest");
-     	DBConnectionManager.init("windowstest_task");
-     	DBConnectionManager.init("windowstest_gps");
+         System.setProperty("env","production");
+         System.setProperty("env_task","production_task");
+         System.setProperty("env_gps","production_gps");
+     	DBConnectionManager.init("production");
+     	DBConnectionManager.init("production_task");
+     	DBConnectionManager.init("production_gps");
  		ConfigManager.getInstance().init("MotoBandTask");
  		MotoDataManager.getInstance().init();
  		DataVersionManager.getInstance().init();
