@@ -30,7 +30,7 @@ public class TaskTrackerStartup {
 //    	System.setProperty("env_task","production_task");
     	DBConnectionManager.init();
     	DBConnectionManager.init(Consts.DB_ENVIRONMENT_TASK);
-    	DBConnectionManager.init(Consts.DB_ENVIRONMENT_TASK);
+    	DBConnectionManager.init(Consts.DB_ENVIRONMENT_GPS);
 		ConfigManager.getInstance().init("MotoBandTask");
 		MotoDataManager.getInstance().init();
 		DataVersionManager.getInstance().init();
