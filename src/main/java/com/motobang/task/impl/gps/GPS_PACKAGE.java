@@ -88,6 +88,7 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 //							PutObjectResult putObjectResult = cosclient.putObject(putObjectRequest);	
 							String dataurl="http://gpsridelinedata-1251739791.file.myqcloud.com/gpsridelinedata/"+rd;
 							RedisManager.getInstance().zrem(Consts.REDIS_SCHEME_RUN, EFullUploadReport.GPS_REPORT_INFO_SET, rd);
+							HardwareGPSDao.updateGPSRidelineDateurl(rd,dataurl);
 //						String reportjsonstr=RedisManager.getInstance().string_get(Consts.REDIS_SCHEME_RUN, rd+EFullUploadReport.GPS_REPORT_INFO);
 //						GPSBaseReportInfoModel report = JSON.parseObject(reportjsonstr, GPSBaseReportInfoModel.class);
 //						GarageModel garagemodel = UserGarageDAO.getUserGaragesBygpssn(report.sn);
