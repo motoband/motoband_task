@@ -42,7 +42,7 @@ public class NEWMOTOMODEL implements JobRunner  {
 		Consts.MOTOBAND_SEARCHSERVICE="http://10.0.0.11:8091/motoband-search/";
 		MotoCarRedisEsManager.getInstance().initCarData();
 		MotoCarRedisEsManager.getInstance().initMotoBrandsV2();
-
+		LOGGER.info("NEWMOTOMODEL is end");
 		return null;
 	}
 
