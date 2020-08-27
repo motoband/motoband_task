@@ -33,10 +33,12 @@ public class TestJobRunnerTester extends JobRunnerTester {
 
     public static void main(String[] args) throws Throwable {
     	 System.setProperty("push_flag","0");
-         System.setProperty("env","production");
-         System.setProperty("env_task","production_task");
-     	DBConnectionManager.init("production");
-     	DBConnectionManager.init("production_task");
+         System.setProperty("env","windowstest");
+         System.setProperty("env_task","windowstest_task");
+         System.setProperty("env_gps","windowstest_gps");
+     	DBConnectionManager.init("windowstest");
+     	DBConnectionManager.init("windowstest_task");
+     	DBConnectionManager.init("windowstest_gps");
  		ConfigManager.getInstance().init("MotoBandTask");
  		MotoDataManager.getInstance().init();
  		DataVersionManager.getInstance().init();
@@ -71,9 +73,11 @@ public class TestJobRunnerTester extends JobRunnerTester {
 //    	taskModel.taskid+=System.currentTimeMillis()/1000;
     	taskModel.test=0;
     	Job job=new Job();
+    	job.setTaskId(MessageTaskModel.GPS_PACKAGE);
+		job.setParam("type", MessageTaskModel.GPS_PACKAGE);
 		job.setTaskId(taskModel.taskid);
-		job.setParam("type", MessageTaskModel.PUSH_IM_PUSH);
-		job.setParam("data", JSON.toJSONString(taskModel));
+//		job.setParam("type", MessageTaskModel.PUSH_IM_PUSH);
+//		job.setParam("data", JSON.toJSONString(taskModel));
 		job.setNeedFeedback(true);
 		job.setRelyOnPrevCycle(true);
 		job.setReplaceOnExist(true);

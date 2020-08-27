@@ -15,6 +15,7 @@ import com.motoband.common.MBResponse;
 import com.motoband.common.MBResponseCode;
 import com.motoband.model.task.MessageTaskModel;
 import com.motobang.task.impl.gps.GPS_CHECKERRORRD;
+import com.motobang.task.impl.gps.GPS_PACKAGE;
 import com.motobang.task.impl.newmotomodel.NEWMOTOMODEL;
 import com.motobang.task.impl.newmotomodel.NEWMOTOMODEL_RANK;
 import com.motobang.task.impl.push.PUSH_CREATE_MBUSER_PUSH;
@@ -50,7 +51,7 @@ public class JobRunnerDispatcher implements JobRunner {
         
 //        JOB_RUNNER_MAP.put(MessageTaskModel.HEWEATHERNOW, new HEWEATHERNOW());
         JOB_RUNNER_MAP.put(MessageTaskModel.GPS_CHECKERRORRD, new GPS_CHECKERRORRD());
-        JOB_RUNNER_MAP.put(MessageTaskModel.GPS_PACKAGE, new GPS_CHECKERRORRD());
+        JOB_RUNNER_MAP.put(MessageTaskModel.GPS_PACKAGE, new GPS_PACKAGE());
 
     }
 
