@@ -74,7 +74,7 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 					String key="gpsridelinedata/"+rd;
 //					map.put("head", "8");
 					List<Map<String, Object>> list=HardwareGPSDao.getGPSReportInfoListWithoutBHV(map);
-					if(CollectionUtil.isEmpty(list)) {
+					if(CollectionUtil.isNotEmpty(list)) {
 						   ObjectMetadata objectMetadata = new ObjectMetadata();
 					        // 从输入流上传必须制定content length, 否则http客户端可能会缓存所有数据，存在内存OOM的情况
 					        // 默认下载时根据cos路径key的后缀返回响应的contenttype, 上传时设置contenttype会覆盖默认值
@@ -87,8 +87,9 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 							UploadResult res=putObjectResult.waitForUploadResult();
 //							PutObjectResult putObjectResult = cosclient.putObject(putObjectRequest);	
 							String dataurl="http://gpsridelinedata-1251739791.file.myqcloud.com/gpsridelinedata/"+rd;
-							RedisManager.getInstance().zrem(Consts.REDIS_SCHEME_RUN, EFullUploadReport.GPS_REPORT_INFO_SET, rd);
+							RedisManager.getInstance().zrem(Consts.REDIS_SCHEME_RUN, EFullUploadReport.GPS_PACKAGE_SET, rd);
 							HardwareGPSDao.updateGPSRidelineDateurl(rd,dataurl);
+							
 //						String reportjsonstr=RedisManager.getInstance().string_get(Consts.REDIS_SCHEME_RUN, rd+EFullUploadReport.GPS_REPORT_INFO);
 //						GPSBaseReportInfoModel report = JSON.parseObject(reportjsonstr, GPSBaseReportInfoModel.class);
 //						GarageModel garagemodel = UserGarageDAO.getUserGaragesBygpssn(report.sn);

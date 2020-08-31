@@ -33,12 +33,12 @@ public class TestJobRunnerTester extends JobRunnerTester {
 
     public static void main(String[] args) throws Throwable {
     	 System.setProperty("push_flag","0");
-         System.setProperty("env","windowstest");
-         System.setProperty("env_task","windowstest_task");
-         System.setProperty("env_gps","windowstest_gps");
-     	DBConnectionManager.init("windowstest");
-     	DBConnectionManager.init("windowstest_task");
-     	DBConnectionManager.init("windowstest_gps");
+         System.setProperty("env","production");
+         System.setProperty("env_task","production_task");
+         System.setProperty("env_gps","production_gps");
+     	DBConnectionManager.init("production");
+     	DBConnectionManager.init("production_task");
+     	DBConnectionManager.init("production_gps");
  		ConfigManager.getInstance().init("MotoBandTask");
  		MotoDataManager.getInstance().init();
  		DataVersionManager.getInstance().init();
@@ -46,7 +46,7 @@ public class TestJobRunnerTester extends JobRunnerTester {
  		OkHttpClientUtil.init();
  		YZManager.getInstance().refreshYZAccessToken();
 //        //  Mock Job 数据
-    	String json="{\"createtime\":1586499906391,\"des\":\"不知这次有没有你，如没有，那是幸福\",\"failcount\":0,\"gpid\":0,\"handlecount\":0,\"id\":0,\"imgurl\":\"http://news2-10013836.cos.ap-shanghai.myqcloud.com/78217F5AC176441A95C30C86C6189E33\",\"linktype\":1,\"name\":\"2020-04-10 14:25:06_阿沟的推送\",\"nid\":\"FB7E8D79694A4038A46BC3FC90C4DC7A\",\"starttime\":0,\"state\":0,\"successcount\":0,\"sumcount\":0,\"taskid\":\"ios_push_20200410142507\",\"test\":1,\"title\":\"机车吐槽大会第二弹\",\"updatetime\":0,\"userpushmodel\":{\"addtime\":0,\"brandid\":0,\"brandparentid\":0,\"ctype\":1,\"cversion\":0,\"lastactivetime\":0,\"mbid\":0,\"modelid\":0,\"state\":0,\"updatetime\":0}}";
+    	String json="{\"createtime\":1586499906391,\"des\":\"不知这次有没有你，如没有，那是幸福\",\"failcount\":0,\"gpid\":0,\"handlecount\":0,\"id\":0,\"imgurl\":\"http://news2-10013836.cos.ap-shanghai.myqcloud.com/78217F5AC176441A95C30C86C6189E33\",\"linktype\":1,\"name\":\"2020-04-10 14:25:06_阿沟的推送\",\"nid\":\"FB7E8D79694A4038A46BC3FC90C4DC7A\",\"starttime\":0,\"state\":0,\"successcount\":0,\"sumcount\":0,\"taskid\":\"ios_push_20200410142501\",\"test\":1,\"title\":\"机车吐槽大会第二弹\",\"updatetime\":0,\"userpushmodel\":{\"addtime\":0,\"brandid\":0,\"brandparentid\":0,\"ctype\":1,\"cversion\":0,\"lastactivetime\":0,\"mbid\":0,\"modelid\":0,\"state\":0,\"updatetime\":0}}";
     	MessageTaskModel taskModel=JSON.parseObject(json, MessageTaskModel.class);
     	if(taskModel.userpushmodel==null) {
     		taskModel.userpushmodel=new MBUserPushModel();
@@ -65,19 +65,19 @@ public class TestJobRunnerTester extends JobRunnerTester {
     		
     		taskModel.userpushmodel.userids=userids;
     	}
-    	taskModel.title="測試推送";
-    	taskModel.subtitle="測試推送";
+    	taskModel.title="測試推送3";
+    	taskModel.subtitle="測試推送3";
     	taskModel.des="其他人收到請聯係服務器";
     	taskModel.nid="1204E87D9F404AFF849EB6364A21E006";
     	//1586750375000
 //    	taskModel.taskid+=System.currentTimeMillis()/1000;
     	taskModel.test=0;
     	Job job=new Job();
-    	job.setTaskId(MessageTaskModel.GPS_PACKAGE);
-		job.setParam("type", MessageTaskModel.GPS_PACKAGE);
+//    	job.setTaskId(MessageTaskModel.GPS_PACKAGE);
+//		job.setParam("type", MessageTaskModel.GPS_PACKAGE);
 		job.setTaskId(taskModel.taskid);
-//		job.setParam("type", MessageTaskModel.PUSH_IM_PUSH);
-//		job.setParam("data", JSON.toJSONString(taskModel));
+		job.setParam("type", MessageTaskModel.PUSH_IM_PUSH);
+		job.setParam("data", JSON.toJSONString(taskModel));
 		job.setNeedFeedback(true);
 		job.setRelyOnPrevCycle(true);
 		job.setReplaceOnExist(true);
