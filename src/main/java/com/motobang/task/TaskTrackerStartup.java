@@ -29,8 +29,8 @@ public class TaskTrackerStartup {
     public static void main(String[] args) throws Exception {
 //    	System.setProperty("env_task","production_task");
     	DBConnectionManager.init();
-    	DBConnectionManager.init("windowstest_task");
-    	DBConnectionManager.init("windowstest_gps");
+    	DBConnectionManager.init(Consts.DB_ENVIRONMENT_TASK);
+    	DBConnectionManager.init(Consts.DB_ENVIRONMENT_GPS);
 		ConfigManager.getInstance().init("MotoBandTask");
 		MotoDataManager.getInstance().init();
 		DataVersionManager.getInstance().init();

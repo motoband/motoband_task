@@ -54,6 +54,7 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
 	@Override
 	public Result run(JobContext arg0) throws Throwable {
 		try {
+			LOGGER.info("更新用戶有效性 is start");
 			long minaddtime = LocalDateTime.of(LocalDate.now().plusYears(-2), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();
 			String sql = "select userid,city,gender,addtime from mbuser where  channel not like '%X'";
 			List<Map<String, Object>> result = UserDAO.executesql(sql);
@@ -131,8 +132,10 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
 				}
 				mbuser.updatetime = System.currentTimeMillis();
 				UserDAO.inserUserPush(mbuser);
-				LOGGER.info("更新用戶有效性over mbuser="+JSON.toJSONString(mbuser));
+//				LOGGER.info("更新用戶有效性over mbuser="+JSON.toJSONString(mbuser));
 			}
+			LOGGER.info("更新用戶有效性over");
+
 		} catch (Exception e) {
 				if(e instanceof InterruptedException) {
         		return null;
