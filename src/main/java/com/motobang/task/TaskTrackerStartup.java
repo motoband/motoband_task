@@ -28,6 +28,8 @@ public class TaskTrackerStartup {
 
     public static void main(String[] args) throws Exception {
 //    	System.setProperty("env_task","production_task");
+		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.ERROR);
+
     	DBConnectionManager.init();
     	DBConnectionManager.init(Consts.DB_ENVIRONMENT_TASK);
     	DBConnectionManager.init(Consts.DB_ENVIRONMENT_GPS);
