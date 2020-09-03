@@ -41,13 +41,13 @@ public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
 					if(CollectionUtil.isEmpty(list)) {
 						String reportjsonstr=RedisManager.getInstance().string_get(Consts.REDIS_SCHEME_RUN, rd+EFullUploadReport.GPS_REPORT_INFO);
 						GPSBaseReportInfoModel report = JSON.parseObject(reportjsonstr, GPSBaseReportInfoModel.class);
-						GarageModel garagemodel = UserGarageDAO.getUserGaragesBygpssn(report.sn);
+						GarageModel garagemodel = UserGarageDAO.getUserGaragesBygpssn(report.info.sn);
 						if (garagemodel == null || StringUtils.isBlank(garagemodel.userid)) {
 							return null;
 						}
 						report.head="8";
-						report.wm=2;
-						report.eng=2;
+						report.info.wm=2;
+						report.info.eng=2;
 						HardwareGPSDao.insertBaseUploadReportInfo(report);
 						new EFullUploadReport().countGPS(report);
 
