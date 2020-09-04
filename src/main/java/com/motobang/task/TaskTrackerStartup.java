@@ -39,7 +39,7 @@ public class TaskTrackerStartup {
 		DataVersionManager.getInstance().startCheck();	
 		OkHttpClientUtil.init();
 		YZManager.getInstance().refreshYZAccessToken();
-		initcosclient();
+//		initcosclient();
 		String cfgPath=null;
 		if(args.length!=0) {
 			cfgPath = args[0];
@@ -56,17 +56,6 @@ public class TaskTrackerStartup {
 
     }
 
-    private static void initcosclient() {
-//    	String secretId = "AKIDl8fUHCxeOZaB8gzRsipx6AsJKb4NatKS";
-//		String secretKey = "14FYwQ4PtIeui1qk35XwUoi6gOiaY2SO";
-//		COSCredentials cred = new BasicCOSCredentials(Consts.SECRETID, Consts.SECRETKEY);
-//		// 2 设置 bucket 的区域, COS 地域的简称请参照 https://cloud.tencent.com/document/product/436/6224
-//		// clientConfig 中包含了设置 region, https(默认 http), 超时, 代理等 set 方法, 使用可参见源码或者常见问题 Java SDK 部分。
-//		Region region = new Region("ap-shanghai");
-//		ClientConfig clientConfig = new ClientConfig(region);
-//		// 3 生成 cos 客户端。
-//		COSClient cosClient = new COSClient(cred, clientConfig);		
-	}
 
 	public static void start(String cfgPath) {
         try {
