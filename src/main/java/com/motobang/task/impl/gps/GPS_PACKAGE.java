@@ -71,7 +71,7 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 				try {
 					Map<String,Object> map=Maps.newHashMap();
 					map.put("rd", rd);
-					String key="gpsridelinedata/"+rd;
+					String key="gpsridelinedata/"+rd+".mbdata";
 //					map.put("head", "8");
 					List<GPSBaseReportInfoModel> list=HardwareGPSDao.getGPSReportInfoList(map);
 					if(CollectionUtil.isNotEmpty(list)) {
@@ -86,7 +86,7 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 							Upload putObjectResult=transferManager.upload(putObjectRequest);
 							UploadResult res=putObjectResult.waitForUploadResult();
 //							PutObjectResult putObjectResult = cosclient.putObject(putObjectRequest);	
-							String dataurl="https://gpsridelinedata-1251739791.file.myqcloud.com/gpsridelinedata/"+rd;
+							String dataurl="https://gpsridelinedata-1251739791.file.myqcloud.com/"+key;
 							RedisManager.getInstance().zrem(Consts.REDIS_SCHEME_RUN, EFullUploadReport.GPS_PACKAGE_SET, rd);
 							HardwareGPSDao.updateGPSRidelineDateurl(rd,dataurl);
 							
