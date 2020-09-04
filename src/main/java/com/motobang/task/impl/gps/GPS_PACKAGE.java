@@ -73,7 +73,7 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 					map.put("rd", rd);
 					String key="gpsridelinedata/"+rd;
 //					map.put("head", "8");
-					List<Map<String, Object>> list=HardwareGPSDao.getGPSReportInfoListWithoutBHV(map);
+					List<GPSBaseReportInfoModel> list=HardwareGPSDao.getGPSReportInfoList(map);
 					if(CollectionUtil.isNotEmpty(list)) {
 						   ObjectMetadata objectMetadata = new ObjectMetadata();
 					        // 从输入流上传必须制定content length, 否则http客户端可能会缓存所有数据，存在内存OOM的情况
