@@ -71,6 +71,7 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 				try {
 					Map<String,Object> map=Maps.newHashMap();
 					map.put("rd", rd);
+					map.put("orderby", "ASC");
 					String key="gpsridelinedata/"+rd+".mbdata";
 //					map.put("head", "8");
 					List<GPSBaseReportInfoModel> list=HardwareGPSDao.getGPSReportInfoList(map);
