@@ -9,10 +9,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-
 import com.alibaba.fastjson.JSON;
 import com.github.ltsopensource.core.logger.Logger;
 import com.github.ltsopensource.core.logger.LoggerFactory;
@@ -20,13 +16,11 @@ import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.runner.InterruptibleJobRunner;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.motoband.common.Consts;
-import com.motoband.dao.UserGarageDAO;
 import com.motoband.dao.gps.HardwareGPSDao;
-import com.motoband.manager.DBConnectionManager;
 import com.motoband.manager.RedisManager;
 import com.motoband.manager.hardware.gps.parse.EFullUploadReport;
-import com.motoband.model.GarageModel;
 import com.motoband.model.hardware.gps.GPSBaseReportInfoModel;
 import com.motoband.utils.collection.CollectionUtil;
 import com.qcloud.cos.COSClient;
@@ -35,7 +29,6 @@ import com.qcloud.cos.auth.BasicCOSCredentials;
 import com.qcloud.cos.auth.COSCredentials;
 import com.qcloud.cos.model.ObjectMetadata;
 import com.qcloud.cos.model.PutObjectRequest;
-import com.qcloud.cos.model.PutObjectResult;
 import com.qcloud.cos.model.UploadResult;
 import com.qcloud.cos.region.Region;
 import com.qcloud.cos.transfer.TransferManager;
@@ -50,6 +43,7 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 		LOGGER.info("GPS_PACKAGE is start");
 		long max=System.currentTimeMillis();
 		Set<String> rdSet=RedisManager.getInstance().zrangbyscore(Consts.REDIS_SCHEME_RUN, EFullUploadReport.GPS_PACKAGE_SET, 0, max);
+//		rdSet=Sets.newHashSet("6EF4CF0C83F8D3A17AB1AF1667D5231F");
 		if(CollectionUtil.isNotEmpty(rdSet)) {
 			COSCredentials cred = new BasicCOSCredentials(Consts.SECRETID, Consts.SECRETKEY);
 			// 2 设置 bucket 的区域, COS 地域的简称请参照 https://cloud.tencent.com/document/product/436/6224
