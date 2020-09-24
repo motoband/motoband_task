@@ -3,6 +3,7 @@ package com.motobang.task.impl.gps;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,7 +44,7 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 		LOGGER.info("GPS_PACKAGE is start");
 		long max=System.currentTimeMillis();
 		Set<String> rdSet=RedisManager.getInstance().zrangbyscore(Consts.REDIS_SCHEME_RUN, EFullUploadReport.GPS_PACKAGE_SET, 0, max);
-//		rdSet=Sets.newHashSet("6EF4CF0C83F8D3A17AB1AF1667D5231F");
+//		rdSet=Sets.newHashSet("4BB5A30F8E9900836B8632CC058F0056");
 		if(CollectionUtil.isNotEmpty(rdSet)) {
 			COSCredentials cred = new BasicCOSCredentials(Consts.SECRETID, Consts.SECRETKEY);
 			// 2 设置 bucket 的区域, COS 地域的简称请参照 https://cloud.tencent.com/document/product/436/6224
@@ -75,6 +76,13 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 					        // 从输入流上传必须制定content length, 否则http客户端可能会缓存所有数据，存在内存OOM的情况
 					        // 默认下载时根据cos路径key的后缀返回响应的contenttype, 上传时设置contenttype会覆盖默认值
 					        objectMetadata.setContentType("application/json");
+//					        Iterator<GPSBaseReportInfoModel> it=list.iterator();
+//					        while (it.hasNext()) {
+//					        	GPSBaseReportInfoModel result=it.next();
+//					        	if(result.gps.tm<0){
+//					        		it.remove();
+//					        	}
+//							}
 					        String json=JSON.toJSONString(list);
 					        objectMetadata.setContentLength(json.getBytes().length);
 					        InputStream input = new ByteArrayInputStream(json.getBytes());
