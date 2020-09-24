@@ -36,7 +36,7 @@ public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
 				try {
 					Map<String,Object> map=Maps.newHashMap();
 					map.put("rd", rd);
-					map.put("head", "8");
+					map.put("head", 8);
 					List<GPSBaseReportInfoModel> list=HardwareGPSDao.getGPSReportInfoList(map);
 					if(CollectionUtil.isEmpty(list)) {
 						String reportjsonstr=RedisManager.getInstance().string_get(Consts.REDIS_SCHEME_RUN, rd+EFullUploadReport.GPS_REPORT_INFO);
@@ -45,7 +45,7 @@ public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
 						if (garagemodel == null || StringUtils.isBlank(garagemodel.userid)) {
 							return null;
 						}
-						report.head="8";
+						report.head=8;
 						report.info.wm=2;
 						report.info.eng=2;
 						HardwareGPSDao.insertBaseUploadReportInfo(report);
