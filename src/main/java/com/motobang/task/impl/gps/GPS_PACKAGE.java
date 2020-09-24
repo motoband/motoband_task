@@ -69,7 +69,7 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 //					map.put("orderby", "ASC");
 //					map.put("valid", 1);
 					String key="gpsridelinedata/"+rd+".mbdata";
-//					map.put("head", "8");
+//					map.put("head", 8);
 					List<GPSBaseReportInfoModel> list=HardwareGPSDao.getGPSPackageReportInfoList(map);
 					if(CollectionUtil.isNotEmpty(list)) {
 						   ObjectMetadata objectMetadata = new ObjectMetadata();
