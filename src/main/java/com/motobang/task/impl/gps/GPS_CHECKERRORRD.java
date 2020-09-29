@@ -14,6 +14,7 @@ import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.runner.InterruptibleJobRunner;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.motoband.common.Consts;
 import com.motoband.dao.UserGarageDAO;
 import com.motoband.dao.gps.HardwareGPSDao;
@@ -31,6 +32,7 @@ public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
 		LOGGER.info("GPS_CHECKERRORRD is start");
 		long max=System.currentTimeMillis()-5*60*1000;
 		Set<String> rdSet=RedisManager.getInstance().zrangbyscore(Consts.REDIS_SCHEME_RUN, EFullUploadReport.GPS_REPORT_INFO_SET, 0, max);
+//		rdSet=Sets.newHashSet("F84465E5C774A1CD0D1944D2947540FE");
 		if(CollectionUtil.isNotEmpty(rdSet)) {
 			for (String rd : rdSet) {
 				try {
@@ -39,8 +41,12 @@ public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
 					map.put("head", 8);
 					List<GPSBaseReportInfoModel> list=HardwareGPSDao.getGPSReportInfoList(map);
 					if(CollectionUtil.isEmpty(list)) {
-						String reportjsonstr=RedisManager.getInstance().string_get(Consts.REDIS_SCHEME_RUN, rd+EFullUploadReport.GPS_REPORT_INFO);
-						GPSBaseReportInfoModel report = JSON.parseObject(reportjsonstr, GPSBaseReportInfoModel.class);
+//						String reportjsonstr=RedisManager.getInstance().string_get(Consts.REDIS_SCHEME_RUN, rd+EFullUploadReport.GPS_REPORT_INFO);
+						map.put("head", 6);
+						map.put("valid", 1);
+						map.put("orderby", "desc");
+						List<GPSBaseReportInfoModel> reports = HardwareGPSDao.getGPSReportInfoList(map);
+					   GPSBaseReportInfoModel report=reports.get(1);	
 						GarageModel garagemodel = UserGarageDAO.getUserGaragesBygpssn(report.info.sn);
 						if (garagemodel == null || StringUtils.isBlank(garagemodel.userid)) {
 							return null;

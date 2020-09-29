@@ -44,7 +44,7 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 		LOGGER.info("GPS_PACKAGE is start");
 		long max=System.currentTimeMillis();
 		Set<String> rdSet=RedisManager.getInstance().zrangbyscore(Consts.REDIS_SCHEME_RUN, EFullUploadReport.GPS_PACKAGE_SET, 0, max);
-//		rdSet=Sets.newHashSet("4BB5A30F8E9900836B8632CC058F0056");
+//		rdSet=Sets.newHashSet("0D34DF5421836379C33D145317AEBF0B");
 		if(CollectionUtil.isNotEmpty(rdSet)) {
 			COSCredentials cred = new BasicCOSCredentials(Consts.SECRETID, Consts.SECRETKEY);
 			// 2 设置 bucket 的区域, COS 地域的简称请参照 https://cloud.tencent.com/document/product/436/6224
@@ -121,7 +121,7 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 		}
 			
 
-		LOGGER.info("GPS_CHECKERRORRD is end");
+		LOGGER.info("GPS_PACKAGE is end");
 		return null;
 	}
 
