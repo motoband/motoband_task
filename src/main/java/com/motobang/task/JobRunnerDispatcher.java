@@ -24,6 +24,7 @@ import com.motobang.task.impl.push.PUSH_IM_PUSH_CHECKFINSHE;
 import com.motobang.task.impl.push.PUSH_IM_PUSH_ERROR_USERIDS;
 import com.motobang.task.impl.search.SEARCH_SUGGEST;
 import com.motobang.task.impl.tuanyou.TUANYOU_PULL_GASLIST;
+import com.motobang.task.impl.yz.YZ_REFRESH_ACCESSTOKEN;
 
 public class JobRunnerDispatcher implements JobRunner {
     protected static final Logger LOGGER = LoggerFactory.getLogger(JobRunnerDispatcher.class);
@@ -52,6 +53,10 @@ public class JobRunnerDispatcher implements JobRunner {
 //        JOB_RUNNER_MAP.put(MessageTaskModel.HEWEATHERNOW, new HEWEATHERNOW());
         JOB_RUNNER_MAP.put(MessageTaskModel.GPS_CHECKERRORRD, new GPS_CHECKERRORRD());
         JOB_RUNNER_MAP.put(MessageTaskModel.GPS_PACKAGE, new GPS_PACKAGE());
+        
+        //yz
+        JOB_RUNNER_MAP.put(MessageTaskModel.YZ_REFRESH_ACCESSTOKEN, new YZ_REFRESH_ACCESSTOKEN());
+
 
     }
 
