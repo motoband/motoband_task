@@ -80,8 +80,12 @@ public class TestJobRunnerTester extends JobRunnerTester {
 //    	taskModel.taskid+=System.currentTimeMillis()/1000;
     	taskModel.test=0;
     	Job job=new Job();
-    	job.setTaskId(MessageTaskModel.GPS_PACKAGE);
-		job.setParam("type", MessageTaskModel.GPS_PACKAGE);
+//    	job.setTaskId(MessageTaskModel.GPS_CHECKERRORRD);
+//		job.setParam("type", MessageTaskModel.GPS_CHECKERRORRD);
+//    	job.setTaskId(MessageTaskModel.GPS_PACKAGE);
+//		job.setParam("type", MessageTaskModel.GPS_PACKAGE);
+    	job.setTaskId(MessageTaskModel.YZ_REFRESH_ACCESSTOKEN);
+		job.setParam("type", MessageTaskModel.YZ_REFRESH_ACCESSTOKEN);
 		job.setTaskId(taskModel.taskid);
 //		job.setParam("type", MessageTaskModel.PUSH_IM_PUSH);
 //		job.setParam("data", JSON.toJSONString(taskModel));
