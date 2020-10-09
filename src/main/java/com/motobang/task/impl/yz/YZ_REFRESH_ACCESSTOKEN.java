@@ -44,7 +44,6 @@ public class YZ_REFRESH_ACCESSTOKEN implements InterruptibleJobRunner {
 		LOGGER.info("开始刷新有赞token  jobContext="+JSON.toJSONString(jobContext));
 		YZManager.getInstance().refreshYZAccessToken();
 		LOGGER.info("结束刷新有赞token  jobContext="+JSON.toJSONString(jobContext));
-
         return new Result(Action.EXECUTE_SUCCESS, YZManager.getInstance().getYZAccessToken());
 	}
 
