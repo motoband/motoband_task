@@ -38,7 +38,7 @@ public class TaskTrackerStartup {
 		DataVersionManager.getInstance().init();
 		DataVersionManager.getInstance().startCheck();	
 		OkHttpClientUtil.init();
-		YZManager.getInstance().refreshYZAccessToken();
+//		YZManager.getInstance().refreshYZAccessToken();
 //		initcosclient();
 		String cfgPath=null;
 		if(args.length!=0) {
