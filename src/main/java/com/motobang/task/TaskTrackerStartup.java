@@ -3,6 +3,7 @@ package com.motobang.task;
 import com.github.ltsopensource.core.logger.Logger;
 import com.github.ltsopensource.core.logger.LoggerFactory;
 import com.github.ltsopensource.tasktracker.TaskTracker;
+import com.motoband.common.Consts;
 import com.motoband.common.trace.TraceLevel;
 import com.motoband.common.trace.Tracer;
 import com.motoband.manager.ConfigManager;
@@ -11,6 +12,11 @@ import com.motoband.manager.DataVersionManager;
 import com.motoband.manager.MotoDataManager;
 import com.motoband.manager.YZManager;
 import com.motoband.utils.OkHttpClientUtil;
+import com.qcloud.cos.COSClient;
+import com.qcloud.cos.ClientConfig;
+import com.qcloud.cos.auth.BasicCOSCredentials;
+import com.qcloud.cos.auth.COSCredentials;
+import com.qcloud.cos.region.Region;
 
 /**
  * 
@@ -22,14 +28,18 @@ public class TaskTrackerStartup {
 
     public static void main(String[] args) throws Exception {
 //    	System.setProperty("env_task","production_task");
+		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.ERROR);
+
     	DBConnectionManager.init();
-    	DBConnectionManager.init("production_task");
+    	DBConnectionManager.init(Consts.DB_ENVIRONMENT_TASK);
+    	DBConnectionManager.init(Consts.DB_ENVIRONMENT_GPS);
 		ConfigManager.getInstance().init("MotoBandTask");
 		MotoDataManager.getInstance().init();
 		DataVersionManager.getInstance().init();
 		DataVersionManager.getInstance().startCheck();	
 		OkHttpClientUtil.init();
-		YZManager.getInstance().refreshYZAccessToken();
+//		YZManager.getInstance().refreshYZAccessToken();
+//		initcosclient();
 		String cfgPath=null;
 		if(args.length!=0) {
 			cfgPath = args[0];
@@ -46,7 +56,8 @@ public class TaskTrackerStartup {
 
     }
 
-    public static void start(String cfgPath) {
+
+	public static void start(String cfgPath) {
         try {
             TaskTrackerCfg cfg = TaskTrackerCfgLoader.load(cfgPath);
 

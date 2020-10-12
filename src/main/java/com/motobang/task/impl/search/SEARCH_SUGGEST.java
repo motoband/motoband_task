@@ -35,6 +35,7 @@ public class SEARCH_SUGGEST implements JobRunner  {
 
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
+//		YZManager.getInstance().refreshYZAccessToken();
 		LOGGER.error("SEARCH_SUGGEST is start");
 		Consts.MOTOBAND_SEARCHSERVICE="http://10.0.0.11:8091/motoband-search/";
 		String urlString =  "http://10.0.0.11:8091/motoband-search/search/suggest/removeall";

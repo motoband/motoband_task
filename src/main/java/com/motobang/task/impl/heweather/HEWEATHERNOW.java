@@ -23,9 +23,8 @@ public class HEWEATHERNOW implements JobRunner{
 	public Result run(JobContext arg0) throws Throwable {
 		// TODO Auto-generated method stub
 		LOGGER.info("HEWEATHERNOW is started");
-//		Consts.MOTOBAND_SEARCHSERVICE="http://10.0.0.11:8091/motoband-search/";
+		Consts.MOTOBAND_SEARCHSERVICE="http://10.0.0.11:8091/motoband-search/";
 		HeWeatherManager.getInstance().updateCityWeather();
-		HeWeatherManager.getInstance().updateWeatherForecast();
 		LOGGER.info("HEWEATHERNOW is finished");
 		return null;
 	}
