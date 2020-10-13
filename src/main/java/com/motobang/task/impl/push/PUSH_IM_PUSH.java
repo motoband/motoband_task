@@ -76,6 +76,13 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 				}
 				//标记需要处理的用户 条件是有效的用户  需要先筛选出有效的用户 条件是半年以内登录过的用户
 				FenPiSendtaskMsg_new(taskid, model, pushMsg, 0);
+				dataMap.put("successcount", UserManager.getInstance().getUserTaskCount(taskid, -1));
+//				UserManager.getInstance().updatetaskmsgliststate(dataMap);
+//				dataMap = new HashMap<String, Object>();
+//				dataMap.put("taskid", taskModel.taskid);
+				dataMap.put("updatetime", System.currentTimeMillis());
+				dataMap.put("state", 1);
+				UserManager.getInstance().updatetaskmsgliststate(dataMap);
 			}
         } catch (Exception e) {
         	if(e.getMessage().contains("interrupt")) {
