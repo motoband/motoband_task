@@ -1,5 +1,7 @@
 package com.motobang.task;
 
+import org.apache.log4j.Level;
+
 import com.github.ltsopensource.core.logger.Logger;
 import com.github.ltsopensource.core.logger.LoggerFactory;
 import com.github.ltsopensource.tasktracker.TaskTracker;
@@ -28,8 +30,6 @@ public class TaskTrackerStartup {
 
     public static void main(String[] args) throws Exception {
 //    	System.setProperty("env_task","production_task");
-		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.ERROR);
-
     	DBConnectionManager.init();
     	DBConnectionManager.init(Consts.DB_ENVIRONMENT_TASK);
     	DBConnectionManager.init(Consts.DB_ENVIRONMENT_GPS);
@@ -50,6 +50,10 @@ public class TaskTrackerStartup {
 		boolean printToControl = Boolean.valueOf(ConfigManager.getInstance().getConfig(ConfigManager.Trace_PrintTraceToControl));
 		String logFileURL = ConfigManager.getInstance().getConfig(ConfigManager.Trace_LogFileURL);
 		Tracer.initialize( tiTraceLevel, writeToFile, printToControl, ConfigManager.ServiceName, "/data/logs/");
+		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.ERROR);
+		org.apache.log4j.Logger log =org.apache.log4j.Logger.getLogger("org.mongodb.driver");   
+        log.setLevel(Level.OFF); 
+        java.util.logging.Logger.getLogger("org.mongodb.driver").setLevel(java.util.logging.Level.OFF);
 		if (_tracer.CriticalAvailable())
 			_tracer.Critical(TaskTrackerStartup.class.getSimpleName()+" MotoBandTask init  SUCCESSFUL");
 		LOGGER.info(TaskTrackerStartup.class.getSimpleName()+" MotoBandTask init  SUCCESSFUL");
