@@ -53,6 +53,7 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
 
 	@Override
 	public Result run(JobContext arg0) throws Throwable {
+		int isvalidusercount=0;
 		try {
 			LOGGER.info("更新用戶有效性 is start");
 //			long minaddtime = LocalDateTime.of(LocalDate.now().plusYears(-2), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();
@@ -137,6 +138,7 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
 					}
 					mbuser.updatetime = System.currentTimeMillis();
 					UserDAO.inserUserPush(mbuser);
+					isvalidusercount++;
 //					LOGGER.info("更新用戶有效性over mbuser="+JSON.toJSONString(mbuser));
 				}
 				if(result.size()<pagesize) {
@@ -145,7 +147,7 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
 				start+=pagesize;
 			}
 			
-			LOGGER.info("更新用戶有效性over");
+			LOGGER.info("更新用戶有效性over,isvalidusercount="+isvalidusercount);
 
 		} catch (Exception e) {
 				if(e instanceof InterruptedException) {
@@ -155,7 +157,7 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
                 return new Result(Action.EXECUTE_FAILED, ExceptionUtils.getStackTrace(e));
         	}
 		}
-		return null;
+		return  new Result(Action.EXECUTE_SUCCESS,"更新成功的有效用户数:"+isvalidusercount);
 	}
 
 	@Override
