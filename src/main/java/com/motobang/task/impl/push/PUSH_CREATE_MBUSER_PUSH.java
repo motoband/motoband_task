@@ -59,9 +59,10 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
 //			long minaddtime = LocalDateTime.of(LocalDate.now().plusYears(-2), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();
 			int start=0;
 			int pagesize=10000;
-			StringBuffer sql = new StringBuffer("select userid,city,gender,addtime from mbuser where  isro=0");
+//			StringBuffer sql = new StringBuffer("select userid,city,gender,addtime from mbuser where  isro=0");
 			while (true) {
-				sql.append(""+start+","+pagesize);
+				StringBuffer sql = new StringBuffer("select userid,city,gender,addtime from mbuser where  isro=0");
+				sql.append(" limit "+start+","+pagesize);
 				LOGGER.info("更新用戶有效性 start="+start+",pagesize="+pagesize);
 				List<Map<String, Object>> result = UserDAO.executesql(sql.toString());
 //				List<String> mbusermodeljsonstr = Lists.newArrayList();
