@@ -54,6 +54,7 @@ public class TaskTrackerStartup {
 		org.apache.log4j.Logger log =org.apache.log4j.Logger.getLogger("org.mongodb.driver");   
         log.setLevel(Level.OFF); 
         java.util.logging.Logger.getLogger("org.mongodb.driver").setLevel(java.util.logging.Level.OFF);
+        new com.github.ltsopensource.core.logger.slf4j.Slf4jLoggerAdapter().setLevel(com.github.ltsopensource.core.logger.Level.ERROR);
 		if (_tracer.CriticalAvailable())
 			_tracer.Critical(TaskTrackerStartup.class.getSimpleName()+" MotoBandTask init  SUCCESSFUL");
 		LOGGER.info(TaskTrackerStartup.class.getSimpleName()+" MotoBandTask init  SUCCESSFUL");
