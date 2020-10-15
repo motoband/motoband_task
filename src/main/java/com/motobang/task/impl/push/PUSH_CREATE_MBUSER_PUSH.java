@@ -55,85 +55,96 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
 	public Result run(JobContext arg0) throws Throwable {
 		try {
 			LOGGER.info("更新用戶有效性 is start");
-			long minaddtime = LocalDateTime.of(LocalDate.now().plusYears(-2), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();
-			String sql = "select userid,city,gender,addtime from mbuser where  channel not like '%X'";
-			List<Map<String, Object>> result = UserDAO.executesql(sql);
-			List<String> mbusermodeljsonstr = Lists.newArrayList();
-			List<String> userids = Lists.newArrayList();
-			for (Map<String, Object> map : result) {
-				String userid = (String) map.get("userid");
-				MBUserPushModel mbuser = new MBUserPushModel();
-				mbuser.userid= userid;
-				if (map.containsKey("city")) {
-					String city = (String) map.get("city");
-					// 获取北京的citydatamodel
-					CityDataModel citydata = MotoDataManager.getInstance().getOldCityName(city);
-					if (citydata != null) {
-						citydata = MotoDataManager.getInstance().getCityData(citydata.citycode);
-						mbuser.province = citydata.province;
-						mbuser.city = citydata.name;
-					} else {
-						citydata = MotoDataManager.getInstance().getCityData(city);
+//			long minaddtime = LocalDateTime.of(LocalDate.now().plusYears(-2), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();
+			int start=0;
+			int pagesize=10000;
+			StringBuffer sql = new StringBuffer("select userid,city,gender,addtime from mbuser where  isro=0");
+			while (true) {
+				sql.append(""+start+","+pagesize);
+				LOGGER.info("更新用戶有效性 start="+start+",pagesize="+pagesize);
+				List<Map<String, Object>> result = UserDAO.executesql(sql.toString());
+//				List<String> mbusermodeljsonstr = Lists.newArrayList();
+//				List<String> userids = Lists.newArrayList();
+				for (Map<String, Object> map : result) {
+					String userid = (String) map.get("userid");
+					MBUserPushModel mbuser = new MBUserPushModel();
+					mbuser.userid= userid;
+					if (map.containsKey("city")) {
+						String city = (String) map.get("city");
+						// 获取北京的citydatamodel
+						CityDataModel citydata = MotoDataManager.getInstance().getOldCityName(city);
 						if (citydata != null) {
+							citydata = MotoDataManager.getInstance().getCityData(citydata.citycode);
 							mbuser.province = citydata.province;
 							mbuser.city = citydata.name;
+						} else {
+							citydata = MotoDataManager.getInstance().getCityData(city);
+							if (citydata != null) {
+								mbuser.province = citydata.province;
+								mbuser.city = citydata.name;
+							}
 						}
 					}
-				}
-				if (map.containsKey("gender")) {
-					mbuser.gender = (int) map.get("gender");
-				}
-				String selectGrage = "select * from usergarage where userid=\"" + userid + "\" and `use`=1";
-				List<Map<String, Object>> grageList = UserDAO.executesql(selectGrage);
-				for (Map<String, Object> garageMap : grageList) {
-					GarageModel g = JSON.parseObject(JSON.toJSONString(garageMap), GarageModel.class);
-					mbuser.brandid = g.brandid;
-					mbuser.modelid = g.modelid;
-					MotoBrandModel res = MotoDataManager.getInstance().getMotoBrand(g.brandid);
-					if (res != null) {
-						mbuser.brandparentid = MotoDataManager.getInstance().getMotoBrand(g.brandid).bpid;
+					if (map.containsKey("gender")) {
+						mbuser.gender = (int) map.get("gender");
 					}
-				}
-				if (map.containsKey("addtime")) {
-					mbuser.addtime = Long.parseLong(map.get("addtime").toString());
-				}
+					String selectGrage = "select * from usergarage where userid=\"" + userid + "\" and `use`=1";
+					List<Map<String, Object>> grageList = UserDAO.executesql(selectGrage);
+					for (Map<String, Object> garageMap : grageList) {
+						GarageModel g = JSON.parseObject(JSON.toJSONString(garageMap), GarageModel.class);
+						mbuser.brandid = g.brandid;
+						mbuser.modelid = g.modelid;
+						MotoBrandModel res = MotoDataManager.getInstance().getMotoBrand(g.brandid);
+						if (res != null) {
+							mbuser.brandparentid = MotoDataManager.getInstance().getMotoBrand(g.brandid).bpid;
+						}
+					}
+					if (map.containsKey("addtime")) {
+						mbuser.addtime = Long.parseLong(map.get("addtime").toString());
+					}
 
-				StringBuffer lastActiveTimeSQL = new StringBuffer();
-//				String tableName=D
-				// 一年内没有登录过 标记为无效用户
-				int year = 12;
-				lastActiveTimeSQL.append("select * from  (");
+					StringBuffer lastActiveTimeSQL = new StringBuffer();
+//					String tableName=D
+					// 一年内没有登录过 标记为无效用户
+					int year = 12;
+					lastActiveTimeSQL.append("select * from  (");
 
-				for (int i = 0; i < year; i++) {
-					lastActiveTimeSQL.append("select * from userloginonlog");
-					lastActiveTimeSQL.append(LocalDate.now().plusMonths(-i).format(DateTimeFormatter.ofPattern("_yyyy_M")));
-					lastActiveTimeSQL.append(" where userid=\"" + userid + "\" and ctype in (1,2) ");
-					if (i != year - 1) {
-						lastActiveTimeSQL.append(" \r\n UNION ALL  \r\n");
+					for (int i = 0; i < year; i++) {
+						lastActiveTimeSQL.append("select * from userloginonlog");
+						lastActiveTimeSQL.append(LocalDate.now().plusMonths(-i).format(DateTimeFormatter.ofPattern("_yyyy_M")));
+						lastActiveTimeSQL.append(" where userid=\"" + userid + "\" and ctype in (1,2) ");
+						if (i != year - 1) {
+							lastActiveTimeSQL.append(" \r\n UNION ALL  \r\n");
+						}
 					}
-				}
-				lastActiveTimeSQL.append(") as  t ORDER BY t.logintime limit 1");
+					lastActiveTimeSQL.append(") as  t ORDER BY t.logintime limit 1");
 
-				List<Map<String, Object>> lastActiveTimeMapList = UserDAO.executesql(lastActiveTimeSQL.toString());
-				if (!CollectionUtil.isEmpty(lastActiveTimeMapList)) {
-					Map<String, Object> lastActiveTime = lastActiveTimeMapList.get(0);
-					if (lastActiveTime.containsKey("ctype")) {
-						mbuser.ctype = Integer.parseInt(lastActiveTime.get("ctype").toString());
+					List<Map<String, Object>> lastActiveTimeMapList = UserDAO.executesql(lastActiveTimeSQL.toString());
+					if (!CollectionUtil.isEmpty(lastActiveTimeMapList)) {
+						Map<String, Object> lastActiveTime = lastActiveTimeMapList.get(0);
+						if (lastActiveTime.containsKey("ctype")) {
+							mbuser.ctype = Integer.parseInt(lastActiveTime.get("ctype").toString());
+						}
+						if (lastActiveTime.containsKey("cversion")) {
+							String cversion = lastActiveTime.get("cversion").toString().replaceAll("\\.", "");
+							mbuser.cversion = Long.parseLong(cversion);
+						}
+						if (lastActiveTime.containsKey("logintime")) {
+							mbuser.lastactivetime = Long.parseLong(lastActiveTime.get("logintime").toString());
+						}
+					} else {
+						mbuser.state = 1;
 					}
-					if (lastActiveTime.containsKey("cversion")) {
-						String cversion = lastActiveTime.get("cversion").toString().replaceAll("\\.", "");
-						mbuser.cversion = Long.parseLong(cversion);
-					}
-					if (lastActiveTime.containsKey("logintime")) {
-						mbuser.lastactivetime = Long.parseLong(lastActiveTime.get("logintime").toString());
-					}
-				} else {
-					mbuser.state = 1;
+					mbuser.updatetime = System.currentTimeMillis();
+					UserDAO.inserUserPush(mbuser);
+//					LOGGER.info("更新用戶有效性over mbuser="+JSON.toJSONString(mbuser));
 				}
-				mbuser.updatetime = System.currentTimeMillis();
-				UserDAO.inserUserPush(mbuser);
-//				LOGGER.info("更新用戶有效性over mbuser="+JSON.toJSONString(mbuser));
+				if(result.size()<pagesize) {
+					break;
+				}
+				start+=pagesize;
 			}
+			
 			LOGGER.info("更新用戶有效性over");
 
 		} catch (Exception e) {
