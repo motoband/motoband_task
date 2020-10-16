@@ -76,7 +76,7 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 				}
 				//标记需要处理的用户 条件是有效的用户  需要先筛选出有效的用户 条件是半年以内登录过的用户
 				FenPiSendtaskMsg_new(taskid, model, pushMsg, 0);
-				dataMap.put("successcount", UserManager.getInstance().getUserTaskCount(taskid, -1));
+				dataMap.put("successcount", UserManager.getInstance().getUserTaskCount(taskid, 0));
 //				UserManager.getInstance().updatetaskmsgliststate(dataMap);
 //				dataMap = new HashMap<String, Object>();
 //				dataMap.put("taskid", taskModel.taskid);
@@ -146,10 +146,10 @@ public class PUSH_IM_PUSH implements InterruptibleJobRunner {
 		}
 		dataMap.put("taskid", taskid);
 		LOGGER.error("taskid="+taskid+"开始检查任务用户总数");
-		dataMap.put("sumcount", UserManager.getInstance().getUserTaskCount(taskid, -1));
+		dataMap.put("sumcount", UserManager.getInstance().getUserTaskCount(taskid, 0));
 		LOGGER.error("taskid="+taskid+"结束检查任务用户总数");
 		LOGGER.error("taskid="+taskid+"开始检查任务用户执行成功总数");
-		dataMap.put("successcount", UserManager.getInstance().getUserTaskCount(taskid, 1));
+		dataMap.put("successcount", UserManager.getInstance().getUserTaskCount(taskid, 0));
 		LOGGER.error("taskid="+taskid+"开始检查任务用户执行失败总数");
 		dataMap.put("failcount", UserManager.getInstance().getUserTaskCount(taskid, 2));
 		LOGGER.error("taskid="+taskid+"开始更新任务执行情况");
