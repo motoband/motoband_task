@@ -183,6 +183,7 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
 				}
 			}
 		} catch (Exception e) {
+			LOGGER.error(e);
 		}
 	}
 

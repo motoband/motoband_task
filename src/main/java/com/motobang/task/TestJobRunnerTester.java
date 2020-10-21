@@ -5,6 +5,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.PropertyConfigurator;
 
 import com.alibaba.fastjson.JSON;
 import com.github.ltsopensource.core.domain.Job;
@@ -44,6 +45,9 @@ public class TestJobRunnerTester extends JobRunnerTester {
  		DataVersionManager.getInstance().init();
  		DataVersionManager.getInstance().startCheck();	
  		OkHttpClientUtil.init();
+ 		String log4jPath="src/main/resources/conf/log4j.properties";
+ 		PropertyConfigurator.configure(log4jPath);
+ 		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.INFO);
 // 		YZManager.getInstance().refreshYZAccessToken();
 //        //  Mock Job 数据
 //    	String json="{\"createtime\":1586499906391,\"des\":\"不知这次有没有你，如没有，那是幸福\",\"failcount\":0,\"gpid\":0,\"handlecount\":0,\"id\":0,\"imgurl\":\"http://news2-10013836.cos.ap-shanghai.myqcloud.com/78217F5AC176441A95C30C86C6189E33\",\"linktype\":1,\"name\":\"2020-04-10 14:25:06_阿沟的推送\",\"nid\":\"FB7E8D79694A4038A46BC3FC90C4DC7A\",\"starttime\":0,\"state\":0,\"successcount\":0,\"sumcount\":0,\"taskid\":\"ios_push_20200410142501\",\"test\":1,\"title\":\"机车吐槽大会第二弹\",\"updatetime\":0,\"userpushmodel\":{\"addtime\":0,\"brandid\":0,\"brandparentid\":0,\"ctype\":1,\"cversion\":0,\"lastactivetime\":0,\"mbid\":0,\"modelid\":0,\"state\":0,\"updatetime\":0}}";
@@ -84,8 +88,10 @@ public class TestJobRunnerTester extends JobRunnerTester {
 //		job.setParam("type", MessageTaskModel.GPS_CHECKERRORRD);
 //    	job.setTaskId(MessageTaskModel.GPS_PACKAGE);
 //		job.setParam("type", MessageTaskModel.GPS_PACKAGE);
-    	job.setTaskId(MessageTaskModel.YZ_REFRESH_ACCESSTOKEN);
-		job.setParam("type", MessageTaskModel.YZ_REFRESH_ACCESSTOKEN);
+//    	job.setTaskId(MessageTaskModel.YZ_REFRESH_ACCESSTOKEN);
+//		job.setParam("type", MessageTaskModel.YZ_REFRESH_ACCESSTOKEN);
+    	job.setTaskId(MessageTaskModel.PUSH_CREATE_MBUSER_PUSH);
+		job.setParam("type", MessageTaskModel.PUSH_CREATE_MBUSER_PUSH);
 		job.setTaskId(taskModel.taskid);
 //		job.setParam("type", MessageTaskModel.PUSH_IM_PUSH);
 //		job.setParam("data", JSON.toJSONString(taskModel));
