@@ -69,6 +69,7 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
 //				List<String> userids = Lists.newArrayList();
 				for (Map<String, Object> map : result) {
 					String userid = (String) map.get("userid");
+					LOGGER.info("userid="+userid+",开始检测");
 					MBUserPushModel mbuser = new MBUserPushModel();
 					mbuser.userid= userid;
 					if (map.containsKey("city")) {
@@ -142,6 +143,7 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
 					UserDAO.inserUserPush(mbuser);
 					isvalidusercount++;
 //					LOGGER.info("更新用戶有效性over mbuser="+JSON.toJSONString(mbuser));
+					LOGGER.info("userid="+userid+",检测结束,state="+mbuser.state);
 				}
 				if(result.size()<pagesize) {
 					break;
