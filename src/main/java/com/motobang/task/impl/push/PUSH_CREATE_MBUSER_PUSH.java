@@ -1,9 +1,6 @@
 package com.motobang.task.impl.push;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
@@ -11,23 +8,26 @@ import java.util.Map;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.github.ltsopensource.core.domain.Action;
 import com.github.ltsopensource.core.logger.Logger;
 import com.github.ltsopensource.core.logger.LoggerFactory;
 import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.runner.InterruptibleJobRunner;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
-import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.motoband.dao.UserDAO;
+import com.motoband.factory.TIMFactory;
 import com.motoband.manager.MotoDataManager;
-import com.motoband.manager.search.ElasticSearchManager;
 import com.motoband.model.CityDataModel;
 import com.motoband.model.GarageModel;
 import com.motoband.model.MotoBrandModel;
 import com.motoband.model.task.MBUserPushModel;
+import com.motoband.utils.OkHttpClientUtil;
 import com.motoband.utils.collection.CollectionUtil;
+
+import okhttp3.Response;
 
 /**
  * 筛选有效用户 创建一个新的用户表，同步到ES 目前支持的字段 userid,province,city,gender, model,brand
@@ -134,6 +134,7 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
 						if (lastActiveTime.containsKey("logintime")) {
 							mbuser.lastactivetime = Long.parseLong(lastActiveTime.get("logintime").toString());
 						}
+						checkTimStatus(mbuser);
 					} else {
 						mbuser.state = 1;
 					}
@@ -159,6 +160,30 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
         	}
 		}
 		return  new Result(Action.EXECUTE_SUCCESS,"更新成功的有效用户数:"+isvalidusercount);
+	}
+
+	private void checkTimStatus(MBUserPushModel mbuser) {
+		List<Map<String,Object>> list3=Lists.newArrayList();
+		Map<String,Object> useridparams=Maps.newHashMap();
+		useridparams.put("UserID", mbuser.userid);
+		list3.add(useridparams);
+		Map<String,Object> params=Maps.newHashMap();
+		params.put("CheckItem", list3);
+		Map<String,Object> urlMap=new TIMFactory().createTIMUserOpenLoginProduct().checkAccount();
+		String url=urlMap.get("url").toString();	
+		try {
+			Response res=OkHttpClientUtil.okHttpPost(url, JSON.toJSONString(params));
+			if(res.isSuccessful()) {
+				String str=res.body().string();
+				JSONArray jsonArray=JSON.parseObject(str).getJSONArray("ResultItem");
+				for (int i=0;i<jsonArray.size();i++) {
+					if(jsonArray.getJSONObject(i).getString("AccountStatus").equals("NotImported")) {
+						mbuser.state=1;
+					}
+				}
+			}
+		} catch (Exception e) {
+		}
 	}
 
 	@Override
