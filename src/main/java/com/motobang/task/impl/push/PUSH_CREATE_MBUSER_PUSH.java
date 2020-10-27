@@ -62,7 +62,7 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
 			LOGGER.info("更新用戶有效性 is start");
 //			long minaddtime = LocalDateTime.of(LocalDate.now().plusYears(-2), LocalTime.now()).toInstant(ZoneOffset.of("+8")).toEpochMilli();
 			int start=0;
-			int pagesize=10000;
+			int pagesize=100000;
 //			StringBuffer sql = new StringBuffer("select userid,city,gender,addtime from mbuser where  isro=0");
 			while (true) {
 				StringBuffer sql = new StringBuffer("select userid,city,gender,addtime from mbuser where  isro=0");
@@ -71,7 +71,7 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
 				List<Map<String, Object>> result = UserDAO.executesql(sql.toString());
 //				List<String> mbusermodeljsonstr = Lists.newArrayList();
 //				List<String> userids = Lists.newArrayList();
-				List<List<Map<String, Object>>> averageList=CollectionUtil.averageAssign(result, 5);
+				List<List<Map<String, Object>>> averageList=CollectionUtil.averageAssign(result, 20);
 				CyclicBarrier cb=new CyclicBarrier(averageList.size()+1);
 				for (List<Map<String, Object>> list : averageList) {
 					ExecutorsUtils.getInstance().execute(new Runnable() {
@@ -81,7 +81,7 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
 								List<MBUserPushModel> pushlist=Lists.newArrayList();
 								for (Map<String, Object> map : list) {
 									String userid = (String) map.get("userid");
-									LOGGER.info("userid="+userid+",开始检测");
+//									LOGGER.info("userid="+userid+",开始检测,threadid"+Thread.currentThread().getId());
 									MBUserPushModel mbuser = new MBUserPushModel();
 									mbuser.userid= userid;
 									if (map.containsKey("city")) {
@@ -152,13 +152,12 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
 										mbuser.state = 1;
 									}
 									mbuser.updatetime = System.currentTimeMillis();
-									isvalidusercount.getAndDecrement();
 									pushlist.add(mbuser);
 //									LOGGER.info("更新用戶有效性over mbuser="+JSON.toJSONString(mbuser));
-									LOGGER.info("userid="+userid+",检测结束,state="+mbuser.state);
+//									LOGGER.info("userid="+userid+",检测结束,state="+mbuser.state+",count="+isvalidusercount.getAndIncrement()+",threadid"+Thread.currentThread().getId());
 								}
-								
 								UserDAO.inserUserPushBatch(pushlist);
+								LOGGER.info("插入成功,threadid"+Thread.currentThread().getId()+",count="+isvalidusercount.getAndAdd(pushlist.size()));
 							} catch (Exception e) {
 								LOGGER.error(e);
 							}finally {
@@ -171,6 +170,7 @@ public class PUSH_CREATE_MBUSER_PUSH implements InterruptibleJobRunner {
 							
 						}
 					});
+					Thread.sleep(500);
 				}
 				
 				cb.await();
