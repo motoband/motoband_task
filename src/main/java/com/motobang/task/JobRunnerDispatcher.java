@@ -14,6 +14,7 @@ import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import com.motoband.common.MBResponse;
 import com.motoband.common.MBResponseCode;
 import com.motoband.model.task.MessageTaskModel;
+import com.motoband.task.impl.cmq.CMQ_WARNING;
 import com.motobang.task.impl.gps.GPS_CHECKERRORRD;
 import com.motobang.task.impl.gps.GPS_PACKAGE;
 import com.motobang.task.impl.heweather.HEWEATHERNOW;
@@ -57,8 +58,10 @@ public class JobRunnerDispatcher implements JobRunner {
         
         //yz
         JOB_RUNNER_MAP.put(MessageTaskModel.YZ_REFRESH_ACCESSTOKEN, new YZ_REFRESH_ACCESSTOKEN());
-
-
+        
+        //cmqwarning
+        JOB_RUNNER_MAP.put(MessageTaskModel.CMQ_WARNING, new CMQ_WARNING());
+            
     }
 
 
