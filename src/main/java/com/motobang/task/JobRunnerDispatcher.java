@@ -14,7 +14,8 @@ import com.github.ltsopensource.tasktracker.runner.JobRunner;
 import com.motoband.common.MBResponse;
 import com.motoband.common.MBResponseCode;
 import com.motoband.model.task.MessageTaskModel;
-import com.motoband.task.impl.cmq.CMQ_WARNING;
+import com.motobang.task.impl.gps.CMQ_TIMEING_MASTERCOUNT;
+import com.motobang.task.impl.gps.CMQ_WARNING;
 import com.motobang.task.impl.gps.GPS_CHECKERRORRD;
 import com.motobang.task.impl.gps.GPS_PACKAGE;
 import com.motobang.task.impl.heweather.HEWEATHERNOW;
@@ -59,8 +60,10 @@ public class JobRunnerDispatcher implements JobRunner {
         //yz
         JOB_RUNNER_MAP.put(MessageTaskModel.YZ_REFRESH_ACCESSTOKEN, new YZ_REFRESH_ACCESSTOKEN());
         
-        //cmqwarning
+        //cmqwarning   CMQ可见消息预警
         JOB_RUNNER_MAP.put(MessageTaskModel.CMQ_WARNING, new CMQ_WARNING());
+        //定时修改master的数量
+        JOB_RUNNER_MAP.put(MessageTaskModel.CMQ_TIMEING_MASTERCOUNT, new CMQ_TIMEING_MASTERCOUNT());
             
     }
 
