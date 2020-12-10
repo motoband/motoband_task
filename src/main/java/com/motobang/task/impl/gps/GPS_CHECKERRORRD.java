@@ -30,7 +30,7 @@ public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
 		LOGGER.info("GPS_CHECKERRORRD is start");
-		long max=System.currentTimeMillis()-5*60*1000;
+		long max=System.currentTimeMillis()-30*60*1000;
 		Set<String> rdSet=RedisManager.getInstance().zrangbyscore(Consts.REDIS_SCHEME_RUN, EFullUploadReport.GPS_REPORT_INFO_SET, 0, max);
 //		rdSet=Sets.newHashSet("F84465E5C774A1CD0D1944D2947540FE");
 		if(CollectionUtil.isNotEmpty(rdSet)) {
