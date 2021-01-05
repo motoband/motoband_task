@@ -55,6 +55,7 @@ public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
 						report.info.wm=2;
 						report.info.eng=2;
 						HardwareGPSDao.insertBaseUploadReportInfo(report);
+						report.endride=1;
 						new EFullUploadReport().countGPS(report);
 
 					}

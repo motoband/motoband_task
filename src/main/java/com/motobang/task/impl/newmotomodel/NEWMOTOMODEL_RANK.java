@@ -92,6 +92,10 @@ public class NEWMOTOMODEL_RANK implements InterruptibleJobRunner  {
 			}else {
 				mongth++;
 			}
+			if(mongth>12) {
+				mongth=1;
+				year++;
+			}
 			LOGGER.info("mongth="+mongth);
 				handleModelid(year,mongth,styleMap);
 				LOGGER.info("NEWMOTOMODEL_RANK is handleBrandid start");	
