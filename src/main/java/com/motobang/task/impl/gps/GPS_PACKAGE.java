@@ -2,6 +2,7 @@ package com.motobang.task.impl.gps;
 
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +24,7 @@ import com.motoband.dao.gps.HardwareGPSDao;
 import com.motoband.manager.RedisManager;
 import com.motoband.manager.hardware.gps.parse.EFullUploadReport;
 import com.motoband.model.hardware.gps.GPSBaseReportInfoModel;
+import com.motoband.utils.OkHttpClientUtil;
 import com.motoband.utils.collection.CollectionUtil;
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.ClientConfig;
@@ -35,6 +37,12 @@ import com.qcloud.cos.region.Region;
 import com.qcloud.cos.transfer.TransferManager;
 import com.qcloud.cos.transfer.TransferManagerConfiguration;
 import com.qcloud.cos.transfer.Upload;
+import com.tencentcloudapi.cdn.v20180606.CdnClient;
+import com.tencentcloudapi.cdn.v20180606.models.PurgePathCacheRequest;
+import com.tencentcloudapi.cdn.v20180606.models.PurgePathCacheResponse;
+import com.tencentcloudapi.common.Credential;
+import com.tencentcloudapi.common.profile.ClientProfile;
+import com.tencentcloudapi.common.profile.HttpProfile;
 
 public class GPS_PACKAGE  implements InterruptibleJobRunner {
     protected static final Logger LOGGER = LoggerFactory.getLogger(GPS_PACKAGE.class);
@@ -91,9 +99,10 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 							UploadResult res=putObjectResult.waitForUploadResult();
 //							PutObjectResult putObjectResult = cosclient.putObject(putObjectRequest);	
 							String dataurl="https://gpsridelinedata-1251739791.file.myqcloud.com/"+key;
+							
 							RedisManager.getInstance().zrem(Consts.REDIS_SCHEME_RUN, EFullUploadReport.GPS_PACKAGE_SET, rd);
 							HardwareGPSDao.updateGPSRidelineDateurl(rd,dataurl);
-							
+							refreshCDN();
 //						String reportjsonstr=RedisManager.getInstance().string_get(Consts.REDIS_SCHEME_RUN, rd+EFullUploadReport.GPS_REPORT_INFO);
 //						GPSBaseReportInfoModel report = JSON.parseObject(reportjsonstr, GPSBaseReportInfoModel.class);
 //						GarageModel garagemodel = UserGarageDAO.getUserGaragesBygpssn(report.sn);
@@ -124,6 +133,34 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 		LOGGER.info("GPS_PACKAGE is end");
 		return null;
 	}
+	//刷新目录
+	public void refreshCDN() {
+        try{
+
+            Credential cred = new Credential(Consts.SECRETID, Consts.SECRETKEY);
+
+            HttpProfile httpProfile = new HttpProfile();
+            httpProfile.setEndpoint("cdn.tencentcloudapi.com");
+
+            ClientProfile clientProfile = new ClientProfile();
+            clientProfile.setHttpProfile(httpProfile);
+
+            CdnClient client = new CdnClient(cred, "", clientProfile);
+
+            PurgePathCacheRequest req = new PurgePathCacheRequest();
+            String[] paths1 = {"https://gpsridelinedata-1251739791.file.myqcloud.com/gpsridelinedata/"};
+            req.setPaths(paths1);
+
+            req.setFlushType("flush");
+
+            PurgePathCacheResponse resp = client.PurgePathCache(req);
+
+            System.out.println(PurgePathCacheResponse.toJsonString(resp));
+        } catch (Exception e) {
+        	LOGGER.error(e);
+        }
+
+    }
 
 	@Override
 	public void interrupt() {
