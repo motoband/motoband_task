@@ -125,7 +125,7 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 				}
 
 			}
-			//降低cdn目录刷新预热频率，因为有数量限制
+			//降低cdn目录刷新预热频率，因为有数量限制  8*8=64次/天    腾讯云限制 100次
 			if(fresh==1) {
 				Calendar calendar = Calendar.getInstance();
 				int curHour24 = calendar.get(calendar.HOUR_OF_DAY);
