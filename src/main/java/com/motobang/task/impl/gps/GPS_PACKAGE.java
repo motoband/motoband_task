@@ -4,6 +4,7 @@ package com.motobang.task.impl.gps;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -124,8 +125,17 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 				}
 
 			}
+			//降低cdn目录刷新预热频率，因为有数量限制
 			if(fresh==1) {
-				refreshCDN();
+				Calendar calendar = Calendar.getInstance();
+				int curHour24 = calendar.get(calendar.HOUR_OF_DAY);
+				if(curHour24==7||curHour24==8||curHour24==9||curHour24==10||curHour24==11||curHour24==18||curHour24==19||curHour24==20) {
+					int minute=calendar.get(calendar.MINUTE);
+					if(minute==7||minute==8||minute==9||minute==10||minute==11||minute==18||minute==19||minute==20) {
+						refreshCDN();
+					}
+				}
+				
 			}
 			
 //			RedisManager.getInstance().zremrangeByScore(Consts.REDIS_SCHEME_RUN, EFullUploadReport.GPS_REPORT_INFO_SET, 0, max);
