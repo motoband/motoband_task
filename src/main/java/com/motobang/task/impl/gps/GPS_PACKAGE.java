@@ -52,6 +52,7 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 		LOGGER.info("GPS_PACKAGE is start");
 		long max=System.currentTimeMillis();
 		Set<String> rdSet=RedisManager.getInstance().zrangbyscore(Consts.REDIS_SCHEME_RUN, EFullUploadReport.GPS_PACKAGE_SET, 0, max);
+		int fresh=0;
 //		rdSet=Sets.newHashSet("0D34DF5421836379C33D145317AEBF0B");
 		if(CollectionUtil.isNotEmpty(rdSet)) {
 			COSCredentials cred = new BasicCOSCredentials(Consts.SECRETID, Consts.SECRETKEY);
@@ -72,6 +73,7 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 			transferManager.setConfiguration(transferManagerConfiguration);
 			for (String rd : rdSet) {
 				try {
+					fresh=1;
 					Map<String,Object> map=Maps.newHashMap();
 					map.put("rd", rd);
 //					map.put("orderby", "ASC");
@@ -122,7 +124,10 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 				}
 
 			}
-			refreshCDN();
+			if(fresh==1) {
+				refreshCDN();
+			}
+			
 //			RedisManager.getInstance().zremrangeByScore(Consts.REDIS_SCHEME_RUN, EFullUploadReport.GPS_REPORT_INFO_SET, 0, max);
 			transferManager.shutdownNow();
 			cosclient.shutdown();
