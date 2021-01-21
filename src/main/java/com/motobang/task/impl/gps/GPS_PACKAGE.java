@@ -125,16 +125,13 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 				}
 
 			}
-			//降低cdn目录刷新预热频率，因为有数量限制  8*8=64次/天    腾讯云限制 100次
+			//降低cdn目录刷新预热频率，因为有数量限制  4*24=96次/天    腾讯云限制 100次
 			if(fresh==1) {
 				Calendar calendar = Calendar.getInstance();
-				int curHour24 = calendar.get(calendar.HOUR_OF_DAY);
-				if(curHour24==7||curHour24==8||curHour24==9||curHour24==10||curHour24==11||curHour24==18||curHour24==19||curHour24==20) {
-					int minute=calendar.get(calendar.MINUTE);
-					if(minute==7||minute==8||minute==9||minute==10||minute==11||minute==18||minute==19||minute==20) {
-						refreshCDN();
-					}
-				}
+				int minute=calendar.get(calendar.MINUTE);
+				if(minute==15||minute==30||minute==45||minute==0) {
+					refreshCDN();
+				} 
 				
 			}
 			
