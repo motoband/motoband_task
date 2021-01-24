@@ -8,7 +8,6 @@ import com.github.ltsopensource.core.logger.LoggerFactory;
 import com.github.ltsopensource.tasktracker.Result;
 import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.github.ltsopensource.tasktracker.runner.JobRunner;
-import com.motoband.common.Consts;
 import com.motoband.manager.heweather.HeWeatherManager;
 
 /**
