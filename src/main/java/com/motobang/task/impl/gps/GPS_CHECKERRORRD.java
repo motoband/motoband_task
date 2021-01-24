@@ -46,6 +46,9 @@ public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
 						map.put("valid", 1);
 						map.put("orderby", "desc");
 						List<GPSBaseReportInfoModel> reports = HardwareGPSDao.getGPSReportInfoList(map);
+						if(reports.size()<2) {
+							continue;
+						}
 					   GPSBaseReportInfoModel report=reports.get(1);	
 						GarageModel garagemodel = UserGarageDAO.getUserGaragesBygpssn(report.info.sn);
 						if (garagemodel == null || StringUtils.isBlank(garagemodel.userid)) {
