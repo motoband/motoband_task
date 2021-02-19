@@ -5,12 +5,15 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSON;
 import com.github.ltsopensource.core.logger.Logger;
@@ -82,8 +85,21 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 //					map.put("valid", 1);
 					String key="gpsridelinedata/"+rd+".mbdata";
 //					map.put("head", 8);
-					GPSRidelineModel gpsridelinemodel=HardwareGPSDao.getGPSRideLineByRd(rd);
-					map.put("sn", gpsridelinemodel.sn);
+					List<GPSRidelineModel> gpsridelinemodel=HardwareGPSDao.getGPSRideLineByRd(rd);
+					String sn=null;
+					if(gpsridelinemodel!=null) {
+						if(gpsridelinemodel.size()>1) {
+							gpsridelinemodel.sort(Comparator.comparing(GPSRidelineModel::getStarttime));
+							Collections.reverse(gpsridelinemodel);
+							sn=gpsridelinemodel.get(0).sn;
+							key="gpsridelinedata/"+rd+sn+".mbdata";
+							map.put("sn", sn);
+						}else {
+							sn=gpsridelinemodel.get(0).sn;
+							map.put("sn", sn);
+						}
+					}
+					
 					List<GPSBaseReportInfoModel> list=HardwareGPSDao.getGPSPackageReportInfoList(map);
 					if(CollectionUtil.isNotEmpty(list)) {
 						   ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -107,7 +123,7 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 							String dataurl="https://gpsridelinedata-1251739791.file.myqcloud.com/"+key;
 							
 							RedisManager.getInstance().zrem(Consts.REDIS_SCHEME_RUN, EFullUploadReport.GPS_PACKAGE_SET, rd);
-							HardwareGPSDao.updateGPSRidelineDateurl(rd,dataurl);
+							HardwareGPSDao.updateGPSRidelineDateurl(rd,dataurl,sn);
 							
 //						String reportjsonstr=RedisManager.getInstance().string_get(Consts.REDIS_SCHEME_RUN, rd+EFullUploadReport.GPS_REPORT_INFO);
 //						GPSBaseReportInfoModel report = JSON.parseObject(reportjsonstr, GPSBaseReportInfoModel.class);
