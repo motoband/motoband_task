@@ -25,6 +25,7 @@ import com.motoband.dao.gps.HardwareGPSDao;
 import com.motoband.manager.RedisManager;
 import com.motoband.manager.hardware.gps.parse.EFullUploadReport;
 import com.motoband.model.hardware.gps.GPSBaseReportInfoModel;
+import com.motoband.model.hardware.gps.GPSRidelineModel;
 import com.motoband.utils.OkHttpClientUtil;
 import com.motoband.utils.collection.CollectionUtil;
 import com.qcloud.cos.COSClient;
@@ -81,6 +82,8 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 //					map.put("valid", 1);
 					String key="gpsridelinedata/"+rd+".mbdata";
 //					map.put("head", 8);
+					GPSRidelineModel gpsridelinemodel=HardwareGPSDao.getGPSRideLineByRd(rd);
+					map.put("sn", gpsridelinemodel.sn);
 					List<GPSBaseReportInfoModel> list=HardwareGPSDao.getGPSPackageReportInfoList(map);
 					if(CollectionUtil.isNotEmpty(list)) {
 						   ObjectMetadata objectMetadata = new ObjectMetadata();
