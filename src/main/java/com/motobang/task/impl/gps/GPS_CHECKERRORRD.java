@@ -35,6 +35,7 @@ public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
 		LOGGER.info("GPS_CHECKERRORRD is start");
 		long max=System.currentTimeMillis()-15*60*1000;
 		Set<String> rdSet=RedisManager.getInstance().zrangbyscore(Consts.REDIS_SCHEME_RUN, EFullUploadReport.GPS_REPORT_INFO_SET, 0, max);
+		_tracer.Debug("GPS结束线路任务机,本次循环要处理的线路数量：" + (rdSet==null?null:rdSet.size()) );
 //		rdSet=Sets.newHashSet("F84465E5C774A1CD0D1944D2947540FE");
 		if(CollectionUtil.isNotEmpty(rdSet)) {
 			for (String rd : rdSet) {
@@ -59,7 +60,8 @@ public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
 					   GPSBaseReportInfoModel report=reports.get(1);	
 						GarageModel garagemodel = UserGarageDAO.getUserGaragesBygpssn(report.info.sn);
 						if (garagemodel == null || StringUtils.isBlank(garagemodel.userid)) {
-							return null;
+							_tracer.Debug("GPS结束线路任务机,车删除了的数据，线路:ridelineid=" + rd );
+//							return null;
 						}
 						report.head=8;
 						report.info.wm=2;
@@ -78,6 +80,8 @@ public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
 								new EFullUploadReport().countGPS(report);
 								_tracer.Error("GPS结束线路任务机，有结束点，但是没有线路，任务机进行结算线路:ridelineid=" + rd );
 							}
+						}else {
+							_tracer.Error("GPS结束线路任务机，有结束点，有线路，任务机进行结算线路:ridelineid=" + rd );
 						}
 					}
 				} catch (Exception e) {
