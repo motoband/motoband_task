@@ -38,6 +38,7 @@ public class TaskTrackerStartup {
 		DataVersionManager.getInstance().init();
 		DataVersionManager.getInstance().startCheck();	
 		OkHttpClientUtil.init();
+//		Consts.MOTOBAND_SEARCHSERVICE="http://10.0.0.11:8091/motoband-search/";
 //		YZManager.getInstance().refreshYZAccessToken();
 //		initcosclient();
 		String cfgPath=null;
