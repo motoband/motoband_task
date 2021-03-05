@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.github.ltsopensource.core.logger.Logger;
@@ -16,6 +17,7 @@ import com.github.ltsopensource.tasktracker.runner.JobContext;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.motoband.common.Consts;
+import com.motoband.common.trace.Tracer;
 import com.motoband.dao.UserGarageDAO;
 import com.motoband.dao.gps.HardwareGPSDao;
 import com.motoband.manager.RedisManager;
@@ -26,7 +28,7 @@ import com.motoband.utils.collection.CollectionUtil;
 
 public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
     protected static final Logger LOGGER = LoggerFactory.getLogger(GPS_CHECKERRORRD.class);
-
+    private static final Tracer _tracer = Tracer.create(GPS_CHECKERRORRD.class);
 	@Override
 	public Result run(JobContext jobContext) throws Throwable {
 		LOGGER.info("GPS_CHECKERRORRD is start");
@@ -57,13 +59,14 @@ public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
 						report.head=8;
 						report.info.wm=2;
 						report.info.eng=2;
-						HardwareGPSDao.insertBaseUploadReportInfo(report);
+//						HardwareGPSDao.insertBaseUploadReportInfo(report);
 						report.endride=1;
 						new EFullUploadReport().countGPS(report);
 
 					}
 				} catch (Exception e) {
 					LOGGER.error(e);
+					_tracer.Error("GPS结束綫路任務機，失败:ridelineid=" + rd + ",error=" + ExceptionUtils.getStackTrace(e));
 					continue;
 				}
 
