@@ -24,6 +24,7 @@ import com.motoband.manager.RedisManager;
 import com.motoband.manager.hardware.gps.parse.EFullUploadReport;
 import com.motoband.model.GarageModel;
 import com.motoband.model.hardware.gps.GPSBaseReportInfoModel;
+import com.motoband.model.hardware.gps.GPSRidelineModel;
 import com.motoband.utils.collection.CollectionUtil;
 
 public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
@@ -41,6 +42,7 @@ public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
 					Map<String,Object> map=Maps.newHashMap();
 					map.put("rd", rd);
 					map.put("head", 8);
+					map.put("orderby", "desc");
 					List<GPSBaseReportInfoModel> list=HardwareGPSDao.getGPSReportInfoList(map);
 					if(CollectionUtil.isEmpty(list)) {
 //						String reportjsonstr=RedisManager.getInstance().string_get(Consts.REDIS_SCHEME_RUN, rd+EFullUploadReport.GPS_REPORT_INFO);
@@ -63,10 +65,20 @@ public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
 						report.endride=1;
 						new EFullUploadReport().countGPS(report);
 
+					}else {
+						List<GPSRidelineModel> gpsRidelineModel=HardwareGPSDao.getGPSRideLineByRd(rd);
+						if(gpsRidelineModel==null||gpsRidelineModel.size()<1) {
+							if(list!=null&&list.size()>0) {
+								GPSBaseReportInfoModel report=list.get(0);
+								report.endride=1;
+								new EFullUploadReport().countGPS(report);
+								_tracer.Error("GPS结束线路任务机，有结束点，但是没有线路，任务机进行结算线路:ridelineid=" + rd );
+							}
+						}
 					}
 				} catch (Exception e) {
 					LOGGER.error(e);
-					_tracer.Error("GPS结束綫路任務機，失败:ridelineid=" + rd + ",error=" + ExceptionUtils.getStackTrace(e));
+					_tracer.Error("GPS结束线路任务机，失败:ridelineid=" + rd + ",error=" + ExceptionUtils.getStackTrace(e));
 					continue;
 				}
 
