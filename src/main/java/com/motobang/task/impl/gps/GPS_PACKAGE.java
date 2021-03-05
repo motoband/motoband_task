@@ -87,7 +87,7 @@ public class GPS_PACKAGE  implements InterruptibleJobRunner {
 //					map.put("head", 8);
 					List<GPSRidelineModel> gpsridelinemodel=HardwareGPSDao.getGPSRideLineByRd(rd);
 					String sn=null;
-					if(gpsridelinemodel!=null) {
+					if(gpsridelinemodel!=null&&gpsridelinemodel.size()>0) {
 						if(gpsridelinemodel.size()>1) {
 							gpsridelinemodel.sort(Comparator.comparing(GPSRidelineModel::getStarttime));
 							Collections.reverse(gpsridelinemodel);
