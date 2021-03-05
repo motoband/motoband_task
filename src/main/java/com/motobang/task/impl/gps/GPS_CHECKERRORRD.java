@@ -39,11 +39,13 @@ public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
 		if(CollectionUtil.isNotEmpty(rdSet)) {
 			for (String rd : rdSet) {
 				try {
+					_tracer.Debug("GPS结束线路任务机，线路:ridelineid=" + rd );
 					Map<String,Object> map=Maps.newHashMap();
 					map.put("rd", rd);
 					map.put("head", 8);
 					map.put("orderby", "desc");
 					List<GPSBaseReportInfoModel> list=HardwareGPSDao.getGPSReportInfoList(map);
+					_tracer.Debug("GPS结束线路任务机,查询结束点线路，线路:ridelineid=" + (list==null?null:list.size()) );
 					if(CollectionUtil.isEmpty(list)) {
 //						String reportjsonstr=RedisManager.getInstance().string_get(Consts.REDIS_SCHEME_RUN, rd+EFullUploadReport.GPS_REPORT_INFO);
 						map.put("head", 6);
@@ -51,6 +53,7 @@ public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
 						map.put("orderby", "desc");
 						List<GPSBaseReportInfoModel> reports = HardwareGPSDao.getGPSReportInfoList(map);
 						if(reports==null||reports.size()<2) {
+							_tracer.Debug("GPS结束线路任务机,没有6的数据，线路:ridelineid=" + rd );
 							continue;
 						}
 					   GPSBaseReportInfoModel report=reports.get(1);	
@@ -63,8 +66,9 @@ public class GPS_CHECKERRORRD  implements InterruptibleJobRunner {
 						report.info.eng=2;
 //						HardwareGPSDao.insertBaseUploadReportInfo(report);
 						report.endride=1;
+						_tracer.Debug("GPS结束线路任务机,结算线路开始，线路:ridelineid=" + rd );
 						new EFullUploadReport().countGPS(report);
-
+						_tracer.Debug("GPS结束线路任务机，结算结束，线路:ridelineid=" + rd );
 					}else {
 						List<GPSRidelineModel> gpsRidelineModel=HardwareGPSDao.getGPSRideLineByRd(rd);
 						if(gpsRidelineModel==null||gpsRidelineModel.size()<1) {
