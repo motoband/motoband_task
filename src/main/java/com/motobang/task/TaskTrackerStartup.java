@@ -50,7 +50,7 @@ public class TaskTrackerStartup {
 		boolean printToControl = Boolean.valueOf(ConfigManager.getInstance().getConfig(ConfigManager.Trace_PrintTraceToControl));
 		String logFileURL = ConfigManager.getInstance().getConfig(ConfigManager.Trace_LogFileURL);
 //		Tracer.initialize( tiTraceLevel, writeToFile, printToControl, ConfigManager.ServiceName, "/data/logs/");
-		Tracer.initialize( TraceLevel.Debug, true, true, ConfigManager.ServiceName, logFileURL);
+		Tracer.initialize( TraceLevel.Debug, true, true, ConfigManager.ServiceName, "/data/logs/");
 //		org.apache.log4j.Logger.getRootLogger().setLevel(org.apache.log4j.Level.ERROR);
 		org.apache.log4j.Logger log =org.apache.log4j.Logger.getLogger("org.mongodb.driver");   
         log.setLevel(Level.OFF); 
